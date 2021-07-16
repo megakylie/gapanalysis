@@ -16,11 +16,10 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(lubridate)
 
-setwd("~/Desktop")
-inat =read.csv("SBBG/GapAnalysis/gapanalysisdatasets/hym_inat_clean.csv")
-lacm = read.csv("SBBG/GapAnalysis/gapanalysisdatasets/hym_lacm_clean.csv")
-chis = read_csv("SBBG/GapAnalysis/gapanalysisdatasets/hym_chis_clean.csv")
-bohart = read_csv("SBBG/GapAnalysis/gapanalysisdatasets/hym_bohart_clean.csv")
+inat =read.csv("~/gitit/TNC Gap Analysis/hym_inat_clean.csv")
+lacm = read.csv("~/gitit/TNC Gap Analysis/hym_lacm_clean.csv")
+chis = read_csv("~/gitit/TNC Gap Analysis/hym_chis_clean.csv")
+bohart = read_csv("~/gitit/TNC Gap Analysis/hym_bohart_clean.csv")
 
 ```
 
@@ -48,6 +47,7 @@ Now to combine. iNat = 1372, LACM = 1186, CHIS = 7621, Bohart = 6326 (bohart is 
 
 ```{r create the master }
 masterdata = rbind(inat_column, lacm_column, chis_column, bohart_column)
+write.csv(masterdata, "hym_master.csv")
 ```
 
 #Quick and dirty summary stats
