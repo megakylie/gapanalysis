@@ -1,0 +1,151 @@
+---
+title: "Gap Analysis Hymenoptera Combined datasets"
+author: "Kylie Etter"
+date: "7/8/2021"
+output: html_document
+---
+This R Code is for data analysis of the Hymenoptera for the TNC Gap Analysis. It downloads the cleaned datasets to combine that have (source, month_arabic, day_arabic, year, island, order, bee, family, genera, specificEp, scientificName) columns. Once combined can compare numbers between sources, compare locality and temporal information. 
+
+The iNaturalist data was removed from the Cal-IBIS data so there was no duplication. 
+
+# Download datasets. (iNaturalist, LACM, Cal-IBIS, Bohart)
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# load packages
+library(tidyverse)
+library(lubridate)
+
+setwd("~/Desktop")
+inat =read.csv("SBBG/GapAnalysis/gapanalysisdatasets/hym_inat_clean.csv")
+lacm = read.csv("SBBG/GapAnalysis/gapanalysisdatasets/hym_lacm_clean.csv")
+chis = read_csv("SBBG/GapAnalysis/gapanalysisdatasets/hym_chis_clean.csv")
+bohart = read_csv("SBBG/GapAnalysis/gapanalysisdatasets/hym_bohart_clean.csv")
+
+```
+
+#Clean up datasets and combine 
+
+Combine datasets with the specific columns (source, month_arabic, day_arabic, year, island, order, family, genus, specificEp, scientificName). 
+
+First, removing excess columns from datasets.
+
+```{r clean up datasets}
+inat_column <- inat %>%
+  select(source, month_arabic, day_arabic, year, island, order, family, genus, specificEp, scientificName)
+lacm_column <- lacm %>%
+  select(source, month_arabic, day_arabic, year, island, order, family, genus, specificEp, scientificName) 
+chis_column <- chis %>%
+  select(source, month_arabic, day_arabic, year, island, order, family, genus, specificEp, scientificName) %>%
+filter(!is.na(source))
+bohart_column <- bohart %>%
+  select(source, month_arabic, day_arabic, year, island, order, family, genus, specificEp, scientificName)
+
+```
+
+Make master dataset.
+Now to combine. iNat = 1372, LACM = 1186, CHIS = 7621, Bohart = 6326 (bohart is all bees). 16505 total. 
+
+```{r create the master }
+masterdata = rbind(inat_column, lacm_column, chis_column, bohart_column)
+```
+
+#Quick and dirty summary stats
+Now all 4 data sets are combine! Summary stats here we go! 
+
+```{r master summary}
+x= table(masterdata$order)
+x
+table(masterdata$family)
+sum(is.na(masterdata$family))
+sum(is.na(masterdata$genus))
+sum(is.na(masterdata$specificEp))
+
+colSums(is.na(masterdata))
+
+```
+Summary of taxonomic resolution by source 
+```{r summary by data source}
+table(inat_column$order)
+table(inat_column$family)
+x = table(inat_column$family)
+print(x)
+
+table(chis_column$family)
+
+table(bohart_column$family)
+
+table(lacm_column$family)
+
+table(masterdata$family)
+
+
+write.csv(masterdata, "gapan_alldata.csv")
+
+```
+
+#Graphs of the different data. 
+
+Mapping the sampling on different islands by data source.
+```{r Graphing by island}
+library(ggplot2)
+library()
+ 
+y= ggplot(masterdata, aes(x=island, fill=source)) + geom_bar(position="fill")
+y
+
+r = ggplot(masterdata, aes(x=year, fill=source)) + geom_bar(position="fill")
+r
+
+masterdataisland <- masterdata %>% filter(!is.na(island))
+masterdataisland <- masterdataisland[c(1:1371, 1373:16366),]
+
+islandplot = ggplot(data = masterdataisland, aes(x = island, fill=source)) + geom_bar()
+islandplot = islandplot + theme_classic() + labs(x="Island", y= "Number of Specimen Collected")
+qw = islandplot +  stat_count(geom = "text", 
+             aes(label = stat(count)),
+             position=position_fill(vjust=1), colour="black")
+
+islandplot2 = ggplot(data = masterdataisland, aes(x = island, fill = source)) +
+    geom_bar(position = "dodge")
+islandplot2 = islandplot2 + theme_classic() + labs(x="Island", y= "Number of Specimen Collected")
+wq = islandplot2 + stat_count(geom = "text", 
+             aes(label = stat(count)),
+             position= "dodge", colour="black")
+
+islandall = ggplot(data = masterdataisland, aes(x=island)) + geom_bar()
+islandall = islandall + stat_count(geom = "text", 
+             aes(label = stat(count)),
+             position=position_fill(vjust=0.5), colour="black")
+islandall + theme_classic()
+
+
+
+```
+
+Graphing the temporal gaps in collections 
+```{r Graphing by year}
+yearplot = ggplot(masterdata, aes(x=year, fill=source)) + geom_bar()
+yearplot = yearplot + theme_classic() + labs(x="Year", y ="Number of Specimen Collected")
+yearplot
+
+yearplot2 = ggplot(masterdata, aes(x=year, fill=source)) + geom_bar(position="dodge")
+yearplot2 = yearplot2 + theme_classic() + labs(x="Year", y ="Number of Specimen Collected")
+yearplot2
+```
+
+Graphing the seasonal gaps in collections. 
+
+```{r Graphing by month}
+monthplot = ggplot(masterdata, aes(x=month_arabic, fill=source)) + geom_bar() + scale_x_continuous(breaks = seq(1, 12, by=1)) 
+monthplot = monthplot + theme_classic() + (labs(x="Month", y="Number of Specimen Collected")) + scale_x_continuous(breaks = seq(1,12, by=1))
+monthplot
+
+monthplotall = ggplot(masterdata, aes(x=month_arabic)) + geom_bar()
+monthplotall = monthplotall + theme_classic() + (labs(x="Month", y="Number of Specimen Collected")) + scale_x_continuous(breaks = seq(1, 12, by=1)) 
+zx = monthplotall + stat_count(geom = "text", 
+             aes(label = stat(count)),
+             position=position_fill(vjust=0.5), colour="black")
+
+```
+

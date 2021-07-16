@@ -1,0 +1,38 @@
+---
+title: "GapAnalysis_Hymenoptera_cleanup"
+author: "Kylie Etter"
+date: "7/2/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# load packages
+library(tidyverse)
+library(lubridate)
+
+setwd("~/Desktop")
+inat =read.csv("SBBG/GapAnalysis/gapanalysisdatasets/hym_inat.csv")
+lacm = read.csv("SBBG/GapAnalysis/gapanalysisdatasets/hym_lacm.csv")
+chis = read_csv("SBBG/GapAnalysis/gapanalysisdatasets/hym_chis.csv")
+
+```
+
+Friday July 3rd 2021 Just cleaned up iNat dataset with this code.
+
+Fixing up the individual datasets to be more cohesive + add month, year, taxon columns. Mostly just fixed up iNAt
+
+inat: keeping relevant columns, fixing up taxon info (Aculeta = infraorder column)
+```{r}
+
+inat2 <- inat %>%
+  select(observed_o, observed_1, user_id, quality_gr, place_gues, latitude, longitude, ArcMap_IslandName, infraorder, suborder, superfamily, bee, family, subfamily, tribe, subtribe, genus, subgenus, species, scientific)
+
+inat_clean <- inat2 %>% 
+  mutate(island = ArcMap_IslandName)
+
+write.csv(inat_clean, "hym_inat_clean.csv")
+
+
+```

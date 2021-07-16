@@ -1,0 +1,50 @@
+---
+title: "GapAnalysis_DateFix"
+author: "Josie Lesage"
+date: "5/12/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# load packages
+library(tidyverse)
+library(lubridate)
+
+```
+
+# Fix dates for Casey
+
+The goal is to produce a .csv file with 3 columns - day, month, year. 
+
+```{r import and split columns}
+# read csv into an R object
+gapdata <- read_csv("Gap Analysis Dates/LACM_gapData.csv") %>%
+  # rename date column
+  rename(date = "FROM Date Collected") %>%
+  # create original date column for cross-referencing
+  mutate(original_date = date) %>% 
+  
+  # pull out last 4 letters for year column
+  separate(date, sep = -4, into = c("day-month", "year")) %>%
+  
+  # split day and month based on "." as divider - 
+  ### WARNING THAT FOR DATES WITHOUT A DAY, THE MONTH WILL BE EMPTY AND DAY WILL HAVE THE MONTH VALUE
+  separate("day-month", sep = "\\.", into = c("day_messy", "month_messy")) %>%
+  
+  # convert roman numerals to numeric values
+  mutate(month_arabic = as.numeric(as.roman(month_messy)),
+         day_arabic = as.numeric(as.roman(day_messy))) %>%
+  
+  
+  # reorder the data for viewing ease
+  select("Bcode", "Country", "State", "County", "Island", "Locality Detail", "Collector", "Order", "Family", "original_date", "day_arabic", "month_arabic", "year", "original_date", "day_messy", "month_messy")
+
+
+#save the file
+write.csv(gapdata2, "Gap Analysis Dates/LACM_gapData_cleaner.csv")
+
+
+```
+
