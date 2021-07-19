@@ -258,3 +258,29 @@ grid.arrange(bar_chis, bar_inat)
 
 ```
 
+# Adding and cleaning up the Miller literature database 
+```{r}
+lit_miller = read.csv("~/gitit/TNC Gap Analysis/Miller_lit.csv")
+lit_miller_clean <- lit_miller %>%
+  rename(order = ORDER, family = FAMILY, genus = GENUS, specificEp = SPECIES, yearpub = YRPUBL, year = YRCOLL, month = MONTH ) %>%
+   select(order, family, genus, specificEp, yearpub, PUBL, year, month, ANA, BAR, CAT, CLE, CRU, MIG, NIC, ROS)
+
+write.csv(lit_miller_clean, "lit_miller_clean.csv")
+# going to manually create in Excel Hymenoptera dataframe and add source = lit 
+
+#upload hymenoptera only
+# I changed the x to 1s for islands to make a matrix, and then removed any "?" from the islands, so only inlcuding ones that had 1 or nothing, no uncertain ones, for nosp removed the sp. from the species column and any question ones, also split into genus and subgenus columns 
+lit_miller_hym = read.csv("~/gitit/TNC Gap Analysis/lit_miller_hym.csv")
+lit_miller_hym2 = read.csv("~/gitit/TNC Gap Analysis/lit_miller_hym_nosp.csv")
+
+ddply(lit_miller_hym,~source,summarize,number_of_distint_fam=length(unique(family)))
+
+ddply(lit_miller_hym2,~source,summarize,number_of_disitinct_gen=length(unique(genus)))
+
+ddply(lit_miller_hym2,~source,summarize,number_of_disitinct_gen=length(unique(scientificName)))
+
+unique(c(as.character(chis$family)))
+# 27 fam, 173 genera, 379 unique sp. identified (only included things with a sp. id)
+```
+
+
