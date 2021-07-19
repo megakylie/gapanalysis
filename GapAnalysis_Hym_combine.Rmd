@@ -2,7 +2,9 @@
 title: "Gap Analysis Hymenoptera Combined datasets"
 author: "Kylie Etter"
 date: "7/8/2021"
-output: html_document
+output: pdf_document
+editor_options: 
+  chunk_output_type: console
 ---
 This R Code is for data analysis of the Hymenoptera for the TNC Gap Analysis. It downloads the cleaned datasets to combine that have (source, month_arabic, day_arabic, year, island, order, bee, family, genera, specificEp, scientificName) columns. Once combined can compare numbers between sources, compare locality and temporal information. 
 
@@ -16,10 +18,11 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(lubridate)
 
+
 inat =read.csv("~/gitit/TNC Gap Analysis/hym_inat_clean.csv")
 lacm = read.csv("~/gitit/TNC Gap Analysis/hym_lacm_clean.csv")
 chis = read_csv("~/gitit/TNC Gap Analysis/hym_chis_clean.csv")
-bohart = read_csv("~/gitit/TNC Gap Analysis/hym_bohart_clean.csv")
+bohart = read.csv("~/gitit/TNC Gap Analysis/hym_bohart_clean.csv")
 
 ```
 
@@ -49,6 +52,13 @@ Now to combine. iNat = 1372, LACM = 1186, CHIS = 7621, Bohart = 6326 (bohart is 
 masterdata = rbind(inat_column, lacm_column, chis_column, bohart_column)
 write.csv(masterdata, "hym_master.csv")
 ```
+
+Updated master dataset with the synonymy. 
+```{r}
+mastersyn = read.csv("~/gitit/TNC Gap Analysis/hym_master_syn.csv")
+
+```
+
 
 #Quick and dirty summary stats
 Now all 4 data sets are combine! Summary stats here we go! 
@@ -89,7 +99,6 @@ write.csv(masterdata, "gapan_alldata.csv")
 Mapping the sampling on different islands by data source.
 ```{r Graphing by island}
 library(ggplot2)
-library()
  
 y= ggplot(masterdata, aes(x=island, fill=source)) + geom_bar(position="fill")
 y
@@ -122,6 +131,34 @@ islandall + theme_classic()
 
 
 ```
+# With the Synonymy done 
+```{r}
+
+mastersynisland <- mastersyn %>% filter(!is.na(island))
+mastersynisland <- mastersynisland[c(1:1371, 1373:16366),]
+
+islandplot = ggplot(data = mastersynisland, aes(x = island, fill=source)) + geom_bar()
+islandplot = islandplot + theme_classic() + labs(x="Island", y= "Number of Specimen Collected")
+qw = islandplot +  stat_count(geom = "text", 
+             aes(label = stat(count)),
+             position=position_fill(vjust=1), colour="black")
+
+islandplot2 = ggplot(data = mastersynisland, aes(x = island, fill = source)) +
+    geom_bar(position = "dodge")
+islandplot2 = islandplot2 + theme_classic() + labs(x="Island", y= "Number of Specimen Collected")
+wq = islandplot2 + stat_count(geom = "text", 
+             aes(label = stat(count)),
+             position= "dodge", colour="black")
+
+islandall = ggplot(data = mastersynisland, aes(x=island)) + geom_bar()
+islandall = islandall + stat_count(geom = "text", 
+             aes(label = stat(count)),
+             position=position_fill(vjust=0.5), colour="black")
+islandall + theme_classic()
+
+
+```
+
 
 Graphing the temporal gaps in collections 
 ```{r Graphing by year}
@@ -147,5 +184,30 @@ zx = monthplotall + stat_count(geom = "text",
              aes(label = stat(count)),
              position=position_fill(vjust=0.5), colour="black")
 
+```
+
+# Unique values by datasource 
+```{r}
+library(plyr)
+ddply(mastersyn,~source,summarize,number_of_distint_fam=length(unique(family)))
+
+ddply(mastersyn,~source,summarize,number_of_disitinct_gen=length(unique(genus)))
+
+ddply(mastersyn,~source,summarize,number_of_disitinct_gen=length(unique(acceptedScientificName)))
+
+chis_fam = unique(c(as.character(chis$family)))
+unique_family =as.data.frame(chis_fam)
+bohart_fam = unique(c(as.character(bohart$family)))
+bohart_fam
+
+
+cbind(mastersyn, record)
+```
+
+ 
+# Playing around with pie graphs!!!
+```{r}
+ggplot(masterdata ,aes(x = "", fill=genus)) + geom_bar(width =
+1) + coord_polar (theta="y")
 ```
 
