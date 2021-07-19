@@ -186,14 +186,16 @@ zx = monthplotall + stat_count(geom = "text",
 
 ```
 
-# Unique values by datasource 
+# Unique values by datasource. Playing aroudn with different ways to do it.
 ```{r}
 library(plyr)
 ddply(mastersyn,~source,summarize,number_of_distint_fam=length(unique(family)))
 
 ddply(mastersyn,~source,summarize,number_of_disitinct_gen=length(unique(genus)))
+ddply(mastersyn,~record,summarize,number_of_disitinct_gen=length(unique(genus)))
 
 ddply(mastersyn,~source,summarize,number_of_disitinct_gen=length(unique(acceptedScientificName)))
+ddply(mastersyn,~record,summarize,number_of_disitinct_gen=length(unique(acceptedScientificName)))
 
 chis_fam = unique(c(as.character(chis$family)))
 unique_family =as.data.frame(chis_fam)
@@ -201,13 +203,58 @@ bohart_fam = unique(c(as.character(bohart$family)))
 bohart_fam
 
 
-cbind(mastersyn, record)
 ```
 
  
 # Playing around with pie graphs!!!
 ```{r}
-ggplot(masterdata ,aes(x = "", fill=genus)) + geom_bar(width =
+#this didn't work 
+ggplot(masterdata ,aes(x = genus, fill=genus)) + geom_bar(width =
 1) + coord_polar (theta="y")
+
+#removing NAs from graph
+mastersyn_graph <- mastersyn %>%
+ na.omit(mastersyn$family)
+mastersyn_graph = mastersyn_graph %>% arrange(family)
+mastersyn_graph = mastersyn_graph[c(580:16131), ]
+
+bar_occurence <- ggplot(data = mastersyn_graph) + 
+  geom_bar(
+    mapping = aes(x = fct_infreq(family), fill = family), 
+    show.legend = FALSE,
+    width = 1
+  ) + 
+  theme(aspect.ratio = 1) 
+
+
+
+bar_occurence = bar_occurence + coord_flip() + labs(x="Family", y= "")
+
+
+
+bar_chis <- ggplot(data = chis) + 
+  geom_bar(
+    mapping = aes(x = fct_infreq(family), fill = family), 
+    show.legend = FALSE,
+    width = 1
+  ) + 
+  theme(aspect.ratio = 1) 
+
+bar_chis = bar_chis + coord_flip() + labs(x="Family", y= "")
+
+bar_inat <- ggplot(data = inat) + 
+  geom_bar(
+    mapping = aes(x = fct_infreq(family), fill = family), 
+    show.legend = FALSE,
+    width = 1) + theme(aspect.ratio = 1)
+
+
+bar_inat = bar_inat + coord_flip() + labs(x="Family", y= "")
+bar_occurence
+bar_chis
+bar_inat
+library(gridExtra)
+grid.arrange(bar_chis, bar_inat) 
+
 ```
 
