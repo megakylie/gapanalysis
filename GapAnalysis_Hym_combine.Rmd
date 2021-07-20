@@ -137,8 +137,11 @@ islandall + theme_classic()
 mastersynisland <- mastersyn %>% filter(!is.na(island))
 mastersynisland <- mastersynisland[c(1:1371, 1373:16366),]
 
-islandplot = ggplot(data = mastersynisland, aes(x = island, fill=source)) + geom_bar()
-islandplot = islandplot + theme_classic() + labs(x="Island", y= "Number of Specimen Collected")
+islandplot = ggplot(data = mastersynisland, aes(x = fct_infreq(island), fill=source)) + geom_bar()
+islandplot = islandplot + theme_bw() + labs(x="Island", y= "Number of Specimen Collected") 
+islandplot + coord_flip() + scale_y_continuous(limits = c(0, 10200), expand=c(0,0))
+islandplot + scale_y_continuous(limits = c(0, 10200), expand=c(0,0))
+
 qw = islandplot +  stat_count(geom = "text", 
              aes(label = stat(count)),
              position=position_fill(vjust=1), colour="black")
@@ -228,7 +231,7 @@ bar_occurence <- ggplot(data = mastersyn_graph) +
 
 
 
-bar_occurence = bar_occurence + coord_flip() + labs(x="Family", y= "")
+bar_occurence = bar_occurence + coord_flip() + labs(x="Family", y= "") + scale_y_continuous(expand=c(0,0))
 
 
 
@@ -240,7 +243,7 @@ bar_chis <- ggplot(data = chis) +
   ) + 
   theme(aspect.ratio = 1) 
 
-bar_chis = bar_chis + coord_flip() + labs(x="Family", y= "")
+bar_chis = bar_chis + coord_flip() + labs(x="Family", y= "") + scale_y_continuous(expand=c(0,0))
 
 bar_inat <- ggplot(data = inat) + 
   geom_bar(
@@ -249,7 +252,7 @@ bar_inat <- ggplot(data = inat) +
     width = 1) + theme(aspect.ratio = 1)
 
 
-bar_inat = bar_inat + coord_flip() + labs(x="Family", y= "")
+bar_inat = bar_inat + coord_flip() + labs(x="Family", y= "") + scale_y_continuous(expand=c(0,0))
 bar_occurence
 bar_chis
 bar_inat
@@ -279,8 +282,58 @@ ddply(lit_miller_hym2,~source,summarize,number_of_disitinct_gen=length(unique(ge
 
 ddply(lit_miller_hym2,~source,summarize,number_of_disitinct_gen=length(unique(scientificName)))
 
-unique(c(as.character(chis$family)))
-# 27 fam, 173 genera, 379 unique sp. identified (only included things with a sp. id)
+unique(c(as.character(lit_miller_hym2$family)))
+occgen = unique(c(as.character(mastersyn$acceptedGenus)))
+litgen = unique(c(as.character(lit_miller_hym2$genus)))
+diffgen = setdiff(litgen, occgen)
+diffgen
+litgen
+
+unique(c(as.character(mastersyn$genus)))
+# 27 fam, 167 genera, *** didn't do good syn 377 unique sp. identified (only included things with a sp. id)
+```
+
+#Creating plots based on the Miller database compared to Occurence data, also updated Occurence Temporal plots. 
+
+```{r}
+lit = lit_miller_hym2 %>%
+ select(record, source, family, genus, specificEp, year, month)
+occurence = mastersyn %>%
+  rename(month = month_arabic) %>%
+  select(record, source, family, genus, specificEp, year, month)
+litocc_data= rbind(lit, occurence)
+
+
+
+litoccyear = ggplot(litocc_data, aes(x=year, fill=source)) + geom_bar() + theme_bw()
+litocc + scale_y_continuous(expand=c(0,0)) + labs(x="Year")
+
+lityear = ggplot(lit, aes(x=year)) + geom_bar() + theme_bw() + scale_y_continuous(expand=c(0,0)) + labs(x="Year", y ="")
+lityear
+
+occyear = ggplot(mastersyn, aes(x=year, fill=source)) + geom_bar() + theme_bw() + scale_y_continuous(expand=c(0,0)) + labs(x="Year", y ="Number of Specimen Collected")
+occyear
+
+litoccmonth = ggplot(litocc_data, aes(x=month, fill=source)) + geom_bar() + theme_bw()
+litoccmonth + scale_y_continuous(expand=c(0,0)) + labs(x="Month")
+
+litmonth = ggplot(lit, aes(x=month)) + geom_bar() + theme_bw() + scale_y_continuous(expand=c(0,0)) + labs(x="Month", y ="")
+litmonth = litmonth + scale_x_continuous(breaks = seq(1, 12, by=1)) 
+litmonth
+
+occmonth = ggplot(mastersyn, aes(x=month_arabic, fill=source)) + geom_bar() + theme_bw() + scale_y_continuous(expand=c(0,0)) + labs(x="Month", y ="Number of Specimen Collected") 
+occmonth = occmonth + scale_x_continuous(breaks = seq(1, 12, by=1)) 
+occmonth
+```
+
+#New Island plots 
+```{r}
+fct_infreq(family)
+islandplot = ggplot(data = masterdataisland, aes(x = island, fill=source)) + geom_bar()
+islandplot = islandplot + theme_classic() + labs(x="Island", y= "Number of Specimen Collected")
+qw = islandplot +  stat_count(geom = "text", 
+             aes(label = stat(count)),
+             position=position_fill(vjust=1), colour="black")
 ```
 
 
