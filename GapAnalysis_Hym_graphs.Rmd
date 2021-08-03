@@ -1,0 +1,244 @@
+---
+title: "Gap Analysis Hymenoptera Combined datasets"
+author: "Kylie Etter"
+date: "7/8/2021"
+output: pdf_document
+editor_options: 
+  chunk_output_type: console
+---
+This R Code is for graphing the Hymenoptera trends for the TNC Gap Analysis. It downloads the cleaned datasets to combine that have (source, month_arabic, day_arabic, year, island, order, bee, family, genera, specificEp, scientificName) columns. 
+
+The iNaturalist data was removed from the Cal-IBIS data so there was no duplication. 
+
+
+
+# Step 1. Download datasets. 
+(iNaturalist, LACM, Cal-IBIS, Bohart for Hymenoptera)
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# load packages
+library(tidyverse)
+library(lubridate)
+
+
+inat =read.csv("~/gitit/TNC Gap Analysis/hym_inat_clean.csv")
+lacm = read.csv("~/gitit/TNC Gap Analysis/hym_lacm_clean.csv")
+chis = read_csv("~/gitit/TNC Gap Analysis/hym_chis_clean.csv")
+bohart = read.csv("~/gitit/TNC Gap Analysis/hym_bohart_clean.csv")
+
+```
+
+# Step 2. Clean up datasets
+
+Combine datasets with the specific columns (source, month_arabic, day_arabic, year, island, order, family, genus, specificEp, scientificName). 
+
+ ** NOTE I DID SYNONYMY AFTER COMBINING THE DATASETS, if done before include acceptedFamily, acceptedGenus, acceptedEpithet, and accepetedName or the syntax you used for these columns in the code below. 
+
+First, removing excess columns from datasets.
+
+```{r clean up datasets}
+inat_column <- inat %>%
+  select(source, month_arabic, day_arabic, year, island, order, family, genus, specificEp, scientificName)
+lacm_column <- lacm %>%
+  select(source, month_arabic, day_arabic, year, island, order, family, genus, specificEp, scientificName) 
+chis_column <- chis %>%
+  select(source, month_arabic, day_arabic, year, island, order, family, genus, specificEp, scientificName) %>%
+filter(!is.na(source))
+bohart_column <- bohart %>%
+  select(source, month_arabic, day_arabic, year, island, order, family, genus, specificEp, scientificName)
+
+```
+
+# Step 3. Make master dataset.
+Now to combine. iNat = 1372, LACM = 1186, CHIS = 7621, Bohart = 6326 (bohart is all bees). 16505 total. 
+
+```{r create the master }
+masterdata = rbind(inat_column, lacm_column, chis_column, bohart_column)
+write.csv(masterdata, "hym_master.csv")
+```
+**Ignore if you did synonymy before combining
+
+Updated master dataset with the synonymy. 
+```{r synonymy dataset}
+mastersyn = read.csv("~/gitit/TNC Gap Analysis/hym_master_syn.csv")
+
+```
+
+# Step 4. Graph! 
+
+Graphs of the different data. 
+
+## Mapping the sampling on different islands by data source. 
+There was a N/A for island that I just removed manually below to make a new dataset for the island graph. 
+```{r Graphing by island}
+library(ggplot2)
+ 
+mastersynisland <- mastersyn %>% filter(!is.na(island))
+mastersynisland <- mastersynisland[c(1:1371, 1373:16366),]
+
+islandplot = ggplot(data = mastersynisland, aes(x = fct_infreq(island), fill=source)) + geom_bar()
+islandplot = islandplot + theme_bw() + labs(x="Island", y= "Number of Specimen Collected") 
+islandplot = islandplot + coord_flip() + scale_y_continuous(limits = c(0, 10200), expand=c(0,0))
+islandplot
+```
+
+##Graphing the temporal gaps in collections (mastersyb = database)
+```{r Graphing by year}
+
+occyear = ggplot(mastersyn, aes(x=year, fill=source)) + geom_bar() + theme_bw() + scale_y_continuous(expand=c(0,0)) + labs(x="Year", y ="Number of Specimen Collected")
+occyear
+
+```
+
+##Graphing the seasonal gaps in collections. 
+
+```{r Graphing by month}
+
+occmonth = ggplot(mastersyn, aes(x=month_arabic, fill=source)) + geom_bar() + theme_bw() + scale_y_continuous(expand=c(0,0)) + labs(x="Month", y ="Number of Specimen Collected") 
+occmonth = occmonth + scale_x_continuous(breaks = seq(1, 12, by=1)) 
+occmonth
+
+```
+
+
+ 
+## Bar graph comparing families of Hymenoptera 
+
+Playing around with pie graphs!!!
+```{r Graphing Families}
+#this didn't work 
+ggplot(masterdata ,aes(x = genus, fill=genus)) + geom_bar(width =
+1) + coord_polar (theta="y")
+
+#removing NAs from graph
+mastersyn_graph <- mastersyn %>%
+ na.omit(mastersyn$family)
+mastersyn_graph = mastersyn_graph %>% arrange(family)
+mastersyn_graph = mastersyn_graph[c(580:16131), ]
+
+bar_occurence <- ggplot(data = mastersyn_graph) + 
+  geom_bar(
+    mapping = aes(x = fct_infreq(family), fill = family), 
+    show.legend = FALSE,
+    width = 1
+  ) + 
+  theme(aspect.ratio = 1) 
+
+
+
+bar_occurence = bar_occurence + coord_flip() + labs(x="Family", y= "") + scale_y_continuous(expand=c(0,0))
+
+
+
+bar_chis <- ggplot(data = chis) + 
+  geom_bar(
+    mapping = aes(x = fct_infreq(family), fill = family), 
+    show.legend = FALSE,
+    width = 1
+  ) + 
+  theme(aspect.ratio = 1) 
+
+bar_chis = bar_chis + coord_flip() + labs(x="Family", y= "") + scale_y_continuous(expand=c(0,0))
+
+bar_inat <- ggplot(data = inat) + 
+  geom_bar(
+    mapping = aes(x = fct_infreq(family), fill = family), 
+    show.legend = FALSE,
+    width = 1) + theme(aspect.ratio = 1)
+
+
+bar_inat = bar_inat + coord_flip() + labs(x="Family", y= "") + scale_y_continuous(expand=c(0,0))
+bar_occurence
+bar_chis
+bar_inat
+library(gridExtra)
+grid.arrange(bar_chis, bar_inat) 
+
+```
+
+#Step 5. Compare to Literature database 
+
+## Adding and cleaning up the Miller literature database 
+
+I adjusted things in Excel to make it comparable to the occurence data. 
+```{r Literature data upload}
+lit_miller = read.csv("~/gitit/TNC Gap Analysis/Miller_lit.csv")
+lit_miller_clean <- lit_miller %>%
+  rename(order = ORDER, family = FAMILY, genus = GENUS, specificEp = SPECIES, yearpub = YRPUBL, year = YRCOLL, month = MONTH ) %>%
+   select(order, family, genus, specificEp, yearpub, PUBL, year, month, ANA, BAR, CAT, CLE, CRU, MIG, NIC, ROS)
+
+write.csv(lit_miller_clean, "lit_miller_clean.csv")
+# going to manually create in Excel Hymenoptera dataframe and add source = lit 
+
+#upload hymenoptera only
+# I changed the x to 1s for islands to make a matrix, and then removed any "?" from the islands, so only inlcuding ones that had 1 or nothing, no uncertain ones, for nosp removed the sp. from the species column and any question ones, also split into genus and subgenus columns 
+lit_miller_hym = read.csv("~/gitit/TNC Gap Analysis/lit_miller_hym.csv")
+lit_miller_hym2 = read.csv("~/gitit/TNC Gap Analysis/lit_miller_hym_nosp.csv")
+
+ddply(lit_miller_hym,~source,summarize,number_of_distint_fam=length(unique(family)))
+
+ddply(lit_miller_hym2,~source,summarize,number_of_disitinct_gen=length(unique(genus)))
+
+ddply(lit_miller_hym2,~source,summarize,number_of_disitinct_gen=length(unique(scientificName)))
+
+unique(c(as.character(lit_miller_hym2$family)))
+occgen = unique(c(as.character(mastersyn$acceptedGenus)))
+litgen = unique(c(as.character(lit_miller_hym2$genus)))
+diffgen = setdiff(litgen, occgen)
+diffgen
+litgen
+
+unique(c(as.character(mastersyn$genus)))
+# 27 fam, 167 genera, *** didn't do good syn 377 unique sp. identified (only included things with a sp. id)
+```
+
+Creating plots based on the Miller database compared to Occurence data, 
+also combined Occurence and Lit plots that aren't helpful
+```{r Literature Graphs}
+lit = lit_miller_hym2 %>%
+ select(record, source, family, genus, specificEp, year, month)
+occurence = mastersyn %>%
+  rename(month = month_arabic) %>%
+  select(record, source, family, genus, specificEp, year, month)
+litocc_data= rbind(lit, occurence)
+
+
+
+litoccyear = ggplot(litocc_data, aes(x=year, fill=source)) + geom_bar() + theme_bw()
+litocc + scale_y_continuous(expand=c(0,0)) + labs(x="Year")
+
+lityear = ggplot(lit, aes(x=year)) + geom_bar() + theme_bw() + scale_y_continuous(expand=c(0,0)) + labs(x="Year", y ="")
+lityear
+
+litoccmonth = ggplot(litocc_data, aes(x=month, fill=source)) + geom_bar() + theme_bw()
+litoccmonth + scale_y_continuous(expand=c(0,0)) + labs(x="Month")
+
+litmonth = ggplot(lit, aes(x=month)) + geom_bar() + theme_bw() + scale_y_continuous(expand=c(0,0)) + labs(x="Month", y ="")
+litmonth = litmonth + scale_x_continuous(breaks = seq(1, 12, by=1)) 
+litmonth
+
+
+```
+
+Extra code to determine the unqiue values by datasource.
+
+#Unique values by datasource. Playing aroudn with different ways to do it.
+```{r Unqiue values by data source code}
+library(plyr)
+ddply(mastersyn,~source,summarize,number_of_distint_fam=length(unique(family)))
+
+ddply(mastersyn,~source,summarize,number_of_disitinct_gen=length(unique(genus)))
+ddply(mastersyn,~record,summarize,number_of_disitinct_gen=length(unique(genus)))
+
+ddply(mastersyn,~source,summarize,number_of_disitinct_gen=length(unique(acceptedScientificName)))
+ddply(mastersyn,~record,summarize,number_of_disitinct_gen=length(unique(acceptedScientificName)))
+
+chis_fam = unique(c(as.character(chis$family)))
+unique_family =as.data.frame(chis_fam)
+bohart_fam = unique(c(as.character(bohart$family)))
+bohart_fam
+
+
+```
+

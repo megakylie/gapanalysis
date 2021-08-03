@@ -139,8 +139,8 @@ mastersynisland <- mastersynisland[c(1:1371, 1373:16366),]
 
 islandplot = ggplot(data = mastersynisland, aes(x = fct_infreq(island), fill=source)) + geom_bar()
 islandplot = islandplot + theme_bw() + labs(x="Island", y= "Number of Specimen Collected") 
-islandplot + coord_flip() + scale_y_continuous(limits = c(0, 10200), expand=c(0,0))
-islandplot + scale_y_continuous(limits = c(0, 10200), expand=c(0,0))
+islandplot = islandplot + coord_flip() + scale_y_continuous(limits = c(0, 10200), expand=c(0,0))
+
 
 qw = islandplot +  stat_count(geom = "text", 
              aes(label = stat(count)),
