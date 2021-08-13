@@ -1,0 +1,156 @@
+---
+title: "GapAnalysis_Plants"
+author: "Kylie Etter"
+date: "8/2/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# load packages
+library(tidyverse)
+library(lubridate)
+library(ggplot2)
+
+plant = read.csv("~/gitit/TNC Gap Analysis/GapAnalysis_Plants_updatednames2.csv")
+
+plant_clean <- plant %>%
+  rename(island = ArcMap_Location,
+         year = year_,
+         month = month_,
+         order = order_) %>%
+  select(institutionCode, source, kingdom, phylum, class, order, acceptedFamily, acceptedGenus, acceptedEpithet, acceptedName, acceptedNameSp, year, month, island)
+
+
+```
+
+```{r Island Graph} 
+
+plantisland <- plant_clean %>% filter(!is.na(island))
+plantisland <- plantisland[c(1:71974),]
+
+
+plislandplot = ggplot(data = plantisland, aes(x = fct_infreq(island), fill=island)) + geom_bar()
+plislandplot = plislandplot + theme_bw() + labs(x="Island", y= "Number of Specimen Collected") 
+plislandplot = plislandplot + coord_flip() + scale_y_continuous(limits = c(0, 24000), expand=c(0,0))
+plislandplot
+
+#graph split by phylum 
+plislandplot2 = ggplot(data = plantisland, aes(x = fct_infreq(island), fill=phylum)) + geom_bar()
+plislandplot2 = plislandplot2 + theme_bw() + labs(x="Island", y= "Number of Specimen Collected") 
+plislandplot2 = plislandplot2 + coord_flip() + scale_y_continuous(limits = c(0, 24000), expand=c(0,0))
+plislandplot2
+
+```
+
+```{r Graph by Year}
+
+
+
+ploccyear2 = ggplot(plant_clean, aes(x=year)) + geom_bar() + theme_bw() + scale_y_continuous(expand=c(0,0)) + labs(x="Year", y ="Number of Specimen Collected")
+ploccyear2 = ploccyear2 + scale_x_continuous(limits= c(1860, 2020), expand=c(0,0), breaks=c(1880, 1900, 1920, 1940, 1960, 1980, 2000, 2018))
+ploccyear2
+
+ploccyear = ggplot(plantisland, aes(x=year, fill=island)) + geom_bar() + theme_bw() + scale_y_continuous(expand=c(0,0)) + labs(x="Year", y ="Number of Specimen Collected")
+ploccyear = ploccyear + scale_x_continuous(limits = c(1860, 2020), expand=c(0,0), breaks=c(1880, 1900, 1920, 1940, 1960, 1980, 2000, 2018))
+ploccyear
+
+#by inst. code for fun 
+plantyr <- plant_clean %>% filter(!is.na(source))
+plantyr <- plantyr[c(1:11, 13:397, 399:95451),]
+inst_ploccyear = ggplot(plantyr, aes(x=year, fill=source)) + geom_bar() + theme_bw() + scale_y_continuous(expand=c(0,0)) + labs(x="Year", y ="Number of Specimen Collected")
+inst_ploccyear = inst_ploccyear + scale_x_continuous(limits = c(1860, 2020), expand=c(0,0), breaks=c(1880, 1900, 1920, 1940, 1960, 1980, 2000, 2019))
+inst_ploccyear
+# so many institutions!! split iNat out?
+
+##added source to data set, that splits into iNat, Bioversity? and Collection = preserved specimen 
+## Preserved specimen vastly outnumber iNat, in terms of collections even in recent years 
+
+
+```
+
+```{r Graph by Month}
+ploccmonth = ggplot(plant_clean, aes(x=month)) + geom_bar() + theme_bw() + scale_y_continuous(expand=c(0,0)) + labs(x="Month", y ="Number of Specimen Collected") 
+ploccmonth = ploccmonth + scale_x_continuous(breaks = seq(1, 12, by=1) )
+ploccmonth
+
+
+```
+
+```{r By Phylum}
+
+## there were some missing phlyums, had to add in 
+plant_bar <- ggplot(data = plant_clean) + 
+  geom_bar(
+    mapping = aes(x = fct_infreq(phylum), fill=phylum), 
+    show.legend = FALSE,
+    width = 1
+  ) + 
+  theme(aspect.ratio = 1) 
+
+plant_bar = plant_bar + labs(x="Phylum", y ="Number of Specimen Collected") + scale_y_continuous(expand=c(0,0)) + theme_bw()
+plant_bar  
+
+plant_bar2 <- ggplot(data = plant_clean) + 
+  geom_bar(
+    mapping = aes(x = fct_infreq(phylum), fill = acceptedFamily), 
+    show.legend = FALSE,
+    width = 1
+  ) + 
+  theme(aspect.ratio = 1) 
+
+plant_bar2 = plant_bar2 + labs(x="Phylum", y ="Number of Specimen Collected") + scale_y_continuous(expand=c(0,0)) + theme_bw()
+plant_bar2
+
+```
+
+```{r Family Pie Graph?}
+
+
+#only flowering land plants 
+trach = read.csv("~/gitit/TNC Gap Analysis/pl_trach_only.csv")
+
+plbar_occurence <- ggplot(data = trach) + 
+  geom_bar(
+    mapping = aes(x = fct_infreq(acceptedFamily), fill = acceptedFamily), 
+    show.legend = FALSE,
+    width = 0.75,
+  position=position_dodge(5)) +
+    theme(axis.text.x = element_text(lineheight=10))
+
+
+plbar_occurence = plbar_occurence + coord_flip() + labs(x="Family", y= "") + scale_y_continuous(expand=c(0,0))
+
+plbar_occurence
+
+```
+
+
+iNat and Biov did not have any unique families, genera, or species not rep in Coll. They haven't added anything novel to plant diversity. 188 diff families, 721 genera, and 1886 unique species 
+```{r}
+library(plyr)
+ddply(plant,~source,summarize,number_of_distint_fam=length(unique(acceptedFamily)))
+# biov, 9, inat 28 fam, coll 188
+
+ddply(plant,~source,summarize,number_of_distint_fam=length(unique(acceptedGenus)))
+# biov 19, inat 43, coll 721
+
+ddply(plant,~source,summarize,number_of_distint_fam=length(unique(acceptedNameSp)))
+# biov 33 inat 51 coll 1886 
+
+x= unique(c(as.character(plant_clean$acceptedFamily)))
+#188 unique 
+x=unique(c(as.character(plant$acceptedGenus)))
+#721 unique genera (1 not in a coll??, there is a blank character)
+x
+x= unique(c(as.character(plant_clean$acceptedNameSp)))
+#1887 (1 blank character)
+
+x
+ddply(plant_clean,~source,summarize,number_of_distint_fam=length(unique(phylum)))
+#Bidiv only has Trach, Coll has 7, iNat has 3 
+
+
+```
+Seems like there are some famlies written in genera area, need to clean that up. 
