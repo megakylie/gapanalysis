@@ -17,16 +17,16 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(lubridate)
 library(ggplot2)
-library(plyr)
 library(dplyr)
 
-dip_inat =read.csv("diptera/dip_inat.csv")
-dip_lacm = read.csv("diptera/dip_lacm.csv")
-dip_chis = read_csv("diptera/dip_chis.csv")
-dip_bold = read.csv("diptera/dip_bold.csv")
+dip_inat <- read_csv("diptera/dip_inat.csv")
+dip_lacm <- read_csv("diptera/dip_lacm.csv")
+dip_chis <- read_csv("diptera/dip_chis.csv")
+dip_bold <- read_csv("diptera/dip_bold.csv")
 
-#extra for flies
-dip_nic = read.csv("diptera/dip_nic.csv")
+# extra for flies
+dip_nic <- read_csv("diptera/dip_nic.csv")
+
 ```
 
 
@@ -35,7 +35,7 @@ dip_nic = read.csv("diptera/dip_nic.csv")
 
 dip_inat_combine <- dip_inat %>%
   select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName)
-dip_lacm_combine <-dip_lacm %>%
+dip_lacm_combine <- dip_lacm %>%
    select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName)
 dip_chis_combine <- dip_chis %>%
   select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName)
@@ -45,29 +45,33 @@ dip_nic_combine <- dip_nic %>%
 
 dip_master = rbind(dip_inat_combine, dip_chis_combine, dip_lacm_combine, dip_nic_combine)
 
-#bold doesn't have date info
+# bold doesn't have date info
 dip_bold_combine <-dip_bold %>%
    select(source, island, acceptedFamily, acceptedGenus, acceptedName) 
 
-dip_combine <-dip_master %>%
+dip_combine <- dip_master %>%
    select(source, island, acceptedFamily, acceptedGenus, acceptedName) 
+
 dip_master_bold = rbind(dip_combine, dip_bold_combine)
 ```
 
 ```{r heat map}
 dip_inat_map <- dip_inat %>%
   select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude)
+
 ```
 
-#Step. 3 Make Graphs! 
+# Step. 3 Make Graphs! 
 
 ## Island Graph 
+
 ```{r Graphing by island}
-library(ggplot2)
- 
-islandplot = ggplot(data = dip_master, aes(x = fct_infreq(island), fill=source)) + geom_bar()
-islandplot = islandplot + theme_bw() + labs(x="Island", y= "Number of Specimens Sampled") 
-dip_islandplot = islandplot + coord_flip() + scale_y_continuous(limits = c(0, 1000), expand=c(0,0))
+dip_islandplot <- ggplot(data = dip_master, aes(x = fct_infreq(island), fill=source)) + 
+  geom_bar() +
+  theme_bw() + labs(x="Island", y= "Number of Specimens Collected") + 
+  coord_flip() + 
+  scale_y_continuous(limits = c(0, 1000), expand=c(0,0))
+
 dip_islandplot
 ```
 
