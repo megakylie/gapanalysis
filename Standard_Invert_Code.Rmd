@@ -1,0 +1,99 @@
+---
+title: "Invert Code"
+output: html_notebook
+editor_options: 
+  chunk_output_type: console
+---
+
+This is an R Markdown for the Gap Analysis Invertebrate Graph and Table Making. This is the cleaned up code from my first run with Hymenoptera, this code should be able to be used with all the datasets for each Order with little adjustment. 
+
+Diptera 
+
+# Step 1. Download Packages and Import Data
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE)
+
+# load packages
+library(tidyverse)
+library(lubridate)
+library(ggplot2)
+library(plyr)
+library(dplyr)
+
+dip_inat =read.csv("~/gitit/TNC Gap Analysis/diptera/dip_inat.csv")
+dip_lacm = read.csv("~/gitit/TNC Gap Analysis/diptera/dip_lacm.csv")
+dip_chis = read_csv("~/gitit/TNC Gap Analysis/diptera/dip_chis.csv")
+dip_bold = read.csv("~/gitit/TNC Gap Analysis/diptera/dip_bold.csv")
+
+#extra for flies
+dip_nic = read.csv("~/gitit/TNC Gap Analysis/diptera/dip_nic.csv")
+```
+
+
+# Step 2. Combine datasets 
+```{r}
+
+dip_inat_combine <- dip_inat %>%
+  select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName)
+dip_lacm_combine <-dip_lacm %>%
+   select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName)
+dip_chis_combine <- dip_chis %>%
+  select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName)
+dip_nic_combine <- dip_nic %>%
+  select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName)
+ 
+
+dip_master = rbind(dip_inat_combine, dip_chis_combine, dip_lacm_combine, dip_nic_combine)
+
+#bold doesn't have date info
+dip_bold_combine <-dip_bold %>%
+   select(source, island, acceptedFamily, acceptedGenus, acceptedName) 
+
+dip_combine <-dip_master %>%
+   select(source, island, acceptedFamily, acceptedGenus, acceptedName) 
+dip_master_bold = rbind(dip_combine, dip_bold_combine)
+```
+
+```{r heat map}
+dip_inat_map <- dip_inat %>%
+  select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude)
+```
+
+#Step. 3 Make Graphs! 
+
+## Island Graph 
+```{r Graphing by island}
+library(ggplot2)
+ 
+islandplot = ggplot(data = dip_master, aes(x = fct_infreq(island), fill=source)) + geom_bar()
+islandplot = islandplot + theme_bw() + labs(x="Island", y= "Number of Specimens Collected") 
+dip_islandplot = islandplot + coord_flip() + scale_y_continuous(limits = c(0, 1000), expand=c(0,0))
+dip_islandplot
+```
+
+## Temporal Graph
+```{r Graphing by year}
+
+dip_occyear = ggplot(dip_master, aes(x=year, fill=source)) + geom_bar() + theme_bw() + scale_y_continuous(expand=c(0,0)) + scale_x_continuous(limits=c(1910, 2025)) + labs(x="Year", y ="Number of Specimens Collected")
+dip_occyear
+
+```
+
+##Graphing the seasonal gaps in collections. 
+
+```{r Graphing by month}
+
+occmonth = ggplot(mastersyn, aes(x=month, fill=source)) + geom_bar() + theme_bw() + scale_y_continuous(expand=c(0,0)) + labs(x="Month", y ="Number of Specimens Collected") 
+occmonth = occmonth + scale_x_continuous(breaks = seq(1, 12, by=1)) 
+occmonth
+
+#by month and island 
+dip_master$month = as.factor(dip_master$month)
+dip_month <- na.omit(subset(dip_master, select = c(island, month)))
+
+dip_isoccmonth = ggplot(dip_master, aes(x=island, fill=month)) + geom_bar(position = "dodge", colour="black") + theme_bw() + scale_y_continuous(expand=c(0,0)) + labs(x="Collections per Island by Month", y ="Number of Specimens Collected") 
+dip_isoccmonth 
+
+
+```
+
