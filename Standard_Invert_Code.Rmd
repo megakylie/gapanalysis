@@ -20,13 +20,13 @@ library(ggplot2)
 library(plyr)
 library(dplyr)
 
-dip_inat =read.csv("~/gitit/TNC Gap Analysis/diptera/dip_inat.csv")
-dip_lacm = read.csv("~/gitit/TNC Gap Analysis/diptera/dip_lacm.csv")
-dip_chis = read_csv("~/gitit/TNC Gap Analysis/diptera/dip_chis.csv")
-dip_bold = read.csv("~/gitit/TNC Gap Analysis/diptera/dip_bold.csv")
+dip_inat =read.csv("diptera/dip_inat.csv")
+dip_lacm = read.csv("diptera/dip_lacm.csv")
+dip_chis = read_csv("diptera/dip_chis.csv")
+dip_bold = read.csv("diptera/dip_bold.csv")
 
 #extra for flies
-dip_nic = read.csv("~/gitit/TNC Gap Analysis/diptera/dip_nic.csv")
+dip_nic = read.csv("diptera/dip_nic.csv")
 ```
 
 

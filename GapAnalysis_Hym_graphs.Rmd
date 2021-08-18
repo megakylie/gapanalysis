@@ -24,11 +24,11 @@ library(ggplot2)
 library(plyr)
 library(dplyr)
 
-inat =read.csv("~/gitit/TNC Gap Analysis/hymenoptera/hym_inat_clean.csv")
-lacm = read.csv("~/gitit/TNC Gap Analysis/hymenoptera/hym_lacm_clean.csv")
-chis = read_csv("~/gitit/TNC Gap Analysis/hymenoptera/hym_chis_clean.csv")
-bohart = read.csv("~/gitit/TNC Gap Analysis/hymenoptera/hym_bohart_clean.csv")
-bold = read.csv("~/gitit/TNC Gap Analysis/hymenoptera/BOLD_IslandHymenoptera_Feb2021.csv")
+inat =read.csv("hymenoptera/hym_inat_clean.csv")
+lacm = read.csv("hymenoptera/hym_lacm_clean.csv")
+chis = read_csv("hymenoptera/hym_chis_clean.csv")
+bohart = read.csv("hymenoptera/hym_bohart_clean.csv")
+bold = read.csv("hymenoptera/BOLD_IslandHymenoptera_Feb2021.csv")
 ```
 
 # Step 2. Clean up datasets
@@ -63,7 +63,7 @@ write.csv(masterdata, "hym_master.csv")
 
 Updated master dataset with the synonymy. 
 ```{r synonymy dataset}
-mastersyn = read.csv("~/gitit/TNC Gap Analysis/hymenoptera/hym_master_syn.csv")
+mastersyn = read.csv("hymenoptera/hym_master_syn.csv")
 
 
 ```
