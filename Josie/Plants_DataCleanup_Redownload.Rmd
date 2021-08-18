@@ -1,0 +1,181 @@
+---
+title: "Redownload_check"
+author: "Josie Lesage"
+date: "8/16/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# load packages
+library(tidyverse)
+library(stringr)
+```
+
+# File goal
+
+The goal of this file is to finish the data prep of a partially cleaned dataset of plants on the Channel Islands. 
+
+In step 1 of this process, we'll ensure that the locality information or spatial information from each island is encoded and remove any records with such poor info that that we can't assign an island. I started this process by passing the data through a ArcGIS map layer to spatially join the island names for points that were accurately GPS'd.
+
+```{r}
+
+plants_raw <- read_csv("Josie/Plants_Redownload/plants_08172021_islname.csv", col_types = cols(.default = "c", isl_name = "c")) 
+
+plants_raw_1 <- head(plants_raw)
+
+plants_isl1 <- plants_raw %>%
+  mutate(locality_low = str_to_lower(locality)) 
+
+plants_isl <- plants_isl1 %>%
+  filter(stateProvince != "Missouri" | is.na(stateProvince),
+         stateProvince != "Alaska" | is.na(stateProvince),
+         stateProvince != "Michigan" | is.na(stateProvince),
+         stateProvince != "Kentucky" | is.na(stateProvince),
+         stateProvince != "UTAH" | is.na(stateProvince),
+         stateProvince != "Florida" | is.na(stateProvince),
+         stateProvince != "Glapagos" | is.na(stateProvince),
+         stateProvince != "Colorado" | is.na(stateProvince),
+         stateProvince != "Gal<e1>pagos" | is.na(stateProvince),
+         stateProvince != "Gal<e1>pagos Prov." | is.na(stateProvince),
+         stateProvince != "Province Gal<e1>pagos Islands" | is.na(stateProvince),
+         stateProvince != "Galapagos Islands" | is.na(stateProvince),
+         stateProvince != "Provincia de Galapagos" | is.na(stateProvince),
+         stateProvince != "Galapagos" | is.na(stateProvince)) %>%
+  mutate(isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "san nicolas"), "San Nicolas", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "san nicholas"), "San Nicolas", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "nicholas"), "San Nicolas", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "nicolas"), "San Nicolas", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "santa catalina is"), "Santa Catalina", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "catalina is"), "Santa Catalina", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "catalina"), "Santa Catalina", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "santa rosa i"), "Santa Rosa", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "clemente"), "San Clemente", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "clement"), "San Clemente", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "santa cruz"), "Santa Cruz", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "cruz is"), "Santa Cruz", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "coronados i"), "Coronados", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "coronado i"), "Coronados", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "isla coronado"), "Coronados", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "anacapa"), "Anacapa", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "cedros"), "Cedros", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "miguel"), "San Miguel", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "guadalupe"), "Guadalupe", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "todos santo"), "Todos Santos", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "todo santos"), "Todos Santos", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "natividad"), "Natividad", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "benito"), "San Benito", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "martin"), "San Martin", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "santa barbara isl"), "Santa Barbara", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "jeronimo"), "Geronimo", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "geronimo"), "Geronimo", isl_name)) %>%
+  filter(!is.na(isl_name)) %>%
+  filter(isl_name == "San Nicolas" | isl_name == "Santa Catalina" | isl_name == "Santa Rosa" | isl_name == "Santa Barbara" | 
+           isl_name == "Anacapa" | isl_name == "Santa Cruz" | isl_name == "San Clemente" | isl_name == "San Miguel")
+
+```
+
+
+In step 2, we'll remove any obvious horticulture species from the dataset. To do this, we'll compare a master list of species names that Kristen indicated should be eliminated from the analysis data. 
+
+The file we want to work with is "Plants_Redownload/plants_08162021.csv"
+
+
+```{r remove plant data}
+plants_genus <- plants_isl %>%
+  filter(!is.na(scientificName),
+         !is.na(specificEpithet)) %>%
+  # fix poaceae - they need to chill tf out
+  mutate(family = ifelse(family == "POACEAE", "Poaceae", family),
+         scientificName = str_to_lower(scientificName)) %>%
+  filter(phylum == "Tracheophyta")
+
+kylie_syn <- read_csv("Josie/KJE_synonymylist.csv") %>%
+  mutate(scientificName = str_to_lower(scientificName),
+         acceptedName = str_to_lower(acceptedName))
+
+elim_list <- read_csv("Josie/Plants_ElimList_Revised2.csv") %>%
+  mutate(Eliminate = replace_na(Eliminate, "Keep"),
+         Eliminate = recode_factor(Eliminate, "1" = "Elim")) %>%
+  rename("sciname_1" = "OG_spname") %>%
+  mutate(sciname_1 = str_to_lower(sciname_1),
+         Updated_name = str_to_lower(Updated_name))
+
+
+elim_list_2 <- read_csv("Josie/Plants_ElimList_round3_2.csv") %>%
+  mutate(Eliminate = replace_na(Eliminate, "Keep"),
+         Eliminate = recode_factor(Eliminate, "elim" = "Elim")) %>%
+  rename("sciname_2" = "Taxa_name",
+         Family_3 = Family) %>%
+  mutate(sciname_2 = str_to_lower(sciname_2),
+         Syn = str_to_lower(Syn))
+
+# this joins the unique names list as done by Kylie's manual entry
+plants_combo1 <- left_join(plants_genus, kylie_syn) %>%
+  mutate(sciname_1 = coalesce(acceptedName, scientificName)) 
+
+# This updates names and eliminations based on Kristen's initial passthrough
+plants_combo2 <- left_join(plants_combo1, elim_list) %>%
+  mutate(sciname_2 = coalesce(Updated_name, sciname_1),
+         Family_2 = coalesce(Family, family))  %>%
+  filter(Eliminate != "Elim" | is.na(Eliminate)) %>% 
+  select(-Eliminate) 
+
+# This updates names and eliminations based on Kristen's second passthrough, 
+# and isolates those that need to be checked on a by-island basis
+plants_combo3 <- left_join(plants_combo2, elim_list_2) %>%
+  mutate(sciname_3 = coalesce(Syn,  sciname_2),
+         Family_4 = coalesce(Family_3, Family_2))
+
+# fix classes/orders based on taxonomy 
+plants_combo3_orders <- plants_combo3 %>%
+  mutate(order = ifelse(Family_4 == "Alliaceae", "Asparagales", order),
+         order = ifelse(Family_4 == "Asparagaceae", "Asparagales", order),
+         order = ifelse(Family_4 == "Asphodelaceae", "Asparagales", order),
+         order = ifelse(Family_4 == "Caprifoliaceae", "Dipsacales", order),
+         order = ifelse(Family_4 == "Caryophyllaceae", "Caryophyllales", order),
+         order = ifelse(Family_4 == "Geraniaceae", "Geraniales", order),
+         order = ifelse(Family_4 == "Hydrophyllaceae", "Boraginales", order),
+         order = ifelse(Family_4 == "Nyctaginaceae", "Caryophyllales", order),
+         order = ifelse(Family_4 == "Orobanchaceae", "Lamiales", order),
+         order = ifelse(Family_4 == "Polygonaceae", "Caryophyllales", order),
+         order = ifelse(Family_4 == "Solanaceae", "Solanales", order),
+         class = ifelse(Family_4 == "Solanaceae", "Magnoliopsida", class),
+         order = ifelse(Family_4 == "Themidaceae", "Asparagales", order))
+
+# get rid of iNat data
+plants_combo4 <- plants_combo3_orders %>%
+  filter(institutionCode != "iNaturalist")
+
+```
+
+Summary Lists
+
+```{r}
+plants_keep <- plants_combo3_orders %>% 
+  group_by(kingdom, phylum, class, order, Family_4, scientificName, sciname_3, Eliminate, SMI,	SR,	SCR,	A,	SBA,	SNI,	SCL,	SCA) %>%
+  summarize(count = n()) %>%
+  mutate(sciname_3 = str_to_sentence(sciname_3),
+         scientificName = str_to_sentence(scientificName))
+
+elim_list_join <- elim_list_2 %>%
+  mutate(sciname_2 = str_to_sentence(sciname_2),
+         Syn = str_to_sentence(Syn),
+         sciname_3 = coalesce(Syn,  sciname_2)) %>%
+  select(Family_3, sciname_3, assign_by_island, Eliminate, SMI,	SR,	SCR,	A,	SBA,	SNI,	SCL,	SCA) %>%
+  group_by(Family_3, sciname_3, Eliminate) %>%
+  distinct() %>%
+  ungroup()
+
+master_elim_list <- full_join(elim_list_join, plants_keep) %>%
+  mutate(Family_5 = coalesce(Family_4, Family_3)) %>%
+  select(kingdom, phylum, class, order, Family_5, scientificName, sciname_3, count, assign_by_island, Eliminate, SMI,	SR,	SCR,	A,	SBA,	SNI,	SCL,	SCA) 
+
+# write_csv(master_elim_list, "Josie/ForKristen2/PlantRecordSummary.csv")
+
+distinct(master_elim_list$sciname_3)
+
+```
+
+
