@@ -100,3 +100,21 @@ ggsave(plot=dip_isoccmonth, filename="diptera/DipteraGraphs/dip_seasonal.png", h
 
 ```
 
+Step 4. Make Tables 
+```{r}
+table(dip_master_bold$acceptedFamily)
+
+
+table(dip_inat_combine$acceptedFamily)
+x = table(inat_column$family)
+print(x)
+
+table(chis_column$family)
+
+table(bohart_column$family)
+
+table(lacm_column$family)
+
+table(masterdata$family)
+```
+
