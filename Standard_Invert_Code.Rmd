@@ -66,7 +66,7 @@ dip_inat_map <- dip_inat %>%
 library(ggplot2)
  
 islandplot = ggplot(data = dip_master, aes(x = fct_infreq(island), fill=source)) + geom_bar()
-islandplot = islandplot + theme_bw() + labs(x="Island", y= "Number of Specimens Collected") 
+islandplot = islandplot + theme_bw() + labs(x="Island", y= "Number of Specimens Sampled") 
 dip_islandplot = islandplot + coord_flip() + scale_y_continuous(limits = c(0, 1000), expand=c(0,0))
 dip_islandplot
 ```
@@ -74,8 +74,10 @@ dip_islandplot
 ## Temporal Graph
 ```{r Graphing by year}
 
-dip_occyear = ggplot(dip_master, aes(x=year, fill=source)) + geom_bar() + theme_bw() + scale_y_continuous(expand=c(0,0)) + scale_x_continuous(limits=c(1910, 2025)) + labs(x="Year", y ="Number of Specimens Collected")
+dip_occyear = ggplot(dip_master, aes(x=year, fill=source)) + geom_bar() + theme_bw() + scale_y_continuous(expand=c(0,0)) + scale_x_continuous(limits=c(1910, 2025)) + labs(x="Year", y ="Number of Specimens Sampled")
 dip_occyear
+
+ggsave(plot=dip_isoccmonth, filename="diptera/DipteraGraphs/dip_year.png", height=5, width=9, units="in", dpi=300)
 
 ```
 
@@ -83,7 +85,7 @@ dip_occyear
 
 ```{r Graphing by month}
 
-occmonth = ggplot(mastersyn, aes(x=month, fill=source)) + geom_bar() + theme_bw() + scale_y_continuous(expand=c(0,0)) + labs(x="Month", y ="Number of Specimens Collected") 
+occmonth = ggplot(mastersyn, aes(x=month, fill=source)) + geom_bar() + theme_bw() + scale_y_continuous(expand=c(0,0)) + labs(x="Month", y ="Number of Specimens Samples") 
 occmonth = occmonth + scale_x_continuous(breaks = seq(1, 12, by=1)) 
 occmonth
 
@@ -91,9 +93,10 @@ occmonth
 dip_master$month = as.factor(dip_master$month)
 dip_month <- na.omit(subset(dip_master, select = c(island, month)))
 
-dip_isoccmonth = ggplot(dip_master, aes(x=island, fill=month)) + geom_bar(position = "dodge", colour="black") + theme_bw() + scale_y_continuous(expand=c(0,0)) + labs(x="Collections per Island by Month", y ="Number of Specimens Collected") 
+ dip_isoccmonth = ggplot(dip_month, aes(x=month, fill=month))+ geom_bar() + theme_bw() + scale_y_continuous(expand=c(0,0.5)) + labs(x="Sampling per Island by Month", y ="Number of Specimens Sampled") +  facet_wrap(vars(island), nrow=2, scales="free_y")
 dip_isoccmonth 
 
+ggsave(plot=dip_isoccmonth, filename="diptera/DipteraGraphs/dip_seasonal.png", height=5, width=9, units="in", dpi=300)
 
 ```
 
