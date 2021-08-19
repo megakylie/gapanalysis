@@ -7,9 +7,9 @@ editor_options:
 
 This is an R Markdown for the Gap Analysis Invertebrate Graph and Table Making. This is the cleaned up code from my first run with Hymenoptera, this code should be able to be used with all the datasets for each Order with little adjustment. 
 
-Diptera 
+#Diptera 
 
-# Step 1. Download Packages and Import Data
+##Dip Step 1. Download Packages and Import Data
 ```{r setup}
 knitr::opts_chunk$set(echo = TRUE)
 
@@ -31,7 +31,7 @@ dip_nic <- read_csv("diptera/dip_nic.csv")
 ```
 
 
-# Step 2. Combine datasets 
+##Dip Step 2. Combine datasets 
 ```{r}
 dip_inat_combine <- dip_inat %>%
   select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName)
@@ -65,9 +65,9 @@ dip_inat_map <- dip_inat %>%
 
 ```
 
-# Step. 3 Make Graphs! 
+##Dip Step. 3 Make Graphs! 
 
-## Island Graph 
+### Island Graph 
 ```{r Graphing by island}
 
 dip_islandsum <- dip_master %>%
@@ -90,7 +90,27 @@ ggsave(plot=dip_island, filename="diptera/DipteraGraphs/dip_island.png", height=
 
 ```
 
-## Temporal Graph
+```{r Graphing by island proportional}
+island_size = read_csv("island_size.csv")
+dip_islandsum2 = merge(dip_islandsum, island_size, by="island", all.y=TRUE)
+dip_islandprop = dip_islandsum2 %>% group_by(island) %>% mutate(by_area = samples/island_size_85)
+
+dip_island_prop <- ggplot(data = dip_islandprop, aes(x = by_area, y = fct_rev(island), fill = source)) + 
+  geom_bar(stat = "identity") +
+  labs(x ="Island", 
+       y = "Specimens Collected/Island Area (km^2)",
+       fill = "Data Source") +
+  theme_bw() + 
+  scale_x_continuous(limits =c(0,70), expand = c(0,0)) +
+  scale_fill_brewer(palette = "Dark2")
+
+dip_island_prop 
+
+ggsave(plot=dip_island_prop, filename="diptera/DipteraGraphs/dip_island_prop.png", height=5, width=8, units="in", dpi=300)
+```
+
+
+### Temporal Graph
 ```{r Graphing by year}
 
 
@@ -107,7 +127,7 @@ ggsave(plot=dip_year, filename="diptera/DipteraGraphs/dip_year.png", height=5, w
 
 ```
 
-##Graphing the seasonal gaps in collections. 
+###Graphing the seasonal gaps in collections. 
 
 ```{r Graphing by month}
 
@@ -138,7 +158,7 @@ ggsave(plot=dip_ismonth, filename="diptera/DipteraGraphs/dip_seasonal.png", heig
 
 ```
 
-Step 4. Make Tables 
+##Dip Step 4. Make Tables 
 ```{r Family by Source Table}
 q = table(dip_master_bold$acceptedFamily)
 q = as.data.frame.table(q)
@@ -167,3 +187,168 @@ ddply(dip_master_bold, "source", summarise, n = length(acceptedName))
 
 ```
 
+#Mammals
+
+##Mam Step 1. Download Packages and Import Data
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE)
+
+# load packages
+library(tidyverse)
+library(lubridate)
+library(ggplot2)
+library(dplyr)
+library(RColorBrewer)
+
+mam_inat <- read_csv("mammal/mam_inat.csv")
+
+mam_chis <- read_csv("mammal/mam_chis.csv")
+
+```
+
+
+##Mam Step 2. Combine datasets 
+```{r}
+#inat doesn't have order listed..would need to add 
+mam_inat_combine <- mam_inat %>%
+  rename(class="iconic_tax") %>%
+  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName)
+
+mam_chis_combine <- mam_chis %>%
+  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName)
+
+
+mam_master = rbind(mam_inat_combine, mam_chis_combine) %>%
+  # reorder the island names to show up N -> S on list
+  mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente"))
+
+```
+
+```{r heat map}
+mam_inat_map <- mam_inat %>%
+  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude)
+
+mam_chis_map <- mam_inat %>%
+  rename(latitude = "decimalLatitude", longitude="decimalLongitude") %>%
+  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude)
+
+mam_map = rbind(mam_inat_map, mam_chis_map)
+
+```
+
+##Mam Step. 3 Make Graphs! 
+
+### Island Graph 
+```{r Graphing by island}
+
+mam_islandsum <- mam_master %>%
+  mutate(no_sample = 1) %>%
+  group_by(island, source) %>%
+  summarise(samples = sum(no_sample))
+mam_islandsum <- na.omit(subset(mam_islandsum, select = c(island, samples, source)))
+
+mam_island <- ggplot(data = mam_islandsum, aes(x = samples, y = fct_rev(island), fill = source)) + 
+  geom_bar(stat = "identity") +
+  labs(x ="Island", 
+       y = "Number of Mammal Specimens Collected",
+       fill = "Data Source") +
+  theme_bw() + 
+  scale_x_continuous(limits =c(0,1200), expand = c(0,0)) +
+  scale_fill_brewer(palette = "Dark2")
+
+mam_island 
+
+ggsave(plot=mam_island, filename="mammal/MammalGraphs/mam_island.png", height=5, width=8, units="in", dpi=300)
+
+```
+
+```{r Graphing by island proportional}
+island_size = read_csv("island_size.csv")
+mam_islandsum2 = merge(mam_islandsum, island_size, by="island", all.y=TRUE)
+mam_islandprop = mam_islandsum2 %>% group_by(island) %>% mutate(by_area = samples/island_size_85)
+
+mam_island_prop <- ggplot(data = mam_islandprop, aes(x = by_area, y = fct_rev(island), fill = source)) + 
+  geom_bar(stat = "identity") +
+  labs(x ="Island", 
+       y = "Mammal Specimens Collected/Island Area (km^2)",
+       fill = "Data Source") +
+  theme_bw() + 
+  scale_x_continuous(limits =c(0,10), expand = c(0,0)) +
+  scale_fill_brewer(palette = "Dark2")
+
+mam_island_prop 
+
+ggsave(plot=mam_island_prop, filename="mammal/MammalGraphs/mam_island_prop.png", height=5, width=8, units="in", dpi=300)
+```
+
+
+### Temporal Graph
+```{r Graphing by year}
+
+
+mam_year = ggplot(mam_master, aes(x=year, fill=source)) + 
+  geom_bar() + 
+  theme_bw() + 
+  scale_y_continuous(expand=c(0,0), limits = c(0, 900)) + 
+  scale_x_continuous(expand=c(0,0), limits=c(1885, 2020), breaks=c(1885, 1900, 1915, 1930, 1945, 1960, 1975, 1990, 2005, 2020)) + 
+  labs(x="Year", y ="Number of Mammal Specimens Sampled") +   scale_fill_brewer(palette = "Dark2")
+
+mam_year
+
+ggsave(plot=mam_year, filename="mammal/MammalGraphs/mam_year.png", height=5, width=9, units="in", dpi=300)
+
+```
+
+###Graphing the seasonal gaps in collections. 
+
+```{r Graphing by month}
+# by month and island 
+mam_master$month <- as.factor(mam_master$month)
+mam_month <- na.omit(subset(mam_master, select = c(island, month)))
+
+
+mam_ismonth <- ggplot(mam_month, aes(x=month, fill=month)) + 
+  geom_bar() + 
+  theme_bw() + 
+  scale_y_continuous(expand=c(0,0.5)) + 
+  labs(x="Mammal Sampling per Island by Month", y ="Number of Specimens Sampled") +  
+  facet_wrap(vars(island), nrow=2, scales="free_y")
+
+mam_ismonth 
+
+ggsave(plot=mam_ismonth, filename="mammal/MammalGraphs/mam_seasonal.png", height=5, width=9, units="in", dpi=300)
+
+```
+
+```{r Mammal Collection Type}
+mam_coll <- ggplot(mam_chis, aes(x=CollectionType, fill=CollectionType)) + geom_bar() + theme_bw() + theme(legend.position = "none") + theme(axis.text.x = element_text(angle = 90))
+
+mam_coll
+ggsave(plot=mam_coll, filename="mammal/MammalGraphs/mam_type.png", height=5, width=8, units="in", dpi=300)
+```
+
+
+##Mam Step 4. Make Tables 
+```{r Family by Source Table}
+mamtab = table(dip_master_bold$acceptedFamily)
+mamtab = as.data.frame.table(mamtab)
+write.csv(mamtab, "mammal/MammalGraphs/mam_table.csv")
+
+
+table(dip_chis_combine$acceptedFamily)
+
+
+table(dip_inat_combine$acceptedFamily)
+
+
+
+```
+
+```{r Source Resolution}
+ddply(dip_master_bold, "source", summarise, n = length(unique(acceptedFamily)))
+
+ddply(dip_master_bold, "source", summarise, n = length(acceptedFamily))
+ddply(dip_master_bold, "source", summarise, n = length(acceptedGenus))
+ddply(dip_master_bold, "source", summarise, n = length(acceptedName))
+
+```
