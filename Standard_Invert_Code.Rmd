@@ -7,9 +7,9 @@ editor_options:
 
 This is an R Markdown for the Gap Analysis Invertebrate Graph and Table Making. This is the cleaned up code from my first run with Hymenoptera, this code should be able to be used with all the datasets for each Order with little adjustment. 
 
-#Diptera 
+# Diptera 
 
-##Dip Step 1. Download Packages and Import Data
+## Dip Step 1. Download Packages and Import Data
 ```{r setup}
 knitr::opts_chunk$set(echo = TRUE)
 
@@ -31,7 +31,7 @@ dip_nic <- read_csv("diptera/dip_nic.csv")
 ```
 
 
-##Dip Step 2. Combine datasets 
+## Dip Step 2. Combine datasets 
 ```{r}
 dip_inat_combine <- dip_inat %>%
   select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName)
