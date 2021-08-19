@@ -21,9 +21,10 @@ In step 1 of this process, we'll ensure that the locality information or spatial
 
 ```{r}
 
-plants_raw <- read_csv("Josie/Plants_Redownload/plants_08172021_islname.csv", col_types = cols(.default = "c", isl_name = "c")) 
+plants_raw_1 <- read_csv("Josie/Plants_Redownload/plants_raw_1.csv", col_types = cols(.default = "c", isl_name = "c")) 
+plants_raw_2 <- read_csv("Josie/Plants_Redownload/plants_raw_2.csv", col_types = cols(.default = "c", isl_name = "c")) 
 
-plants_raw_1 <- head(plants_raw)
+plants_raw <- full_join(plants_raw_1, plants_raw_2)
 
 plants_isl1 <- plants_raw %>%
   mutate(locality_low = str_to_lower(locality)) 
@@ -74,15 +75,16 @@ plants_isl <- plants_isl1 %>%
   filter(isl_name == "San Nicolas" | isl_name == "Santa Catalina" | isl_name == "Santa Rosa" | isl_name == "Santa Barbara" | 
            isl_name == "Anacapa" | isl_name == "Santa Cruz" | isl_name == "San Clemente" | isl_name == "San Miguel")
 
+remove(plants_raw_1)
+remove(plants_raw_2)
+remove(plants_isl1)
 ```
 
 
-In step 2, we'll remove any obvious horticulture species from the dataset. To do this, we'll compare a master list of species names that Kristen indicated should be eliminated from the analysis data. 
-
-The file we want to work with is "Plants_Redownload/plants_08162021.csv"
+In step 2, we'll remove any obvious horticulture species from the dataset and fix synonyms to be up-to-date and consistent. To do this, we'll compare a master list of species names that Kristen indicated should be eliminated from the analysis data. 
 
 
-```{r remove plant data}
+```{r intial cleanup pass - plant data}
 plants_genus <- plants_isl %>%
   filter(!is.na(scientificName),
          !is.na(specificEpithet)) %>%
@@ -91,19 +93,34 @@ plants_genus <- plants_isl %>%
          scientificName = str_to_lower(scientificName)) %>%
   filter(phylum == "Tracheophyta")
 
-kylie_syn <- read_csv("Josie/KJE_synonymylist.csv") %>%
+# isolate by-island species
+by_isl <- read_csv("Josie/byislsp.csv", col_types = cols(.default = "c")) %>%
+  rename(scientificName = old_name) %>%
+  mutate(scientificName = str_to_lower(scientificName)) %>%
+  select(scientificName, assign_by_island)
+
+plants_byisl <- left_join(plants_genus, by_isl) %>%
+  filter(!is.na(assign_by_island))
+
+plants_nonisl <- left_join(plants_genus, by_isl) %>%
+  filter(is.na(assign_by_island))
+
+```
+
+
+```{r fix synonomy for taxa not sorted by island}
+kylie_syn <- read_csv("Josie/KJE_synonymylist.csv", col_types = cols(.default = "c")) %>%
   mutate(scientificName = str_to_lower(scientificName),
          acceptedName = str_to_lower(acceptedName))
 
-elim_list <- read_csv("Josie/Plants_ElimList_Revised2.csv") %>%
+elim_list <- read_csv("Josie/Plants_ElimList_Revised2.csv", col_types = cols(.default = "c")) %>%
   mutate(Eliminate = replace_na(Eliminate, "Keep"),
          Eliminate = recode_factor(Eliminate, "1" = "Elim")) %>%
   rename("sciname_1" = "OG_spname") %>%
   mutate(sciname_1 = str_to_lower(sciname_1),
          Updated_name = str_to_lower(Updated_name))
 
-
-elim_list_2 <- read_csv("Josie/Plants_ElimList_round3_2.csv") %>%
+elim_list_2 <- read_csv("Josie/Plants_ElimList_round3_2.csv", col_types = cols(.default = "c")) %>%
   mutate(Eliminate = replace_na(Eliminate, "Keep"),
          Eliminate = recode_factor(Eliminate, "elim" = "Elim")) %>%
   rename("sciname_2" = "Taxa_name",
@@ -112,7 +129,7 @@ elim_list_2 <- read_csv("Josie/Plants_ElimList_round3_2.csv") %>%
          Syn = str_to_lower(Syn))
 
 # this joins the unique names list as done by Kylie's manual entry
-plants_combo1 <- left_join(plants_genus, kylie_syn) %>%
+plants_combo1 <- left_join(plants_nonisl, kylie_syn) %>%
   mutate(sciname_1 = coalesce(acceptedName, scientificName)) 
 
 # This updates names and eliminations based on Kristen's initial passthrough
@@ -126,10 +143,23 @@ plants_combo2 <- left_join(plants_combo1, elim_list) %>%
 # and isolates those that need to be checked on a by-island basis
 plants_combo3 <- left_join(plants_combo2, elim_list_2) %>%
   mutate(sciname_3 = coalesce(Syn,  sciname_2),
-         Family_4 = coalesce(Family_3, Family_2))
+         Family_4 = coalesce(Family_3, Family_2)) %>%
+  filter(Eliminate != "Elim" | is.na(Eliminate)) %>%
+  select(-SMI, -SCR, - A, -SR, -SBA, -SNI, -SCL, -SCA, -assign_by_island, -Eliminate)
+
+# final clean
+masterlist <- read_csv("Josie/PlantMasterList.csv", col_types = cols(.default = "c")) %>%
+  mutate(final_syn = coalesce(syn_replace, new_datasetname)) %>%
+  rename(sciname_3 = new_datasetname) %>%
+  mutate(sciname_3 = str_to_lower(sciname_3),
+         sciname_4 = str_to_lower(final_syn)) %>%
+  select(-old_name, -count_in_dataset, -final_syn) %>%
+  distinct()
+
+plants_combo4 <- left_join(plants_combo3, masterlist, by = c("sciname_3"))
 
 # fix classes/orders based on taxonomy 
-plants_combo3_orders <- plants_combo3 %>%
+plants_combo4_orders <- plants_combo4 %>%
   mutate(order = ifelse(Family_4 == "Alliaceae", "Asparagales", order),
          order = ifelse(Family_4 == "Asparagaceae", "Asparagales", order),
          order = ifelse(Family_4 == "Asphodelaceae", "Asparagales", order),
@@ -142,15 +172,74 @@ plants_combo3_orders <- plants_combo3 %>%
          order = ifelse(Family_4 == "Polygonaceae", "Caryophyllales", order),
          order = ifelse(Family_4 == "Solanaceae", "Solanales", order),
          class = ifelse(Family_4 == "Solanaceae", "Magnoliopsida", class),
-         order = ifelse(Family_4 == "Themidaceae", "Asparagales", order))
+         order = ifelse(Family_4 == "Themidaceae", "Asparagales", order),
+         family = ifelse(genus == "Athyrium", "Athyriaceae", family)) %>%
+  rename(old_name = scientificName)
 
-# get rid of iNat data
-plants_combo4 <- plants_combo3_orders %>%
-  filter(institutionCode != "iNaturalist")
+plants_nonisl_initialclean <- plants_combo4_orders %>%
+  filter(Eliminate == "Keep")
 
 ```
 
-Summary Lists
+### Main data cleanup by island
+After fixing synonyms and removing the major problem species, we also want to remove specimens that were assigned the incorrect island based on their known occurrences. 
+
+```{r cleanup for main islands by island}
+
+SMI <- plants_nonisl_initialclean %>%
+  filter(isl_name == "San Miguel",
+         SMI == "1")
+
+SR <- plants_nonisl_initialclean %>%
+  filter(isl_name == "Santa Rosa",
+         SR == "1")
+
+SCR <- plants_nonisl_initialclean %>%
+  filter(isl_name == "Santa Cruz",
+         SCR == "1")
+
+A <- plants_nonisl_initialclean %>%
+  filter(isl_name == "Anacapa",
+         SR == "1")
+
+SBA <- plants_nonisl_initialclean %>%
+  filter(isl_name == "Santa Barbara",
+         SBA == "1")
+
+SNI <- plants_nonisl_initialclean %>%
+  filter(isl_name == "San Nicolas",
+         SNI == "1")
+
+SCL <- plants_nonisl_initialclean %>%
+  filter(isl_name == "San Clemente",
+         SCL == "1")
+
+SCA <- plants_nonisl_initialclean %>%
+  filter(isl_name == "Santa Catalina",
+         SCA == "1")
+
+plants_nonisl_clean <- rbind(SBA, SCA, SCL, SCR, SMI, SNI, SR, A)
+
+remove(SBA, SCA, SCL, SCR, SMI, SNI, SR, A)
+
+```
+
+
+
+### Special Cases - by island
+In a few cases, we'll want to clean the data OR assign MRT based on the specific island a speciment is from. 
+
+```{r}
+by_isl <- read_csv("Josie/byislsp.csv", col_types = cols(.default = "c")) %>%
+  rename(scientificName = old_name) %>%
+  mutate(scientificName = str_to_lower(scientificName)) 
+
+plants_byisl_join <- left_join(plants_byisl, by_isl) %>%
+  select(scientificName, new_datasetname, isl_name, SMI:SCA)
+
+```
+
+## Summary Lists
 
 ```{r}
 plants_keep <- plants_combo3_orders %>% 
