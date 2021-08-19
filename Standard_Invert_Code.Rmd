@@ -78,7 +78,7 @@ dip_island
 ## Temporal Graph
 ```{r Graphing by year}
 
-dip_year = ggplot(dip_master, aes(x=year, fill=source)) + geom_bar() + theme_bw() + scale_y_continuous(expand=c(0,0)) + scale_x_continuous(limits=c(1910, 2025)) + labs(x="Year", y ="Number of Specimens Sampled")
+dip_year = ggplot(dip_master, aes(x=year, fill=source)) + geom_bar() + theme_bw() + scale_y_continuous(expand=c(0,0), limits=c(0,800)) + scale_x_continuous(limits=c(1910, 2025)) + labs(x="Year", y ="Number of Specimens Sampled")
 dip_year
 
 ggsave(plot=dip_year, filename="diptera/DipteraGraphs/dip_year.png", height=5, width=9, units="in", dpi=300)
@@ -118,6 +118,9 @@ table(dip_chis_combine$acceptedFamily)
 table(dip_lacm_combine$acceptedFamily)
 
 table(dip_inat_combine$acceptedFamily)
+
+table(dip_nic_combine$acceptedFamily)
+
 
 ```
 
