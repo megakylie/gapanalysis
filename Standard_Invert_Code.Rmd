@@ -75,12 +75,16 @@ dip_islandsum <- dip_master %>%
   group_by(island, source) %>%
   summarise(samples = sum(no_sample))
 
-ggplot(data = dip_islandsum, aes(x = samples, y = fct_rev(island), fill = source)) + 
+dip_island_graph <- ggplot(data = dip_islandsum, aes(x = samples, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
-  labs(x="Island", y= "Number of Specimens Collected") +
+  labs(x ="Island", 
+       y = "Number of Specimens Collected",
+       fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,1200), expand = c(0,0)) +
   scale_fill_brewer(palette = "Dark2")
+
+dip_island_graph
 
 ```
 
