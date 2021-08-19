@@ -93,6 +93,28 @@ islandplot = ggplot(data = mastersynisland, aes(x = fct_infreq(island), fill=sou
 islandplot = islandplot + theme_bw() + labs(x="Island", y= "Number of Specimens Sampled") 
 islandplot = islandplot + coord_flip() + scale_y_continuous(limits = c(0, 10200), expand=c(0,0))
 islandplot
+
+hym_islandsum <- hym_master_syn %>%
+  mutate(no_sample = 1) %>%
+  group_by(island, source) %>%
+  summarise(samples = sum(no_sample))
+
+island_size = read_csv("island_size.csv")
+hym_island = merge(hym_islandsum, island_size, by="island", all.y=TRUE)
+hym_islandprop = hym_island %>% group_by(island) %>% mutate(by_area = samples/island_size_85)
+
+hym_island_prop <- ggplot(data = hym_islandprop, aes(x = by_area, y = fct_rev(island), fill = source)) + 
+  geom_bar(stat = "identity") +
+  labs(x ="Island", 
+       y = "Number of Specimens Collected Proportional to Island Size",
+       fill = "Data Source") +
+  theme_bw() + 
+  scale_x_continuous(limits =c(0,70), expand = c(0,0)) +
+  scale_fill_brewer(palette = "Dark2")
+
+hym_island_prop 
+
+ggsave(plot=hym_island_prop, filename="diptera/DipteraGraphs/hym_island_prop.png", height=5, width=8, units="in", dpi=300)
 ```
 
 ##Graphing the temporal gaps in collections (mastersyb = database)
@@ -296,3 +318,75 @@ hymsp2 = unique(c(as.character(mastersyn$acceptedName)))
 
 ```
 
+#New Graph Making code with JAL edits, standardized graph code!
+## Island Graph 
+```{r Graphing by island}
+
+hym_islandsum <- mastersyn %>%
+  mutate(no_sample = 1) %>%
+  group_by(island, source) %>%
+  summarise(samples = sum(no_sample))
+
+hym_islandsum <- hym_islandsum[c(1:32),]
+
+
+## this factor isn't working, some data is being removed??
+hym_islandsum$source <- factor(hym_islandsum$source,                
+                         levels = c("Cal-IBIS", "iNaturalist", "LACM", "Bohart"))
+##
+
+hym_island_plot <- ggplot(data = hym_islandsum, aes(x = samples, y = fct_rev(island), fill = source)) + 
+  geom_bar(stat = "identity") +
+  labs(x ="Island", 
+       y = "Number of Specimens Collected",
+       fill = "Data Source") +
+  theme_bw() + 
+  scale_x_continuous(limits =c(0,1200), expand = c(0,0)) +
+  scale_fill_brewer(palette = "Dark2")
+
+hym_island_plot 
+
+ggsave(plot=hym_island_plot, filename="diptera/DipteraGraphs/hym_island.png", height=5, width=8, units="in", dpi=300)
+
+```
+
+## Temporal Graph
+```{r Graphing by year}
+
+hym_year = ggplot(hym_master_syn, aes(x=year, fill=source)) + 
+  geom_bar() + 
+  theme_bw() + 
+  scale_y_continuous(expand=c(0,0), limits = c(0, 3000)) + 
+  scale_x_continuous(limits=c(1910, 2025)) + 
+  labs(x="Year", y ="Number of Specimens Sampled") +   scale_fill_brewer(palette = "Dark2")
+
+hym_year
+
+ggsave(plot=dip_year, filename="diptera/DipteraGraphs/dip_year.png", height=5, width=9, units="in", dpi=300)
+
+```
+
+##Graphing the seasonal gaps in collections. 
+
+```{r Graphing by month}
+
+
+# by month and island 
+hym_master_syn$month <- as.factor(hym_master_syn$month)
+hym_month <- na.omit(subset(hym_master_syn, select = c(island, month)))
+hym_month$month <- factor(hym_month$month,                
+                         levels = c("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"))
+
+
+hym_ismonth <- ggplot(hym_month, aes(x=month, fill=month)) + 
+  geom_bar() + 
+  theme_bw() + 
+  scale_y_continuous(expand=c(0,0.5)) + 
+  labs(x="Sampling per Island by Month", y ="Number of Specimens Sampled") +  
+  facet_wrap(vars(island), nrow=2, scales="free_y")
+
+hym_ismonth 
+
+ggsave(plot=hym_ismonth, filename="diptera/DipteraGraphs/hym_seasonal.png", height=5, width=9, units="in", dpi=300)
+
+```
