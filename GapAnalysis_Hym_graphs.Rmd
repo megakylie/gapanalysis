@@ -90,7 +90,7 @@ mastersynisland <- mastersyn %>% filter(!is.na(island))
 mastersynisland <- mastersynisland[c(1:1371, 1373:16366),]
 
 islandplot = ggplot(data = mastersynisland, aes(x = fct_infreq(island), fill=source)) + geom_bar()
-islandplot = islandplot + theme_bw() + labs(x="Island", y= "Number of Specimens Collected") 
+islandplot = islandplot + theme_bw() + labs(x="Island", y= "Number of Specimens Sampled") 
 islandplot = islandplot + coord_flip() + scale_y_continuous(limits = c(0, 10200), expand=c(0,0))
 islandplot
 ```
@@ -98,7 +98,7 @@ islandplot
 ##Graphing the temporal gaps in collections (mastersyb = database)
 ```{r Graphing by year}
 
-occyear = ggplot(mastersyn, aes(x=year, fill=source)) + geom_bar() + theme_bw() + scale_y_continuous(expand=c(0,0)) + labs(x="Year", y ="Number of Specimens Collected")
+occyear = ggplot(mastersyn, aes(x=year, fill=source)) + geom_bar() + theme_bw() + scale_y_continuous(expand=c(0,0)) + labs(x="Year", y ="Number of Specimens Sampled")
 occyear
 
 ```
@@ -107,7 +107,7 @@ occyear
 
 ```{r Graphing by month}
 
-occmonth = ggplot(mastersyn, aes(x=month, fill=source)) + geom_bar() + theme_bw() + scale_y_continuous(expand=c(0,0)) + labs(x="Month", y ="Number of Specimens Collected") 
+occmonth = ggplot(mastersyn, aes(x=month, fill=source)) + geom_bar() + theme_bw() + scale_y_continuous(expand=c(0,0)) + labs(x="Month", y ="Number of Specimens Sampled") 
 occmonth = occmonth + scale_x_continuous(breaks = seq(1, 12, by=1)) 
 occmonth
 
@@ -117,7 +117,7 @@ mastersyn$Month = mastersyn$month2
 hymmonth <- na.omit(subset(mastersyn, select = c(island, Month)))
 # weird na so I had to manually remove blank
 hymmonth <- hymmonth[c(1:1371, 1373:16323),]
-isoccmonth = ggplot(hymmonth, aes(x=island, fill=Month)) + geom_bar(position = "dodge", colour="black") + theme_bw() + scale_y_continuous(expand=c(0,0)) + labs(x="Collections per Island by Month", y ="Number of Specimens Collected") 
+isoccmonth = ggplot(hymmonth, aes(x=Month, fill=Month))+ geom_bar() + theme_bw() + scale_y_continuous(expand=c(0,0)) + labs(x="Sampling per Island by Month", y ="Number of Specimens Sampled") +  facet_wrap(vars(island), nrow=2)
 isoccmonth 
 
 

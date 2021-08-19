@@ -98,9 +98,7 @@ dip_occyear = ggplot(dip_master, aes(x=year, fill=source)) +
   scale_x_continuous(limits=c(1910, 2025)) + 
   labs(x="Year", y ="Number of Specimens Sampled")
 
-dip_occyear
-
-ggsave(plot=dip_isoccmonth, filename="diptera/DipteraGraphs/dip_year.png", height=5, width=9, units="in", dpi=300)
+ggsave(plot=dip_year, filename="diptera/DipteraGraphs/dip_year.png", height=5, width=9, units="in", dpi=300)
 
 ```
 
@@ -121,6 +119,7 @@ occmonth
 dip_master$month <- as.factor(dip_master$month)
 dip_month <- na.omit(subset(dip_master, select = c(island, month)))
 
+
 dip_isoccmonth <- ggplot(dip_month, aes(x=month, fill=month)) + 
   geom_bar() + 
   theme_bw() + 
@@ -130,7 +129,33 @@ dip_isoccmonth <- ggplot(dip_month, aes(x=month, fill=month)) +
 
 dip_isoccmonth 
 
-ggsave(plot=dip_isoccmonth, filename="diptera/DipteraGraphs/dip_seasonal.png", height=5, width=9, units="in", dpi=300)
+ggsave(plot=dip_ismonth, filename="diptera/DipteraGraphs/dip_seasonal.png", height=5, width=9, units="in", dpi=300)
+
+```
+
+Step 4. Make Tables 
+```{r Family by Source Table}
+q = table(dip_master_bold$acceptedFamily)
+q = as.data.frame.table(q)
+write.csv(q, "diptera/DipteraGraphs/dip_table.csv")
+
+# include BOLD? so few 
+table(dip_bold_combine$acceptedFamily)
+
+table(dip_chis_combine$acceptedFamily)
+
+table(dip_lacm_combine$acceptedFamily)
+
+table(dip_inat_combine$acceptedFamily)
+
+```
+
+```{r Source Resolution}
+ddply(dip_master_bold, "source", summarise, n = length(unique(acceptedFamily)))
+
+ddply(dip_master_bold, "source", summarise, n = length(acceptedFamily))
+ddply(dip_master_bold, "source", summarise, n = length(acceptedGenus))
+ddply(dip_master_bold, "source", summarise, n = length(acceptedName))
 
 ```
 

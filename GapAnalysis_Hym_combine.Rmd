@@ -18,11 +18,14 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(lubridate)
 
+library(plyr)
+library(dplyr)
 
-inat =read.csv("~/gitit/TNC Gap Analysis/hym_inat_clean.csv")
-lacm = read.csv("~/gitit/TNC Gap Analysis/hym_lacm_clean.csv")
-chis = read_csv("~/gitit/TNC Gap Analysis/hym_chis_clean.csv")
-bohart = read.csv("~/gitit/TNC Gap Analysis/hym_bohart_clean.csv")
+
+inat =read.csv("~/gitit/TNC Gap Analysis/hymenoptera/hym_inat_clean.csv")
+lacm = read.csv("~/gitit/TNC Gap Analysis/hymenoptera/hym_lacm_clean.csv")
+chis = read.csv("~/gitit/TNC Gap Analysis/hymenoptera/hym_chis_clean.csv")
+bohart = read.csv("~/gitit/TNC Gap Analysis/hymenoptera/hym_bohart_clean.csv")
 
 ```
 
@@ -55,7 +58,7 @@ write.csv(masterdata, "hym_master.csv")
 
 Updated master dataset with the synonymy. 
 ```{r}
-mastersyn = read.csv("~/gitit/TNC Gap Analysis/hym_master_syn.csv")
+mastersyn = read.csv("~/gitit/TNC Gap Analysis/hymenoptera/hym_master_syn.csv")
 
 ```
 
@@ -114,7 +117,7 @@ islandplot = islandplot + theme_classic() + labs(x="Island", y= "Number of Speci
 qw = islandplot +  stat_count(geom = "text", 
              aes(label = stat(count)),
              position=position_fill(vjust=1), colour="black")
-
+qw
 islandplot2 = ggplot(data = masterdataisland, aes(x = island, fill = source)) +
     geom_bar(position = "dodge")
 islandplot2 = islandplot2 + theme_classic() + labs(x="Island", y= "Number of Specimen Collected")
@@ -263,6 +266,7 @@ grid.arrange(bar_chis, bar_inat)
 
 # Adding and cleaning up the Miller literature database 
 ```{r}
+#old, don't rerun
 lit_miller = read.csv("~/gitit/TNC Gap Analysis/Miller_lit.csv")
 lit_miller_clean <- lit_miller %>%
   rename(order = ORDER, family = FAMILY, genus = GENUS, specificEp = SPECIES, yearpub = YRPUBL, year = YRCOLL, month = MONTH ) %>%
@@ -273,14 +277,13 @@ write.csv(lit_miller_clean, "lit_miller_clean.csv")
 
 #upload hymenoptera only
 # I changed the x to 1s for islands to make a matrix, and then removed any "?" from the islands, so only inlcuding ones that had 1 or nothing, no uncertain ones, for nosp removed the sp. from the species column and any question ones, also split into genus and subgenus columns 
-lit_miller_hym = read.csv("~/gitit/TNC Gap Analysis/lit_miller_hym.csv")
-lit_miller_hym2 = read.csv("~/gitit/TNC Gap Analysis/lit_miller_hym_nosp.csv")
+lit_miller_hym = read.csv("~/gitit/TNC Gap Analysis/hymenoptera/lit_miller_hym_nosp.csv")
 
-ddply(lit_miller_hym,~source,summarize,number_of_distint_fam=length(unique(family)))
+ddply(lit_miller_hym,~source,summarize,number_of_distint_fam=length(unique(acceptedFamily)))
 
-ddply(lit_miller_hym2,~source,summarize,number_of_disitinct_gen=length(unique(genus)))
+ddply(lit_miller_hym,~source,summarize,number_of_disitinct_gen=length(unique(acceptedGenus)))
 
-ddply(lit_miller_hym2,~source,summarize,number_of_disitinct_gen=length(unique(scientificName)))
+ddply(lit_miller_hym,~source,summarize,number_of_disitinct_gen=length(unique(acceptedName)))
 
 unique(c(as.character(lit_miller_hym2$family)))
 occgen = unique(c(as.character(mastersyn$acceptedGenus)))
@@ -290,7 +293,7 @@ diffgen
 litgen
 
 unique(c(as.character(mastersyn$genus)))
-# 27 fam, 167 genera, *** didn't do good syn 377 unique sp. identified (only included things with a sp. id)
+# 20 fam, 162 genera, *** didn't do good syn 360 unique sp. identified (only included things with a sp. id)
 ```
 
 #Creating plots based on the Miller database compared to Occurence data, also updated Occurence Temporal plots. 
