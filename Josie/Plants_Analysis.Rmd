@@ -1,0 +1,727 @@
+---
+title: "Plants_Analysis"
+author: "Josie Lesage"
+date: "8/20/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+### --- Load Packages --- ###
+library(tidyverse)
+library(raster)
+library(sf)
+
+### --- Set functions for code --- ###
+makeAccum <- function(x,ci,nm){
+	# k is the island from isl.names
+	# ci is 'r' (raw) or 's' (smooth) for plotting the 90%CI
+  resampling.result<-matrix(nrow=length(x),ncol=100)
+  for(i in 1:100){
+    randCurve<-sample(x,length(x),replace=F)
+    for(j in 1:length(x)){
+      resampling.result[j,i]<-length(unique(randCurve[1:j]))
+    }
+    }
+
+# generate raw 90% & 10% CIs
+curve.mean <- apply(resampling.result,MARGIN=1,mean)
+lowerCI < -apply(resampling.result,MARGIN=1,function(y) {sort(y,decreasing=T)[90]})
+upperCI <- apply(resampling.result,MARGIN=1,function(z) {sort(z,decreasing=T)[10]})
+
+#make smoother CIs
+# plot curve with smoothed 90% CIs
+xlen<-1:length(x)
+lowerCIsm<-loess(lowerCI~xlen)
+upperCIsm<-loess(upperCI~xlen)
+
+# Plot
+plot(0,0,col=0,
+     xlim=c(1,length(x)),ylim=c(1,length(unique(x))),
+     ylab="Richness",xlab="Number of collections",asp=2)	
+if(ci=='s'){
+  polygon(c(xlen,rev(xlen)),
+          c(lowerCIsm[[2]],rev(upperCIsm[[2]])),col="grey90",border=0)}
+if(ci=='r'){
+  polygon(c(xlen,rev(xlen)),
+          c(lowerCI,rev(upperCI)),col="grey90",border=0)}	
+lines(1:length(x),curve.mean)
+text(0,length(unique(x)),labels=nm,adj=0,cex=1.5)
+}
+
+```
+
+```{r import data}
+data <- read_csv("Josie/Data/DraftData.csv")
+```
+
+# File Goal
+
+To use the plant data to produce an analysis of where on the islands plants have been sampled, and where the obvious gaps are. 
+
+# Summaries and Barcharts
+
+# Island heat map
+```{r}
+
+# create a dataframe of all complete cases of name, lat/long, island, and year
+all_data <- data %>%
+  filter(institutionCode != "iNaturalist") %>%
+  dplyr::select(Sci_Name, isl_name, decimalLatitude, decimalLongitude, year) %>%
+  rename(Latitude = decimalLatitude,
+         Longitude = decimalLongitude)
+
+all_data <- all_data[complete.cases(all_data),]
+
+############### drop points with meaningless coords- this removes any specimens that have long/lats that are not in the vicinity of the islands
+### START CAM CHANGE ###
+
+w<-which(as.numeric(all_data$Longitude) > (-118) |
+           as.numeric(all_data$Longitude) < (-120.5))
+all_data<-all_data[-w,]
+w<-which(as.numeric(all_data$Latitude) > (34.1) |
+           as.numeric(all_data$Latitude) < (32.7))
+all_data<-all_data[-w,]
+
+########## Remove obvious georeferencing errors by hand- the 'identify' function allows you to click on a scatterplot (ie distribution map) to identify individual points. This is nice if you have a few coords out in the ocean. If you have a bunch, you'll probably want to do an intersection with island polygons, but I didn't have an island polygon file when I was doing this (the maps I used are line shapefiles, not polygons)
+
+## JL: will want to do this with the Scrubr package down the line!
+plot(all_data$Longitude, all_data$Latitude, asp=1)
+identify(all_data$Longitude, all_data$Latitude, n=1) #click on map to retrieve name of any point, won't continue until this is done
+# is singleton?
+w<-which(all_data$Longitude==all_data$Longitude[975] &
+           all_data$Latitude==all_data$Latitude[975])
+length(w)
+all_data<-all_data[-w,]
+### END CAM CHANGE ###
+
+########## assign records to islands ###
+# You'll need to have 8 presence/absence columns (1/0) corresponding to the islands. My approach was to just do a text search using 'grep' since all the specimens I'm working with have the island name somewhere in the locality description. You may need to take another approach, but the point is to end up with an 8 column matrix of 1s & 0s with the number of rows equal to the number of specimens (NOT the number of taxa)
+
+isl.rec<-matrix(nrow=dim(all_data)[1],ncol=8)
+isl.rec[]<-0
+isl.names<-c("Anacapa","Santa Cruz","Santa Rosa","San Miguel",
+             "Santa Catalina","San Clemente","San Nicolas","Santa Barbara")
+for(i in 1:8){isl.rec[grep(isl.names[i],all_data$isl_name,ignore.case=T),i]<-1}
+isl.rec[grep("San Nicholas",all_data$isl_name,ignore.case=T),7]<-1
+isl.rec[grep("Catalina",all_data$isl_name,ignore.case=T),5]<-1
+
+################# make an island name column #############
+# this converts the 8 column matrix in to a single column with just the island name for each specimen
+island<-vector(length=dim(all_data)[1])
+for(i in 1:8){island[isl.rec[,i]==1]<-isl.names[i]}
+all_data<-cbind(all_data,island)
+
+# using Ben's modified code and a shapefile found online to isolate counties of interest, 
+# Albers projection is used in order to have grids in km^2
+
+counties <- readOGR("Heatmap_files", layer="cnty24k09_1_line")
+chis_counties<-counties[counties$NAME%in%c("Ventura", "Santa Barbara","Los Angeles","San Diego","Orange")]
+
+# cropping parts of counties that are not of interest
+library(raster)
+library(rgeos)
+
+is.map<-crop(counties, extent(-1.5e+05,2.5e+05,-6e+05,-4e+05))
+plot(is.map,col="black")
+rm(counties)
+rm(chis_counties)
+
+####### project long lat coords into Albers (island maps are in Albers)
+P4S.latlon <- CRS("+proj=longlat +datum=WGS84")
+new_proj<-"+proj=aea +lat_1=34 +lat_2=40.5 +lat_0=0 +lon_0=-120 +x_0=0 +y_0=-4000000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
+
+sp<-SpatialPointsDataFrame(coords= cbind(as.numeric(all_data$Longitude),as.numeric(all_data$Latitude)),
+                           data=all_data,proj4string=P4S.latlon)
+pointsX<-spTransform(sp,CRS(new_proj))
+
+# attach projected points to 'all_data'
+all_data<-cbind(all_data,pointsX@coords)
+
+######## Make some plots
+plot(is.map,col="gray50")
+points(all_data$coords.x1,all_data$coords.x2,cex=.3) 
+#looks like some of the coordinates are not on the islands! See Ben's code for removing these.
+
+### plotting limits for each island- you can use these to plot one island at a time, since R doesn't have a zoom in/out feature
+plot(is.map,col="gray50",axes=T)
+abline(v=seq(from=-1.5e+05,to=2.5e+05,by=5e+04))
+abline(h=seq(from=-6e+05,to=-4e+05,by=5e+04))
+
+island.plot.lims<-matrix(nrow=10,ncol=4)
+colnames(island.plot.lims)<-c("xmn","xmx","ymn","ymx")
+rownames(island.plot.lims)<-c(isl.names,"north","south")
+island.plot.lims[1,]<-c(50000,60000,-450000,-440000)
+island.plot.lims[2,]<-c(0,50000,-460000,-420000)
+island.plot.lims[3,]<-c(-30000,10000,-470000,-430000)
+island.plot.lims[4,]<-c(-45000,-20000,-450000,-430000)
+island.plot.lims[5,]<-c(120000,160000,-530000,-500000)
+island.plot.lims[6,]<-c(130000,160000,-590000,-550000)
+island.plot.lims[7,]<-c(30000,60000,-540000,-520000)
+island.plot.lims[8,]<-c(80000,100000,-510000,-500000)
+island.plot.lims[9,]<-c(-50000,70000,-470000,-420000)
+island.plot.lims[10,]<-c(30000,160000,-580000,-500000)
+
+write.csv(island.plot.lims,"islandPlotLimits.csv")
+####### individual island maps ###########
+# i corresponds to the columns in the 8 column matrix
+#CAM: run separately for each island (1=Anacapa, 2=Santa Cruz ...). I'm guessing this is repeated for i=1 through 8,
+#and performed separately for the steps "fill in the holes" and "identify cells for each island".
+#Anacapa
+i=1
+plot(is.map,
+     xlim=island.plot.lims[i,c(1,2)],
+     ylim=island.plot.lims[i,c(3,4)],
+     col="gray50",asp=1)
+points(all_data$coords.x1,all_data$coords.x2,cex=.6,col=rgb(0,0,1,0.5),pch=19)
+
+legend("bottomleft",
+       legend=c(
+         paste("Species:",length(unique(all_data$Taxon[all_data$island==isl.names[i]]))),
+         paste("Collections:",length(which(all_data$island==isl.names[i])))),
+       col=0)
+
+# Santa Cruz
+i=2
+plot(is.map,
+     xlim=island.plot.lims[i,c(1,2)],
+     ylim=island.plot.lims[i,c(3,4)],
+     col="gray50",asp=1)
+points(all_data$coords.x1,all_data$coords.x2,cex=.6,col=rgb(0,0,1,0.5),pch=19)
+
+legend("bottomleft",
+       legend=c(
+         paste("Species:",length(unique(all_data$Taxon[all_data$island==isl.names[i]]))),
+         paste("Collections:",length(which(all_data$island==isl.names[i])))),
+       col=0)
+
+#Santa Rosa
+i=3
+plot(is.map,
+     xlim=island.plot.lims[i,c(1,2)],
+     ylim=island.plot.lims[i,c(3,4)],
+     col="gray50",asp=1)
+points(all_data$coords.x1,all_data$coords.x2,cex=.6,col=rgb(0,0,1,0.5),pch=19)
+
+legend("bottomleft",
+       legend=c(
+         paste("Species:",length(unique(all_data$Taxon[all_data$island==isl.names[i]]))),
+         paste("Collections:",length(which(all_data$island==isl.names[i])))),
+       col=0)
+
+#San Miguel
+i=4
+plot(is.map,
+     xlim=island.plot.lims[i,c(1,2)],
+     ylim=island.plot.lims[i,c(3,4)],
+     col="gray50",asp=1)
+points(all_data$coords.x1,all_data$coords.x2,cex=.6,col=rgb(0,0,1,0.5),pch=19)
+
+legend("bottomleft",
+       legend=c(
+         paste("Species:",length(unique(all_data$Taxon[all_data$island==isl.names[i]]))),
+         paste("Collections:",length(which(all_data$island==isl.names[i])))),
+       col=0)
+
+#Santa Catalina
+i=5
+plot(is.map,
+     xlim=island.plot.lims[i,c(1,2)],
+     ylim=island.plot.lims[i,c(3,4)],
+     col="gray50",asp=1)
+points(all_data$coords.x1,all_data$coords.x2,cex=.6,col=rgb(0,0,1,0.5),pch=19)
+
+legend("bottomleft",
+       legend=c(
+         paste("Species:",length(unique(all_data$Taxon[all_data$island==isl.names[i]]))),
+         paste("Collections:",length(which(all_data$island==isl.names[i])))),
+       col=0)
+
+#San Clemente
+i=6
+plot(is.map,
+     xlim=island.plot.lims[i,c(1,2)],
+     ylim=island.plot.lims[i,c(3,4)],
+     col="gray50",asp=1)
+points(all_data$coords.x1,all_data$coords.x2,cex=.6,col=rgb(0,0,1,0.5),pch=19)
+
+legend("bottomleft",
+       legend=c(
+         paste("Species:",length(unique(all_data$Taxon[all_data$island==isl.names[i]]))),
+         paste("Collections:",length(which(all_data$island==isl.names[i])))),
+       col=0)
+
+#San Nicolas
+i=7
+plot(is.map,
+     xlim=island.plot.lims[i,c(1,2)],
+     ylim=island.plot.lims[i,c(3,4)],
+     col="gray50",asp=1)
+points(all_data$coords.x1,all_data$coords.x2,cex=.6,col=rgb(0,0,1,0.5),pch=19)
+
+legend("bottomleft",
+       legend=c(
+         paste("Species:",length(unique(all_data$Taxon[all_data$island==isl.names[i]]))),
+         paste("Collections:",length(which(all_data$island==isl.names[i])))),
+       col=0)
+
+#Santa Barbara
+i=8
+plot(is.map,
+     xlim=island.plot.lims[i,c(1,2)],
+     ylim=island.plot.lims[i,c(3,4)],
+     col="gray50",asp=1)
+points(all_data$coords.x1,all_data$coords.x2,cex=.6,col=rgb(0,0,1,0.5),pch=19)
+
+legend("bottomleft",
+       legend=c(
+         paste("Species:",length(unique(all_data$Taxon[all_data$island==isl.names[i]]))),
+         paste("Collections:",length(which(all_data$island==isl.names[i])))),
+       col=0)
+
+
+
+############### Make Rasters #############
+# for collecting intensity & richness grids, make a raster with some arbitrary grid cell size and then find the grid cell for each specimen. 
+# 5km grid cells: ncol=50,nrow=34
+# 10km: ncol=25,nrow=17
+# 1km = ncol= 250, nrow=170
+r<-raster(
+  xmn=-50000, 
+  xmx=200000, 
+  ymn=-600000, 
+  ymx=-430000,
+  ncol= 250, nrow=170)
+r[]<-0
+
+### First, rasterize the islands. This would be a lot easier with a polygon map but I didn't have one so I did some work by hand here- I rasterized the outlines, then selected grid cells by hand from the middle of islands to make up the island rasters. It would be much easier to just rasterize a polygon shapefile.
+isl.rast<-rasterize(is.map,r) #CAM: This line takes some time to run
+
+# now go through, island by island, and fill in the holes
+# (rasterize doesn't quite work here bc it's lines, not polygons)
+#Anacapa
+i=1
+plot(isl.rast,
+     xlim=island.plot.lims[i,c(1,2)],
+     ylim=island.plot.lims[i,c(3,4)],
+     col="gray50",asp=1)
+
+plot(is.map,add=T) #this step takes a while
+
+#identify cells to add with click()
+to.add<-click(isl.rast,n=4,cell=TRUE) #click on map to add cells
+
+# add selected to the raster
+isl.rast[to.add$cell]<-1 #repeat from plot(isl.rast,... until all cells are filled
+
+# convert to binary
+w<-which(is.na(isl.rast[])==FALSE)
+isl.rast[w]<-1
+
+i=2
+plot(isl.rast,
+     xlim=island.plot.lims[i,c(1,2)],
+     ylim=island.plot.lims[i,c(3,4)],
+     col="gray50",asp=1)
+
+plot(is.map,add=T) #this step takes a while
+
+#identify cells to add with click()
+to.add<-click(isl.rast,n=20,cell=TRUE) #click on map to add cells
+
+# add selected to the raster
+isl.rast[to.add$cell]<-1 #repeat from plot(isl.rast,... until all cells are filled
+
+# convert to binary
+w<-which(is.na(isl.rast[])==FALSE)
+isl.rast[w]<-1
+
+i=3
+plot(isl.rast,
+     xlim=island.plot.lims[i,c(1,2)],
+     ylim=island.plot.lims[i,c(3,4)],
+     col="gray50",asp=1)
+
+plot(is.map,add=T) #this step takes a while
+
+#identify cells to add with click()
+to.add<-click(isl.rast,n=20,cell=TRUE) #click on map to add cells
+
+# add selected to the raster
+isl.rast[to.add$cell]<-1 #repeat from plot(isl.rast,... until all cells are filled
+
+# convert to binary
+w<-which(is.na(isl.rast[])==FALSE)
+isl.rast[w]<-1
+
+i=4
+plot(isl.rast,
+     xlim=island.plot.lims[i,c(1,2)],
+     ylim=island.plot.lims[i,c(3,4)],
+     col="gray50",asp=1)
+
+plot(is.map,add=T) #this step takes a while
+
+#identify cells to add with click()
+to.add<-click(isl.rast,n=10,cell=TRUE) #click on map to add cells
+
+# add selected to the raster
+isl.rast[to.add$cell]<-1 #repeat from plot(isl.rast,... until all cells are filled
+
+# convert to binary
+w<-which(is.na(isl.rast[])==FALSE)
+isl.rast[w]<-1
+
+i=5
+plot(isl.rast,
+     xlim=island.plot.lims[i,c(1,2)],
+     ylim=island.plot.lims[i,c(3,4)],
+     col="gray50",asp=1)
+
+plot(is.map,add=T) #this step takes a while
+
+#identify cells to add with click()
+to.add<-click(isl.rast,n=20,cell=TRUE) #click on map to add cells
+
+# add selected to the raster
+isl.rast[to.add$cell]<-1 #repeat from plot(isl.rast,... until all cells are filled
+
+# convert to binary
+w<-which(is.na(isl.rast[])==FALSE)
+isl.rast[w]<-1
+
+i=6
+plot(isl.rast,
+     xlim=island.plot.lims[i,c(1,2)],
+     ylim=island.plot.lims[i,c(3,4)],
+     col="gray50",asp=1)
+
+plot(is.map,add=T) #this step takes a while
+
+#identify cells to add with click()
+to.add<-click(isl.rast,n=20,cell=TRUE) #click on map to add cells
+
+# add selected to the raster
+isl.rast[to.add$cell]<-1 #repeat from plot(isl.rast,... until all cells are filled
+
+# convert to binary
+w<-which(is.na(isl.rast[])==FALSE)
+isl.rast[w]<-1
+
+i=7
+plot(isl.rast,
+     xlim=island.plot.lims[i,c(1,2)],
+     ylim=island.plot.lims[i,c(3,4)],
+     col="gray50",asp=1)
+
+plot(is.map,add=T) #this step takes a while
+
+#identify cells to add with click()
+to.add<-click(isl.rast,n=20,cell=TRUE) #click on map to add cells
+
+# add selected to the raster
+isl.rast[to.add$cell]<-1 #repeat from plot(isl.rast,... until all cells are filled
+
+# convert to binary
+w<-which(is.na(isl.rast[])==FALSE)
+isl.rast[w]<-1
+
+i=8
+plot(isl.rast,
+     xlim=island.plot.lims[i,c(1,2)],
+     ylim=island.plot.lims[i,c(3,4)],
+     col="gray50",asp=1)
+
+plot(is.map,add=T) #this step takes a while
+
+#identify cells to add with click()
+to.add<-click(isl.rast,n=4,cell=TRUE) #click on map to add cells
+
+# add selected to the raster
+isl.rast[to.add$cell]<-1 #repeat from plot(isl.rast,... until all cells are filled
+
+# convert to binary
+w<-which(is.na(isl.rast[])==FALSE)
+isl.rast[w]<-1
+
+############### identify cells for each island ##########
+island.pix<-list()
+
+i=1
+plot(isl.rast,
+     xlim=island.plot.lims[i,c(1,2)],
+     ylim=island.plot.lims[i,c(3,4)],
+     col="gray50",asp=1)
+
+# select the shape
+s<-select(isl.rast,use='pol',draw=T) #click on map 4+ times to add perimeter around island, then hit escape
+# convert to coord
+s.coords<-xyFromCell(s,which(s[]==1))
+# intersect coords with original rast
+s.cells<-cellFromXY(isl.rast,s.coords)
+island.pix[[i]]<-s.cells
+
+i=2
+plot(isl.rast,
+     xlim=island.plot.lims[i,c(1,2)],
+     ylim=island.plot.lims[i,c(3,4)],
+     col="gray50",asp=1)
+
+# select the shape
+s<-select(isl.rast,use='pol',draw=T) #click on map 4+ times to add perimeter around island, then hit escape
+# convert to coord
+s.coords<-xyFromCell(s,which(s[]==1))
+# intersect coords with original rast
+s.cells<-cellFromXY(isl.rast,s.coords)
+island.pix[[i]]<-s.cells
+
+i=3
+plot(isl.rast,
+     xlim=island.plot.lims[i,c(1,2)],
+     ylim=island.plot.lims[i,c(3,4)],
+     col="gray50",asp=1)
+
+# select the shape
+s<-select(isl.rast,use='pol',draw=T) #click on map 4+ times to add perimeter around island, then hit escape
+# convert to coord
+s.coords<-xyFromCell(s,which(s[]==1))
+# intersect coords with original rast
+s.cells<-cellFromXY(isl.rast,s.coords)
+island.pix[[i]]<-s.cells
+
+i=4
+plot(isl.rast,
+     xlim=island.plot.lims[i,c(1,2)],
+     ylim=island.plot.lims[i,c(3,4)],
+     col="gray50",asp=1)
+
+# select the shape
+s<-select(isl.rast,use='pol',draw=T) #click on map 4+ times to add perimeter around island, then hit escape
+# convert to coord
+s.coords<-xyFromCell(s,which(s[]==1))
+# intersect coords with original rast
+s.cells<-cellFromXY(isl.rast,s.coords)
+island.pix[[i]]<-s.cells
+
+i=5
+plot(isl.rast,
+     xlim=island.plot.lims[i,c(1,2)],
+     ylim=island.plot.lims[i,c(3,4)],
+     col="gray50",asp=1)
+
+# select the shape
+s<-select(isl.rast,use='pol',draw=T) #click on map 4+ times to add perimeter around island, then hit escape
+# convert to coord
+s.coords<-xyFromCell(s,which(s[]==1))
+# intersect coords with original rast
+s.cells<-cellFromXY(isl.rast,s.coords)
+island.pix[[i]]<-s.cells
+
+i=6
+plot(isl.rast,
+     xlim=island.plot.lims[i,c(1,2)],
+     ylim=island.plot.lims[i,c(3,4)],
+     col="gray50",asp=1)
+
+# select the shape
+s<-select(isl.rast,use='pol',draw=T) #click on map 4+ times to add perimeter around island, then hit escape
+# convert to coord
+s.coords<-xyFromCell(s,which(s[]==1))
+# intersect coords with original rast
+s.cells<-cellFromXY(isl.rast,s.coords)
+island.pix[[i]]<-s.cells
+
+i=7
+plot(isl.rast,
+     xlim=island.plot.lims[i,c(1,2)],
+     ylim=island.plot.lims[i,c(3,4)],
+     col="gray50",asp=1)
+
+# select the shape
+s<-select(isl.rast,use='pol',draw=T) #click on map 4+ times to add perimeter around island, then hit escape
+# convert to coord
+s.coords<-xyFromCell(s,which(s[]==1))
+# intersect coords with original rast
+s.cells<-cellFromXY(isl.rast,s.coords)
+island.pix[[i]]<-s.cells
+
+i=8
+plot(isl.rast,
+     xlim=island.plot.lims[i,c(1,2)],
+     ylim=island.plot.lims[i,c(3,4)],
+     col="gray50",asp=1)
+
+# select the shape
+s<-select(isl.rast,use='pol',draw=T) #click on map 4+ times to add perimeter around island, then hit escape
+# convert to coord
+s.coords<-xyFromCell(s,which(s[]==1))
+# intersect coords with original rast
+s.cells<-cellFromXY(isl.rast,s.coords)
+island.pix[[i]]<-s.cells
+
+# now convert to matrix and save
+
+island.cells<-data.frame(matrix(nrow=0,ncol=2))
+colnames(island.cells)<-c("island","isl.rastCell")
+for(i in 1:8)
+{
+  x<-island.pix[[i]]
+  island.cells<-rbind(island.cells,cbind(rep((isl.names[i])),x))
+}
+
+write.csv(island.cells,"islandCells.csv",row.names=F)
+writeRaster(isl.rast,"islandRaster.asc",format="ascii", overwrite=TRUE)
+write.csv(all_data,"cleanOccurrences.csv",row.names=F)
+
+
+
+
+
+
+
+
+
+getwd()
+###### Load data
+??readOGR
+# Load shapefile for plotting island outlines
+counties <- sf::read_sf("Heatmap_files/cnty24k09_1_line.shp")
+is.map <- crop(counties, extent(-1.5e+05,2.5e+05,-6e+05,-4e+05))
+rm(counties)
+
+# Load data
+# 2 col matrix indicating which cells from islandRaster correspond to which island
+island.cells<-read.csv("islandCells.csv")
+# binary raster of the islands and coastline
+isl.rast<-raster("islandRaster.asc")
+# the cleaned specimen data
+occ<-read.csv("cleanOccurrences.csv")
+# the xlim & ylim (in albers) for plotting each island
+plot.lims<-read.csv("islandPlotLimits.csv")
+
+isl.names<-c("Anacapa","Santa Cruz","Santa Rosa","San Miguel",
+"Santa Catalina","San Clemente","San Nicolas","Santa Barbara")
+###### Things to do
+# Accumulation curves
+# Maps
+# Download spp from coastal counties to find 'expected spp' (esp comm mainland)
+	# common mainland spp that are absent from islands
+	# common mainland spp that are rare on the islands
+# Make rasters
+	# Collecting intensity maps
+	# Richness maps
+# Single island spp?
+
+################ Accumulation curves ################################
+# for makeAccum, x= binomials for all specimens from an island, 
+#                ci =c('r','s') for plotting 
+#                     smooth or rough 90% Confidence Intervals
+
+# make Accum is a custom function that is defined at the bottom of this file
+
+# k is a number 1:8 corresponding to isl.names (line 22)
+k=7
+makeAccum(occ$binom[occ$island==isl.names[k]],'r',nm=isl.names[k])
+
+
+######### combined accumulation curve
+# I use a loop through 7 here because there aren't enough bryos on Santa Barbara to bother making a curve
+plot(0,0,col=0,xlim=c(0,800),ylim=c(0,125),ylab="Richness",xlab="Number of collections")
+for(k in 1:7)
+{
+	x<-occ$binom[occ$island==isl.names[k]]
+	resampling.result<-matrix(nrow=length(x),ncol=100)
+	for(i in 1:100){ randCurve<-sample(x,length(x),replace=F)
+	for(j in 1:length(x)){resampling.result[j,i]<-	
+			length(unique(randCurve[1:j]))}}
+	# generate raw 90% & 10% CIs
+	curve.mean<-apply(resampling.result,MARGIN=1,mean)
+	lowerCI<-apply(resampling.result,MARGIN=1,function(y) 
+		{sort(y,decreasing=T)[90]})
+	upperCI<-apply(resampling.result,MARGIN=1,function(z) 
+		{sort(z,decreasing=T)[10]})
+	xlen<-1:length(x)
+	lowerCIsm<-loess(lowerCI~xlen)
+	upperCIsm<-loess(upperCI~xlen)
+	#polygon(c(xlen,rev(xlen)),
+	#c(lowerCI,rev(upperCI)),col="grey90",border=0)	
+	lines(1:length(x),curve.mean,col=k)
+}
+legend("bottomright",legend=isl.names[1:7],lty=1,col=c(1:7))
+####### end combined accumulation curve
+
+################# Grid maps ############
+
+#get cellIDs for each occurrence
+cellID<-cellFromXY(isl.rast,cbind(occ$coords.x1,occ$coords.x2))
+occ<-cbind(occ,cellID); rm(cellID)
+length(unique(occ$cellID))
+# make a big grid
+w<-which(!is.na(isl.rast[]))
+taxa<-sort(unique(occ$binom))
+taxGrid<-matrix(nrow=length(taxa),ncol=length(w))
+colnames(taxGrid)<-w
+rownames(taxGrid)<-taxa
+taxGrid[]<-0
+for(i in 1:dim(taxGrid)[1]){
+	spCells<-occ$cellID[occ$binom==taxa[i]]
+	for(j in 1:length(spCells)){
+		taxGrid[i,w%in%spCells[j]]<-taxGrid[i,w%in%spCells[j]]+1
+	}
+}
+
+# make a binary version (this is presence/abs of each sp in each cell rather than num of collections of each sp in each cell)
+binaryGrid<-taxGrid
+binaryGrid[binaryGrid>0]<-1
+
+# make corresponding rasters
+rich.rast<-isl.rast
+rich.rast[rich.rast==1]<-0
+rich.rast[w]<-colSums(binaryGrid)
+coll.rast<-isl.rast
+coll.rast[coll.rast==1]<-0
+coll.rast[w]<-colSums(taxGrid)
+
+plot(rich.rast)
+plot(coll.rast)
+
+################# Calculate %empty and redundacy for islands ##
+
+k=1
+is.cel<-island.cells$isl.rastCell[island.cells$island==isl.names[k]]
+rich.cel<-rich.rast[is.cel]
+coll.cel<-coll.rast[is.cel]
+
+coll.Summary<-matrix(nrow=8,ncol=9)
+# Red=  1-R/N
+rownames(coll.Summary)<-isl.names
+colnames(coll.Summary)<-c("totCells","totColls","totRich","Empty","perEmpty",
+"mnRich","mnColl","mnRedund","mnRedundwE")
+for(i in 1:7){
+	is.cel<-island.cells$isl.rastCell[island.cells$island==isl.names[i]]
+	rich.cel<-rich.rast[is.cel]
+	coll.cel<-coll.rast[is.cel]
+	coll.Summary[i,"totCells"]<-length(rich.cel)
+	coll.Summary[i,"totColls"]<-sum(coll.cel)
+	coll.Summary[i,"Empty"]<-length(which(rich.cel==0))
+	coll.Summary[i,"perEmpty"]<-round(length(which(rich.cel==0))/ 
+		length(rich.cel),3)
+	coll.Summary[i,"mnRich"]<-mean(rich.cel[rich.cel!=0])
+	coll.Summary[i,"mnColl"]<-mean(coll.cel[rich.cel!=0])
+	coll.Summary[i,"totRich"]<-length(unique( 
+		occ$binom[occ$island==isl.names[i]]))
+	coll.Summary[i,"mnRedund"]<-round(mean(1-(rich.cel[rich.cel!=0]/coll.cel[rich.cel!=0])),3)
+	#coll.Summary[i,"mnRedundwE"]<-round(1/mean((coll.cel-
+	# 	rich.cel)),3)
+}
+
+######### Make Grid-based maps ##################
+colorfunc<-colorRampPalette(c("white","dodgerblue"))
+colRamp<-colorfunc(20)
+
+# richness
+i=1
+plot(rich.rast,col=colRamp,xlim=c(plot.lims[i,1]))
+```
+
