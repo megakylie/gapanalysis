@@ -215,7 +215,7 @@ mam_inat_combine <- mam_inat %>%
   select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName)
 
 mam_chis_combine <- mam_chis %>%
-  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName)
+  select(source, month, year, island, class, order, acceptedFamily, acceptedGenus, acceptedName)
 
 
 mam_master = rbind(mam_inat_combine, mam_chis_combine) %>%
@@ -226,7 +226,7 @@ mam_master = rbind(mam_inat_combine, mam_chis_combine) %>%
 
 ```{r heat map}
 mam_inat_map <- mam_inat %>%
-  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude)
+  select(source, month, year, island, class acceptedFamily, acceptedGenus, acceptedName, latitude, longitude)
 
 mam_chis_map <- mam_inat %>%
   rename(latitude = "decimalLatitude", longitude="decimalLongitude") %>%
@@ -273,7 +273,7 @@ mam_island_prop <- ggplot(data = mam_islandprop, aes(x = by_area, y = fct_rev(is
        y = "Mammal Specimens Collected/Island Area (km^2)",
        fill = "Data Source") +
   theme_bw() + 
-  scale_x_continuous(limits =c(0,10), expand = c(0,0)) +
+  scale_x_continuous(limits =c(0,275), expand = c(0,0)) +
   scale_fill_brewer(palette = "Dark2")
 
 mam_island_prop 
@@ -330,15 +330,17 @@ ggsave(plot=mam_coll, filename="mammal/MammalGraphs/mam_type.png", height=5, wid
 
 ##Mam Step 4. Make Tables 
 ```{r Family by Source Table}
-mamtab = table(dip_master_bold$acceptedFamily)
+mamtab = table(mam_master$acceptedName)
 mamtab = as.data.frame.table(mamtab)
-write.csv(mamtab, "mammal/MammalGraphs/mam_table.csv")
+write.csv(mamtab, "mammal/MammalGraphs/mam_table2.csv")
 
 
-table(dip_chis_combine$acceptedFamily)
+table(mam_chis_combine$acceptedName)
+
+table(mam_chis_combine$order)
 
 
-table(dip_inat_combine$acceptedFamily)
+table(mam_inat_combine$acceptedName)
 
 
 
