@@ -21,8 +21,8 @@ In step 1 of this process, we'll ensure that the locality information or spatial
 
 ```{r}
 
-plants_raw_1 <- read_csv("Josie/Plants_Redownload/plants_raw_1.csv", col_types = cols(.default = "c", isl_name = "c")) 
-plants_raw_2 <- read_csv("Josie/Plants_Redownload/plants_raw_2.csv", col_types = cols(.default = "c", isl_name = "c")) 
+plants_raw_1 <- read_csv("Josie/Data/plants_raw_1.csv", col_types = cols(.default = "c", isl_name = "c")) 
+plants_raw_2 <- read_csv("Josie/Data/plants_raw_2.csv", col_types = cols(.default = "c", isl_name = "c")) 
 
 plants_raw <- full_join(plants_raw_1, plants_raw_2)
 
@@ -94,7 +94,7 @@ plants_genus <- plants_isl %>%
   filter(phylum == "Tracheophyta")
 
 # isolate by-island species
-by_isl <- read_csv("Josie/byislsp.csv", col_types = cols(.default = "c")) %>%
+by_isl <- read_csv("Josie/Data/byislsp.csv", col_types = cols(.default = "c")) %>%
   rename(scientificName = old_name) %>%
   mutate(scientificName = str_to_lower(scientificName)) %>%
   select(scientificName, assign_by_island)
@@ -109,18 +109,18 @@ plants_nonisl <- left_join(plants_genus, by_isl) %>%
 
 
 ```{r fix synonomy for taxa not sorted by island}
-kylie_syn <- read_csv("Josie/KJE_synonymylist.csv", col_types = cols(.default = "c")) %>%
+kylie_syn <- read_csv("Josie/Data/KJE_synonymylist.csv", col_types = cols(.default = "c")) %>%
   mutate(scientificName = str_to_lower(scientificName),
          acceptedName = str_to_lower(acceptedName))
 
-elim_list <- read_csv("Josie/Plants_ElimList_Revised2.csv", col_types = cols(.default = "c")) %>%
+elim_list <- read_csv("Josie/Data/Plants_ElimList_Revised2.csv", col_types = cols(.default = "c")) %>%
   mutate(Eliminate = replace_na(Eliminate, "Keep"),
          Eliminate = recode_factor(Eliminate, "1" = "Elim")) %>%
   rename("sciname_1" = "OG_spname") %>%
   mutate(sciname_1 = str_to_lower(sciname_1),
          Updated_name = str_to_lower(Updated_name))
 
-elim_list_2 <- read_csv("Josie/Plants_ElimList_round3_2.csv", col_types = cols(.default = "c")) %>%
+elim_list_2 <- read_csv("Josie/Data/Plants_ElimList_round3_2.csv", col_types = cols(.default = "c")) %>%
   mutate(Eliminate = replace_na(Eliminate, "Keep"),
          Eliminate = recode_factor(Eliminate, "elim" = "Elim")) %>%
   rename("sciname_2" = "Taxa_name",
@@ -230,7 +230,7 @@ remove(SBA, SCA, SCL, SCR, SMI, SNI, SR, A)
 In a few cases, we'll want to clean the data OR assign MRT based on the specific island a speciment is from. 
 
 ```{r}
-by_isl <- read_csv("Josie/byislsp.csv", col_types = cols(.default = "c")) %>%
+by_isl <- read_csv("Josie/Data/byislsp.csv", col_types = cols(.default = "c")) %>%
   rename(scientificName = old_name) %>%
   mutate(scientificName = str_to_lower(scientificName)) 
 
@@ -249,35 +249,9 @@ plants_keep <- plants_nonisl_clean %>%
          country, stateProvince, county, municipality, locality, isl_name,
          decimalLatitude, decimalLongitude, geodeticDatum,
          id, institutionCode, collectionCode, occurrenceID, basisOfRecord, catalogNumber,
-         scientificNameAuthorship, identifiedBy, dateIdentified, recordedBy, associatedCollectors) %>%
-  group_by(kingdom_final, phylum_final, class_final, order_final, family_final, isl_name, Sci_Name) %>%
-  summarise(count = n()) %>%
-  spread(isl_name, count, fill = 0)
+         scientificNameAuthorship, identifiedBy, dateIdentified, recordedBy, associatedCollectors)
 
-write_csv(plants_keep, "Josie/ForKristen2/Data_nobyisl.csv")
-
-  group_by(final_kingdom, phylum, class, order, Family_4, scientificName, sciname_3, Eliminate, SMI,	SR,	SCR,	A,	SBA,	SNI,	SCL,	SCA) %>%
-  summarize(count = n()) %>%
-  mutate(sciname_3 = str_to_sentence(sciname_3),
-         scientificName = str_to_sentence(scientificName))
-
-elim_list_join <- elim_list_2 %>%
-  mutate(sciname_2 = str_to_sentence(sciname_2),
-         Syn = str_to_sentence(Syn),
-         sciname_3 = coalesce(Syn,  sciname_2)) %>%
-  select(Family_3, sciname_3, assign_by_island, Eliminate, SMI,	SR,	SCR,	A,	SBA,	SNI,	SCL,	SCA) %>%
-  group_by(Family_3, sciname_3, Eliminate) %>%
-  distinct() %>%
-  ungroup()
-
-master_elim_list <- full_join(elim_list_join, plants_keep) %>%
-  mutate(Family_5 = coalesce(Family_4, Family_3)) %>%
-  select(kingdom, phylum, class, order, Family_5, scientificName, sciname_3, count, assign_by_island, Eliminate, SMI,	SR,	SCR,	A,	SBA,	SNI,	SCL,	SCA) 
-
-# write_csv(master_elim_list, "Josie/ForKristen2/PlantRecordSummary.csv")
-
-distinct(master_elim_list$sciname_3)
-
+write_csv(plants_keep, "Josie/Data/DraftData.csv")
 ```
 
 
