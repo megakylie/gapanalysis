@@ -242,8 +242,21 @@ plants_byisl_join <- left_join(plants_byisl, by_isl) %>%
 ## Summary Lists
 
 ```{r}
-plants_keep <- plants_combo3_orders %>% 
-  group_by(kingdom, phylum, class, order, Family_4, scientificName, sciname_3, Eliminate, SMI,	SR,	SCR,	A,	SBA,	SNI,	SCL,	SCA) %>%
+plants_keep <- plants_nonisl_clean %>% 
+  mutate(Sci_Name = str_to_sentence(sciname_4)) %>%
+  select(kingdom_final, phylum_final, class_final, order_final, family_final, old_name, Sci_Name,
+         eventDate, year, month, day, startDayOfYear, endDayOfYear, verbatimEventDate, associatedTaxa, 
+         country, stateProvince, county, municipality, locality, isl_name,
+         decimalLatitude, decimalLongitude, geodeticDatum,
+         id, institutionCode, collectionCode, occurrenceID, basisOfRecord, catalogNumber,
+         scientificNameAuthorship, identifiedBy, dateIdentified, recordedBy, associatedCollectors) %>%
+  group_by(kingdom_final, phylum_final, class_final, order_final, family_final, isl_name, Sci_Name) %>%
+  summarise(count = n()) %>%
+  spread(isl_name, count, fill = 0)
+
+write_csv(plants_keep, "Josie/ForKristen2/Data_nobyisl.csv")
+
+  group_by(final_kingdom, phylum, class, order, Family_4, scientificName, sciname_3, Eliminate, SMI,	SR,	SCR,	A,	SBA,	SNI,	SCL,	SCA) %>%
   summarize(count = n()) %>%
   mutate(sciname_3 = str_to_sentence(sciname_3),
          scientificName = str_to_sentence(scientificName))
