@@ -324,13 +324,15 @@ hymsp2 = unique(c(as.character(mastersyn$acceptedName)))
 ### Island Graph 
 ```{r Graphing by island}
 
-hym_islandsum <- mastersyn %>%
-  mutate(no_sample = 1) %>%
-  group_by(island, source) %>%
-  summarise(samples = sum(no_sample))
-hym_islandsum <- na.omit(subset(hym_islandsum, select = c(island, samples, source)))
+ hym_islandsum <- mastersyn %>%
+   mutate(no_sample = 1) %>%
+   group_by(island, source) %>%
+   summarise(samples = sum(no_sample)) %>%
+   filter(!is.na(island)) %>%
+   ungroup() %>%
+   mutate(source2 = fct_relevel(source, "Cal-IBIS", "iNaturalist", "LACM", "Bohart"))
+
 hym_islandsum = hym_islandsum[c(2:33),] 
-hym_islandsum$source <- as.factor(hym_islandsum$source)
 
 hym_island <- ggplot(data = hym_islandsum, aes(x = samples, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
@@ -338,7 +340,7 @@ hym_island <- ggplot(data = hym_islandsum, aes(x = samples, y = fct_rev(island),
        y = "Number of Hymenoptera Specimens Collected",
        fill = "Data Source") +
   theme_bw() + 
-  scale_x_continuous(limits =c(0,7000), expand = c(0,0)) +
+  scale_x_continuous(limits =c(0,11000), expand = c(0,0)) +
   scale_fill_brewer(palette = "Dark2")
 
 hym_island 
@@ -352,7 +354,7 @@ island_size = read_csv("island_size.csv")
 hym_islandsum2 = merge(hym_islandsum, island_size, by="island", all.y=TRUE)
 hym_islandprop = hym_islandsum2 %>% group_by(island) %>% mutate(by_area = samples/island_size_85)
 
-hym_island_prop <- ggplot(data = hym_islandprop, aes(x = by_area, y = fct_rev(island), fill = source)) + 
+hym_island_prop <- ggplot(data = hym_islandprop, aes(x = by_area, y = fct_rev(island), fill = source2)) + 
   geom_bar(stat = "identity") +
   labs(x ="Island", 
        y = "Hymenoptera Specimens Collected/Island Area (km^2)",
@@ -370,8 +372,9 @@ ggsave(plot=hym_island_prop, filename="hymenoptera/HymenopteraGraphs/hym_island_
 ### Temporal Graph
 ```{r Graphing by year}
 
+hymyear =  mastersyn %>% mutate(source2 = fct_relevel(source, "Cal-IBIS", "iNaturalist", "LACM", "Bohart"))
 
-hym_year = ggplot(mastersyn, aes(x=year, fill=source)) + 
+hym_year = ggplot(hymyear, aes(x=year, fill=source2)) + 
   geom_bar() + 
   theme_bw() + 
   scale_y_continuous(expand=c(0,0), limits = c(0, 3500)) + 
