@@ -94,10 +94,10 @@ plants_genus <- plants_isl %>%
   filter(phylum == "Tracheophyta")
 
 # isolate by-island species
-by_isl <- read_csv("Josie/Data/byislsp.csv", col_types = cols(.default = "c")) %>%
+by_isl <- read_csv("Josie/byislsp.csv", col_types = cols(.default = "c")) %>%
   rename(scientificName = old_name) %>%
   mutate(scientificName = str_to_lower(scientificName)) %>%
-  select(scientificName, assign_by_island)
+  dplyr::select(scientificName, assign_by_island)
 
 plants_byisl <- left_join(plants_genus, by_isl) %>%
   filter(!is.na(assign_by_island))
@@ -137,7 +137,7 @@ plants_combo2 <- left_join(plants_combo1, elim_list) %>%
   mutate(sciname_2 = coalesce(Updated_name, sciname_1),
          Family_2 = coalesce(Family, family))  %>%
   filter(Eliminate != "Elim" | is.na(Eliminate)) %>% 
-  select(-Eliminate) 
+  dplyr::select(-Eliminate) 
 
 # This updates names and eliminations based on Kristen's second passthrough, 
 # and isolates those that need to be checked on a by-island basis
@@ -145,15 +145,15 @@ plants_combo3 <- left_join(plants_combo2, elim_list_2) %>%
   mutate(sciname_3 = coalesce(Syn,  sciname_2),
          Family_4 = coalesce(Family_3, Family_2)) %>%
   filter(Eliminate != "Elim" | is.na(Eliminate)) %>%
-  select(-SMI, -SCR, - A, -SR, -SBA, -SNI, -SCL, -SCA, -assign_by_island, -Eliminate)
+  dplyr::select(-SMI, -SCR, - A, -SR, -SBA, -SNI, -SCL, -SCA, -assign_by_island, -Eliminate)
 
 # final clean
-masterlist <- read_csv("Josie/PlantMasterList.csv", col_types = cols(.default = "c")) %>%
+masterlist <- read_csv("Josie/Data/PlantMasterList.csv", col_types = cols(.default = "c")) %>%
   mutate(final_syn = coalesce(syn_replace, new_datasetname)) %>%
   rename(sciname_3 = new_datasetname) %>%
   mutate(sciname_3 = str_to_lower(sciname_3),
          sciname_4 = str_to_lower(final_syn)) %>%
-  select(-old_name, -count_in_dataset, -final_syn) %>%
+  dplyr::select(-old_name, -count_in_dataset, -final_syn) %>%
   distinct()
 
 plants_combo4 <- left_join(plants_combo3, masterlist, by = c("sciname_3"))
@@ -230,12 +230,12 @@ remove(SBA, SCA, SCL, SCR, SMI, SNI, SR, A)
 In a few cases, we'll want to clean the data OR assign MRT based on the specific island a speciment is from. 
 
 ```{r}
-by_isl <- read_csv("Josie/Data/byislsp.csv", col_types = cols(.default = "c")) %>%
+by_isl <- read_csv("Josie/byislsp.csv", col_types = cols(.default = "c")) %>%
   rename(scientificName = old_name) %>%
   mutate(scientificName = str_to_lower(scientificName)) 
 
 plants_byisl_join <- left_join(plants_byisl, by_isl) %>%
-  select(scientificName, new_datasetname, isl_name, SMI:SCA)
+  dplyr::select(scientificName, new_datasetname, isl_name, SMI:SCA)
 
 ```
 
@@ -244,7 +244,7 @@ plants_byisl_join <- left_join(plants_byisl, by_isl) %>%
 ```{r}
 plants_keep <- plants_nonisl_clean %>% 
   mutate(Sci_Name = str_to_sentence(sciname_4)) %>%
-  select(kingdom_final, phylum_final, class_final, order_final, family_final, old_name, Sci_Name,
+  dplyr::select(kingdom_final, phylum_final, class_final, order_final, family_final, old_name, Sci_Name,
          eventDate, year, month, day, startDayOfYear, endDayOfYear, verbatimEventDate, associatedTaxa, 
          country, stateProvince, county, municipality, locality, isl_name,
          decimalLatitude, decimalLongitude, geodeticDatum,
