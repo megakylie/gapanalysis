@@ -15,6 +15,9 @@ library(sf)
 library(rgdal)
 library(raster)
 library(rgeos)
+library(CoordinateCleaner)
+library(scrubr)
+library(scales)
 
 ### --- Set functions for code --- ###
 makeAccum <- function(x,ci,nm){
@@ -56,7 +59,7 @@ text(0,length(unique(x)),labels=nm,adj=0,cex=1.5)
 ```
 
 ```{r import data}
-data <- read_csv("Josie/Data/DraftData.csv")
+data <- read_csv("Josie/Data/DraftData_20210823.csv")
 ```
 
 # File Goal
@@ -77,21 +80,36 @@ all_data <- data %>%
   filter(!is.na(Latitude), !is.na(Longitude))
 
 ############### drop points with meaningless coords - this removes any specimens that have long/lats that are not in the vicinity of the islands
-### START CAM CHANGE ###
 
 ########## Remove obvious georeferencing errors by hand- the 'identify' function allows you to click on a scatterplot (ie distribution map) to identify individual points. This is nice if you have a few coords out in the ocean. If you have a bunch, you'll probably want to do an intersection with island polygons, but I didn't have an island polygon file when I was doing this (the maps I used are line shapefiles, not polygons)
 
-## JL: will want to do this with the Scrubr package down the line!
+## JL: will do this with the coord cleaner package 
 
+flags <- clean_coordinates(x = all_data, lon = "Longitude", lat = "Latitude",
+                          species = "Sci_Name",
+                          tests = c("capitals", "centroids", "equal","gbif", "institutions",
+                                     "zeros"))
+all_data <- all_data[flags$.summary,] 
+
+all_data_coords <- all_data %>%
+  filter(Longitude <= -118, Longitude >= -120.5,
+         Latitude <= 34.1, Latitude >= 32.7)
+  
+plot(all_data_coords$Longitude, all_data_coords$Latitude, asp=1)
 
 # using Ben's modified code and a shapefile found online to isolate counties of interest, 
 # Albers projection is used in order to have grids in km^2
 
-counties <- readOGR("Heatmap_files/Master_IslandNames.shp")
-chis_counties <- counties[counties$NAME%in%c("Santa Rosa", "Santa Cruz", "San Miguel", "Anacapa", "San Clemente", "Santa Barbara", "Santa Catalina", "San Nicolas")]
+ibis <- st_read("Heatmap_files/Master_IslandNames.shp")
+chis_ibis <- ibis %>%
+  filter(Name %in% c("Santa Rosa", "Santa Cruz", "San Miguel", "Anacapa", "San Clemente", "Santa Barbara", "Santa Catalina", "San Nicolas"))
 
-# cropping parts of counties that are not of interest
-is.map<-crop(chis_counties, extent(-1.5e+05,2.5e+05,-6e+05,-4e+05))
+ggplot(chis_ibis) +
+  geom_sf()
+
+counties <- readOGR("Heatmap_files", layer="cnty24k09_1_line")
+chis_counties<-counties[counties$NAME%in%c("Ventura", "Santa Barbara","Los Angeles","San Diego","Orange")]
+is.map<-crop(counties, extent(-1.5e+05,2.5e+05,-6e+05,-4e+05))
 
 plot(is.map, col="black")
 rm(counties)
@@ -101,12 +119,19 @@ rm(chis_counties)
 P4S.latlon <- CRS("+proj=longlat +datum=WGS84")
 new_proj <- "+proj=aea +lat_1=34 +lat_2=40.5 +lat_0=0 +lon_0=-120 +x_0=0 +y_0=-4000000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
 
-sp <- SpatialPointsDataFrame(coords = cbind(as.numeric(all_data$Longitude), as.numeric(all_data$Latitude)),
-                           data = all_data, proj4string = P4S.latlon)
+sp <- SpatialPointsDataFrame(coords = cbind(as.numeric(all_data_coords$Longitude),
+                                            as.numeric(all_data_coords$Latitude)),
+                           data = all_data_coords, proj4string = P4S.latlon)
 pointsX <- spTransform(sp, CRS(new_proj))
 
 # attach projected points to 'all_data'
-all_data <- cbind(all_data,pointsX@coords)
+all_data_coords <- cbind(all_data_coords,pointsX@coords)
+
+
+plot(is.map, col="gray50") +
+  points(all_data_coords$coords.x1, all_data_coords$coords.x2, cex=.3) 
+
+write_csv(all_data_coords, "Josie/Data/DraftData_Cleaner.csv")
 
 ```
 
@@ -115,22 +140,19 @@ all_data <- cbind(all_data,pointsX@coords)
 ```{r accumulation curves and grid}
 ###### Load data
 
-# Load shapefile for plotting island outlines
-counties <- sf::read_sf("Heatmap_files/cnty24k09_1_line.shp")
-is.map <- crop(counties, extent(-1.5e+05,2.5e+05,-6e+05,-4e+05))
-rm(counties)
-
-# Load data
 # 2 col matrix indicating which cells from islandRaster correspond to which island
-island.cells<-read.csv("islandCells.csv")
-# binary raster of the islands and coastline
-isl.rast<-raster("islandRaster.asc")
-# the cleaned specimen data
-occ<-read.csv("Josie/Data/DraftData.csv")
-# the xlim & ylim (in albers) for plotting each island
-plot.lims<-read.csv("islandPlotLimits.csv")
+island.cells<-read.csv("Heatmap_files/islandCells.csv")
 
-isl.names<-c("Anacapa","Santa Cruz","Santa Rosa","San Miguel",
+# binary raster of the islands and coastline
+isl.rast<-raster("Heatmap_files/islandRaster.asc")
+
+# the cleaned specimen data
+occ <- read_csv("Josie/Data/DraftData_Cleaner.csv")
+
+# the xlim & ylim (in albers) for plotting each island
+plot.lims <- read.csv("Heatmap_files/islandPlotLimits.csv")
+
+isl.names <- c("Anacapa","Santa Cruz","Santa Rosa","San Miguel",
 "Santa Catalina","San Clemente","San Nicolas","Santa Barbara")
 
 
@@ -185,10 +207,11 @@ taxGrid <- matrix(nrow=length(taxa),ncol=length(w))
 colnames(taxGrid) <- w
 rownames(taxGrid) <- taxa
 taxGrid[] <- 0
+
 for(i in 1:dim(taxGrid)[1]){
 	spCells <- occ$cellID[occ$binom==taxa[i]]
 	for(j in 1:length(spCells)){
-		taxGrid[i,w%in%spCells[j]]<-taxGrid[i,w%in%spCells[j]]+1
+		taxGrid[i,w %in% spCells[j]]<-taxGrid[i,w %in% spCells[j]]+1
 	}
 }
 
@@ -247,10 +270,28 @@ plot(rich.rast,col=colRamp,xlim=c(plot.lims[i,1]))
 
 ```{r basic graphs}
 
+occ <- occ %>%
+  filter(year > 1800)
+
 plants_islandsum <- occ %>%
   mutate(no_sample = 1) %>%
   group_by(isl_name, year) %>%
   summarise(samples = sum(no_sample))
+
+plants_island_time <- ggplot(data = plants_islandsum, aes(y = samples, x = year, fill = isl_name)) + 
+  annotation_logticks() +
+  geom_bar(stat = "identity") +
+  labs(x ="Year", 
+       y = "Number of Specimens Collected",
+       fill = "Island") +
+  theme_bw() + 
+  theme(axis.text.x = element_text(angle = -45, hjust = 0.5, vjust = 0.25),
+        legend.position = "none",
+        strip.background = element_rect(fill = "white")) +
+  scale_y_log10(breaks = log_breaks(), expand = c(0,0)) +
+  scale_x_continuous(limits = c(1850,2025), expand = c(0,0)) +
+  scale_fill_brewer(palette = "Dark2") +
+  facet_wrap(~isl_name, ncol = 4)
 
 ggplot(data = plants_islandsum, aes(y = samples, x = year, fill = isl_name)) + 
   geom_bar(stat = "identity") +
@@ -258,11 +299,17 @@ ggplot(data = plants_islandsum, aes(y = samples, x = year, fill = isl_name)) +
        y = "Number of Specimens Collected",
        fill = "Island") +
   theme_bw() + 
-  theme(axis.text.x = element_text(angle = -45, hjust = 0.5, vjust = 0.25)) +
-  scale_y_continuous(limits = c(0,5000), expand = c(0,0)) +
-  scale_x_continuous(limits = c(1850,2021), expand = c(0,0)) +
-  scale_fill_brewer(palette = "Dark2")
+  theme(axis.text.x = element_text(angle = -45, hjust = 0.5, vjust = 0.25),
+        legend.position = "none",
+        strip.background = element_rect(fill = "white")) +
+  scale_y_continuous(limits = c(0,1500), expand = c(0,0)) +
+  scale_x_continuous(limits = c(1850,2025), expand = c(0,0)) +
+  scale_fill_brewer(palette = "Dark2") +
+  facet_wrap(~isl_name, ncol = 4)
 
+plants_island_time
+
+ggsave(plants_island_time, filename = "Josie/Figures_Spec_Isl_Time", height = 1800, width = 2400, units = "px", dpi = 300)
 
 
 ```
