@@ -482,7 +482,7 @@ plants_keep <- plants_nonisl_clean %>%
          id, institutionCode, collectionCode, occurrenceID, basisOfRecord, catalogNumber,
          scientificNameAuthorship, identifiedBy, dateIdentified, recordedBy, associatedCollectors)
 
-write_csv(plants_keep, "Josie/Data/DraftData.csv")
+write_csv(plants_keep, "Josie/Data/DraftData_20210823.csv")
 ```
 
 
