@@ -7,7 +7,7 @@ editor_options:
 
 This is an R Markdown for the Gap Analysis Invertebrate Graph and Table Making. This is the cleaned up code from my first run with Hymenoptera, this code should be able to be used with all the datasets for each Order with little adjustment. 
 
-#Includes: Diptera, Mollusks, Chilopoda, Diplopoda, Blattodea
+#Includes: Diptera, Mollusks, Chilopoda, Diplopoda, Blattodea, Odonata
 
 # Diptera 
 
@@ -459,6 +459,10 @@ ggsave(plot=chilo_ismonth, filename="chilopoda/chilopodaGraphs/chilo_seasonal.pn
 chilotab = table(chilo_master$acceptedFamily)
 chilotab = as.data.frame.table(chilotab)
 write.csv(chilotab, "chilopoda/ChilopodaGraphs/chilo_table.csv")
+
+chilotab2 = table(chilo_master$acceptedName)
+chilotab2 = as.data.frame.table(chilotab2)
+chilotab2
 
 ```
 
