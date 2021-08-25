@@ -336,8 +336,8 @@ hym_islandsum = hym_islandsum[c(2:33),]
 
 hym_island <- ggplot(data = hym_islandsum, aes(x = samples, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
-  labs(x ="Island", 
-       y = "Number of Hymenoptera Specimens Collected",
+  labs(y ="Island", 
+       x = "Number of Hymenoptera Specimens Sampled",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,11000), expand = c(0,0)) +
@@ -356,8 +356,8 @@ hym_islandprop = hym_islandsum2 %>% group_by(island) %>% mutate(by_area = sample
 
 hym_island_prop <- ggplot(data = hym_islandprop, aes(x = by_area, y = fct_rev(island), fill = source2)) + 
   geom_bar(stat = "identity") +
-  labs(x ="Island", 
-       y = "Hymenoptera Specimens Collected/Island Area (km^2)",
+  labs(y ="Island", 
+       x = "Hymenoptera Specimens Sampled/Island Area (km^2)",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,150), expand = c(0,0)) +

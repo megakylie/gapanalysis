@@ -5,7 +5,9 @@ editor_options:
   chunk_output_type: console
 ---
 
-This is an R Markdown for the Gap Analysis Vertabrate Graph and Table Making. Based on the Invertabrate code. Geographic, Temporal and Seasonal gaps are addressed with graphs. Mammals, Reptiles and Birds are included. 
+This is an R Markdown for the Gap Analysis Vertabrate Graph and Table Making. Based on the Invertabrate code. Geographic, Temporal and Seasonal gaps are addressed with graphs. 
+
+Mammals, Reptiles and Birds are included. 
 
 #Mammals
 
@@ -19,7 +21,9 @@ library(lubridate)
 library(ggplot2)
 library(dplyr)
 library(RColorBrewer)
+```
 
+```{r}
 mam_inat <- read_csv("mammal/mam_inat.csv")
 
 mam_chis <- read_csv("mammal/mam_chis.csv")
@@ -35,7 +39,7 @@ mam_inat_combine <- mam_inat %>%
   select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName)
 
 mam_chis_combine <- mam_chis %>%
-  select(source, month, year, island, class, order, acceptedFamily, acceptedGenus, acceptedName)
+  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName)
 
 
 mam_master = rbind(mam_inat_combine, mam_chis_combine) %>%
@@ -69,8 +73,8 @@ mam_islandsum <- na.omit(subset(mam_islandsum, select = c(island, samples, sourc
 
 mam_island <- ggplot(data = mam_islandsum, aes(x = samples, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
-  labs(x ="Island", 
-       y = "Number of Mammal Specimens Collected",
+  labs(y ="Island", 
+       x = "Number of Mammal Specimens Sampled",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,1200), expand = c(0,0)) +
@@ -89,8 +93,8 @@ mam_islandprop = mam_islandsum2 %>% group_by(island) %>% mutate(by_area = sample
 
 mam_island_prop <- ggplot(data = mam_islandprop, aes(x = by_area, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
-  labs(x ="Island", 
-       y = "Mammal Specimens Collected/Island Area (km^2)",
+  labs(y ="Island", 
+       x = "Mammal Specimens Sampled/Island Area (km^2)",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,275), expand = c(0,0)) +
@@ -167,6 +171,7 @@ table(mam_inat_combine$acceptedName)
 ```
 
 
+#
 #Reptiles 
 
 ##Rep Step 1. Download Packages and Import Data
@@ -179,7 +184,9 @@ library(lubridate)
 library(ggplot2)
 library(dplyr)
 library(RColorBrewer)
+```
 
+```{r}
 rep_inat <- read_csv("reptile/rep_inat.csv")
 
 rep_chis <- read_csv("reptile/rep_chis.csv")
@@ -220,8 +227,8 @@ rep_islandsum <- na.omit(subset(rep_islandsum, select = c(island, samples, sourc
 
 rep_island <- ggplot(data = rep_islandsum, aes(x = samples, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
-  labs(x ="Island", 
-       y = "Number of Reptile Specimens Collected",
+  labs(y ="Island", 
+       x = "Number of Reptile Specimens Sampled",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,2700), expand = c(0,0)) +
@@ -240,8 +247,8 @@ rep_islandprop = rep_islandsum2 %>% group_by(island) %>% mutate(by_area = sample
 
 rep_island_prop <- ggplot(data = rep_islandprop, aes(x = by_area, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
-  labs(x ="Island", 
-       y = "Reptile Specimens Collected/Island Area (km^2)",
+  labs(y ="Island", 
+       x = "Reptile Specimens Sampled/Island Area (km^2)",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,50), expand = c(0,0)) +
@@ -325,3 +332,6 @@ ddply(dip_master_bold, "source", summarise, n = length(acceptedName))
 
 ```
 
+
+#
+#Birds (coming soon)
