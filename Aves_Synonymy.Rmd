@@ -1,0 +1,36 @@
+---
+title: "Aves Synonymy"
+output: html_notebook
+editor_options: 
+  chunk_output_type: console
+---
+
+This is an R Markdown for the TNC Gap Analysis to complete the synonymy for Aves. DAK has done the Cal-IBIS and SBMNH synonymy. Using lists created from her completed synonymy this code will complete the synonymy for the iNaturalist and eBird datasets. 
+
+
+#Download Packages & Data
+```{r Packages!}
+library(tidyverse)
+library(lubridate)
+library(stringr)
+```
+
+```{r Data}
+aves_syn = read_csv("Aves/aves_syn.csv")
+aves_inat_messy = read_csv("Aves/aves_inat_messy.csv")
+aves_ebird_messy = read_csv("Aves/aves_ebird_messy.csv")
+
+```
+
+```{r}
+aves_inat1 <- left_join(aves_inat_messy, aves_syn)
+write.csv(aves_inat1, "Aves/aves_inat1.csv")
+#about 1000 lines missing, 162 unique ScientificNames
+
+aves_ebird1 <- left_join(aves_ebird_messy, aves_syn)
+write.csv(aves_ebird1, "Aves/aves_ebird1.csv")
+#about 2000 lines missing, 34 unique ScientificNames (179 inat and ebird combined)
+
+
+```
+

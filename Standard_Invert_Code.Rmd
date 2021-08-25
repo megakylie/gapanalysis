@@ -7,21 +7,22 @@ editor_options:
 
 This is an R Markdown for the Gap Analysis Invertebrate Graph and Table Making. This is the cleaned up code from my first run with Hymenoptera, this code should be able to be used with all the datasets for each Order with little adjustment. 
 
-#Includes: Diptera, Mollusks, Chilopoda, Diplopoda, Blattodea, Odonata
+Includes: Diptera, Mollusks, Chilopoda, Diplopoda, Blattodea, Odonata
 
-# Diptera 
-
-### Dip Step 1. Download Packages and Import Data
-```{r setup}
-knitr::opts_chunk$set(echo = TRUE)
-
+#Packages to Download 
+```{r Download Packages}
 # load packages
 library(tidyverse)
 library(lubridate)
 library(ggplot2)
-library(plyr)
 library(dplyr)
 library(RColorBrewer)
+```
+
+# Diptera 
+
+### Dip Step 1. Download Packages *above* and Import Data
+```{r setup}
 
 dip_inat <- read_csv("diptera/dip_inat.csv")
 dip_lacm <- read_csv("diptera/dip_lacm.csv")
@@ -80,8 +81,8 @@ dip_islandsum <- dip_master %>%
 
 dip_island <- ggplot(data = dip_islandsum, aes(x = samples, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
-  labs(x ="Island", 
-       y = "Number of Diptera Specimens Collected",
+  labs(y ="Island", 
+       x = "Number of Diptera Specimens Sampled",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,1200), expand = c(0,0)) +
@@ -100,8 +101,8 @@ dip_islandprop = dip_islandsum2 %>% group_by(island) %>% mutate(by_area = sample
 
 dip_island_prop <- ggplot(data = dip_islandprop, aes(x = by_area, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
-  labs(x ="Island", 
-       y = "Diptera Specimens Collected/Island Area (km^2)",
+  labs(y ="Island", 
+       x = "Diptera Specimens Sampled/Island Area (km^2)",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,70), expand = c(0,0)) +
@@ -228,7 +229,8 @@ mol_chis_combine <- mol_chis %>%
 
 mol_master = rbind(mol_inat_combine, mol_chis_combine) %>%
   # reorder the island names to show up N -> S on list
-  mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente"))
+  mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente")) %>%
+  rename(order= "acceptedOrder")
 
 ```
 
@@ -245,8 +247,8 @@ mol_islandsum <- na.omit(subset(mol_islandsum, select = c(island, samples, sourc
 
 mol_island <- ggplot(data = mol_islandsum, aes(x = samples, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
-  labs(x ="Island", 
-       y = "Number of Mollusk Specimens Sampled",
+  labs(y ="Island", 
+       x = "Number of Mollusk Specimens Sampled",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,900), expand = c(0,0)) +
@@ -265,8 +267,8 @@ mol_islandprop = mol_islandsum2 %>% group_by(island) %>% mutate(by_area = sample
 
 mol_island_prop <- ggplot(data = mol_islandprop, aes(x = by_area, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
-  labs(x ="Island", 
-       y = "Mollusk Specimens Sampled/Island Area (km^2)",
+  labs(y ="Island", 
+       x = "Mollusk Specimens Sampled/Island Area (km^2)",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,65), expand = c(0,0)) +
@@ -356,7 +358,6 @@ library(RColorBrewer)
 chilo_inat <- read_csv("chilopoda/chilo_inat.csv")
 ```
 
-
 ###Chilo Step 2. Combine datasets 
 ```{r selecting and combining}
 #inat doesn't have order listed..would need to add 
@@ -365,7 +366,8 @@ chilo_inat_combine <- chilo_inat %>%
 
 chilo_master = rbind(chilo_inat_combine) %>%
   # reorder the island names to show up N -> S on list
-  mutate(island = fct_relevel(island, "Santa Cruz", "Anacapa", "Santa Catalina", "San Nicolas", "San Clemente"))
+  mutate(island = fct_relevel(island, "Santa Cruz", "Anacapa", "Santa Catalina", "San Nicolas", "San Clemente")) %>%
+  rename(order = "acceptedOrder")
 
 ```
 
@@ -384,12 +386,12 @@ chilo_islandsum <- chilo_master %>%
 
 chilo_island <- ggplot(data = chilo_islandsum, aes(x = samples, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
-  labs(x ="Island", 
-       y = "Number of Chilopoda Specimens Sampled",
+  labs(y ="Island", 
+       x = "Number of Chilopoda Specimens Sampled",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,45), expand = c(0,0)) +
-   scale_fill_manual(values=c("#CC3300"))
+   scale_fill_manual(values=c("#FF5500"))
 
 chilo_island 
 
@@ -404,12 +406,12 @@ chilo_islandprop = chilo_islandsum2 %>% group_by(island) %>% mutate(by_area = sa
 
 chilo_island_prop <- ggplot(data = chilo_islandprop, aes(x = by_area, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
-  labs(x ="Island", 
-       y = "Chilopoda Specimens Sampled/Island Area (km^2)",
+  labs(y ="Island", 
+       x = "Chilopoda Specimens Sampled/Island Area (km^2)",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,0.5), expand = c(0,0)) +
-  scale_fill_manual(values=c("#CC3300"))
+  scale_fill_manual(values=c("#FF5500"))
 
 chilo_island_prop 
 
@@ -424,7 +426,7 @@ chilo_year = ggplot(chilo_master, aes(x=year, fill=source)) +
   theme_bw() + 
   scale_y_continuous(expand=c(0,0), limits = c(0, 30)) + 
   scale_x_continuous(limits=c(2000, 2022),   breaks=c(2000, 2005, 2010, 2015, 2020)) + 
-  labs(x="Year", y ="Number of Chilopoda Specimens Sampled") +  scale_fill_manual(values=c("#CC3300"))
+  labs(x="Year", y ="Number of Chilopoda Specimens Sampled") +  scale_fill_manual(values=c("#FF5500"))
 
 chilo_year
 
@@ -471,17 +473,8 @@ chilotab2
 
 #
 # Diplopoda
+###Diplo Step 1. Download Packages *above* and Import Data
 
-###Diplo Step 1. Download Packages and Import Data
-```{r packages}
-
-# load packages
-library(tidyverse)
-library(lubridate)
-library(ggplot2)
-library(dplyr)
-library(RColorBrewer)
-```
 
 ```{r data}
 diplo_inat <- read_csv("diplopoda/diplo_inat.csv")
@@ -489,7 +482,6 @@ diplo_lacm <- read_csv("diplopoda/diplo_lacm.csv")
 diplo_chis <- read_csv("diplopoda/diplo_chis.csv")
 
 ```
-
 
 ###Diplo Step 2. Combine datasets 
 ```{r selecting and combining}
@@ -506,7 +498,8 @@ diplo_lacm_combine <- diplo_lacm %>%
 
 diplo_master = rbind(diplo_inat_combine, diplo_chis_combine, diplo_lacm_combine) %>%
   # reorder the island names to show up N -> S on list
-  mutate(island = fct_relevel(island, "Santa Cruz", "Anacapa", "Santa Catalina", "San Nicolas", "San Clemente"))
+  mutate(island = fct_relevel(island, "Santa Cruz", "Anacapa", "Santa Catalina", "San Nicolas", "San Clemente")) %>%
+  rename(order = "acceptedOrder")
 
 ```
 
@@ -524,8 +517,8 @@ diplo_islandsum <- diplo_master %>%
 
 diplo_island <- ggplot(data = diplo_islandsum, aes(x = samples, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
-  labs(x ="Island", 
-       y = "Number of Diplopoda Specimens Sampled",
+  labs(y ="Island", 
+       x = "Number of Diplopoda Specimens Sampled",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,15), expand = c(0,0)) +
@@ -544,8 +537,8 @@ diplo_islandprop = diplo_islandsum2 %>% group_by(island) %>% mutate(by_area = sa
 
 diplo_island_prop <- ggplot(data = diplo_islandprop, aes(x = by_area, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
-  labs(x ="Island", 
-       y = "Diplopoda Specimens Sampled/Island Area (km^2)",
+  labs(y ="Island", 
+       x = "Diplopoda Specimens Sampled/Island Area (km^2)",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,4), expand = c(0,0)) +
@@ -626,22 +619,11 @@ ddply(dip_master_bold, "source", summarise, n = length(acceptedName))
 
 #
 # Blattodea
-###Bla Step 1. Download Packages and Import Data
-```{r packages}
-# load packages
-library(tidyverse)
-library(lubridate)
-library(ggplot2)
-library(dplyr)
-library(RColorBrewer)
-```
-
+###Bla Step 1. Download Packages *above* and Import Data
 ```{r data}
 bla_inat <- read_csv("blattodea/bla_inat.csv")
 bla_chis <- read_csv("blattodea/bla_chis.csv")
 ```
-
-
 ###Bla Step 2. Combine datasets 
 ```{r selecting and combining}
 #inat doesn't have order listed..would need to add 
@@ -655,7 +637,8 @@ bla_chis_combine <- bla_chis %>%
 
 bla_master = rbind(bla_inat_combine, bla_chis_combine) %>%
   # reorder the island names to show up N -> S on list
-  mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente"))
+  mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente")) %>%
+  rename(order = "acceptedOrder")
 
 ```
 
@@ -671,8 +654,8 @@ bla_islandsum <- bla_master %>%
 
 bla_island <- ggplot(data = bla_islandsum, aes(x = samples, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
-  labs(x ="Island", 
-       y = "Number of Blattodea Specimens Sampled",
+  labs(y ="Island", 
+       x = "Number of Blattodea Specimens Sampled",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,10), expand = c(0,0)) +
@@ -691,8 +674,8 @@ bla_islandprop = bla_islandsum2 %>% group_by(island) %>% mutate(by_area = sample
 
 bla_island_prop <- ggplot(data = bla_islandprop, aes(x = by_area, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
-  labs(x ="Island", 
-       y = "Blattodea Specimens Sampled/Island Area (km^2)",
+  labs(y ="Island", 
+       x = "Blattodea Specimens Sampled/Island Area (km^2)",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,0.25), expand = c(0,0)) +
@@ -760,30 +743,22 @@ table(bla_inat_combine$acceptedFamily)
 
 #
 # Odonanta
-###Odo Step 1. Download Packages and Import Data
-```{r packages}
-# load packages
-library(tidyverse)
-library(lubridate)
-library(ggplot2)
-library(dplyr)
-library(RColorBrewer)
-```
+###Odo Step 1. Download Packages *above* and Import Data
 
 ```{r data}
 odo_inat <- read_csv("odonata/odo_inat.csv")
 odo_chis <- read_csv("odonata/odo_chis.csv")
 ```
 
-
 ###Odo Step 2. Combine datasets 
 ```{r selecting and combining}
 odo_inat_combine <- odo_inat %>%
-  select(source, month, year, island, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude)
+  rename(order="acceptedOrder") %>%
+  select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude)
 
 odo_chis_combine <- odo_chis %>%
-  rename(latitude = "decimalLat", longitude="decimalLon") %>%
-  select(source, month, year, island, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude)
+  rename(order = "order_", latitude = "decimalLat", longitude="decimalLon") %>%
+  select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude)
 
 
 odo_master = rbind(odo_inat_combine, odo_chis_combine) %>%
@@ -805,8 +780,8 @@ odo_islandsum <- na.omit(subset(odo_islandsum, select = c(island, samples, sourc
 
 odo_island <- ggplot(data = odo_islandsum, aes(x = samples, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
-  labs(x ="Island", 
-       y = "Number of Odonata Specimens Sampled",
+  labs(x ="Number of Phasmidae Sampled", 
+       y = "Island",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,150), expand = c(0,0)) +
@@ -825,8 +800,8 @@ odo_islandprop = odo_islandsum2 %>% group_by(island) %>% mutate(by_area = sample
 
 odo_island_prop <- ggplot(data = odo_islandprop, aes(x = by_area, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
-  labs(x ="Island", 
-       y = "Odonata Specimens Sampled/Island Area (km^2)",
+  labs(y ="Island", 
+       x = "Odonata Specimens Sampled/Island Area (km^2)",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,1.25), expand = c(0,0)) +
@@ -878,8 +853,124 @@ ggsave(plot=odo_ismonth, filename="odonata/OdonataGraphs/odo_seasonal.png", heig
 ```{r Family by Source Table}
 odotab = table(odo_master$acceptedFamily)
 odotab = as.data.frame.table(odotab)
-write.csv(diplotab, "odonata/OdonataGraphs/odo_table.csv")
+write.csv(odotab, "odonata/OdonataGraphs/odo_table.csv")
 
 table(odo_chis_combine$acceptedFamily)
 table(odo_inat_combine$acceptedFamily)
+
+#unique name list 
+odotab2 = table(odo_master$acceptedName)
+odotab2 = as.data.frame.table(odotab2)
+write.csv(odotab2, "odonata/OdonataGraphs/odo_table2.csv")
 ```
+#
+# Phasmida
+###Phas Step 1. Download Packages *above* and Import Data
+
+```{r data}
+phas_inat <- read_csv("phasmida/phas_inat.csv")
+phas_chis <- read_csv("phasmida/phas_chis.csv")
+```
+
+###Phas Step 2. Combine datasets 
+```{r selecting and combining}
+phas_inat_combine <- phas_inat %>%
+  select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude)
+
+phas_chis_combine <- phas_chis %>%
+  rename(order = "order_", latitude = "decimalLat", longitude="decimalLon") %>%
+  select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude)
+
+
+phas_master = rbind(phas_inat_combine, phas_chis_combine) %>%
+  # reorder the island names to show up N -> S on list
+  mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente"))
+
+```
+
+###Phas Step. 3 Make Graphs! 
+
+#### Island Graph 
+```{r Graphing by island}
+
+phas_islandsum <- phas_master %>%
+  mutate(no_sample = 1) %>%
+  group_by(island, source) %>%
+  summarise(samples = sum(no_sample)) 
+phas_islandsum <- na.omit(subset(phas_islandsum, select = c(island, samples, source)))
+
+phas_island <- ggplot(data = phas_islandsum, aes(x = samples, y = fct_rev(island), fill = source)) + 
+  geom_bar(stat = "identity") +
+  labs(x ="Number of Phasmida Specimens Sampled", 
+       y = "Island",
+       fill = "Data Source") +
+  theme_bw() + 
+  scale_x_continuous(limits =c(0,8), expand = c(0,0)) +
+  scale_fill_brewer(palette = "Dark2")
+
+phas_island 
+
+ggsave(plot=phas_island, filename="phasmida/PhasmidaGraphs/phas_island.png", height=5, width=8, units="in", dpi=300)
+
+```
+
+```{r Graphing by island proportional}
+island_size = read_csv("island_size.csv")
+phas_islandsum2 = merge(phas_islandsum, island_size, by="island", all.y=TRUE)
+phas_islandprop = phas_islandsum2 %>% group_by(island) %>% mutate(by_area = samples/island_size_85)
+
+phas_island_prop <- ggplot(data = phas_islandprop, aes(x = by_area, y = fct_rev(island), fill = source)) + 
+  geom_bar(stat = "identity") +
+  labs(y ="Island", 
+       x = "Phasmida Specimens Sampled/Island Area (km^2)",
+       fill = "Data Source") +
+  theme_bw() + 
+  scale_x_continuous(limits =c(0,1), expand = c(0,0)) +
+  scale_fill_brewer(palette = "Dark2")
+
+phas_island_prop 
+
+ggsave(plot=phas_island_prop, filename="phasmida/PhasmidaGraphs/odo_island_prop.png", height=5, width=8, units="in", dpi=300)
+```
+
+
+#### Temporal Graph
+```{r Graphing by year}
+phas_year = ggplot(phas_master, aes(x=year, fill=source)) + 
+  geom_bar() + 
+  theme_bw() + 
+  scale_y_continuous(expand=c(0,0), limits = c(0, 5)) + 
+  scale_x_continuous(limits=c(1930, 2025),   breaks=c(1930, 1945, 1960, 1975, 1990, 2005, 2020)) + 
+  labs(x="Year", y ="Number of Phasmida Specimens Sampled") +   scale_fill_brewer(palette = "Dark2")
+
+phas_year
+
+ggsave(plot=phas_year, filename="phasmida/PhasmidaGraphs/phas_year.png", height=5, width=9, units="in", dpi=300)
+
+```
+
+####Seasonal Graph 
+
+```{r Graphing by month}
+
+# by month and island 
+phas_master$month <- as.factor(phas_master$month)
+phas_month <- na.omit(subset(phas_master, select = c(island, month)))
+
+phas_ismonth <- ggplot(phas_month, aes(x=month, fill=month)) + 
+  geom_bar() + 
+  theme_bw() + 
+  scale_y_continuous(expand=c(0,0)) +
+  labs(x="Phasmida Sampling per Island by Month", y ="Number of Specimens Sampled") +  
+  facet_wrap(vars(island), nrow=2, scales="free_y")
+
+phas_ismonth 
+
+ggsave(plot=phas_ismonth, filename="phasmida/PhasmidaGraphs/phas_seasonal.png", height=5, width=9, units="in", dpi=300)
+
+```
+
+###Phas Step 4. Make Tables 
+```{r Family by Source Table}
+write.csv(phas_master, "phasmida/PhasmidaGraphs/phas_master.csv")
+
