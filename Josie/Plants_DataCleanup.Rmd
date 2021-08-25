@@ -480,7 +480,8 @@ plants_keep <- plants_nonisl_clean %>%
          country, stateProvince, county, municipality, locality, isl_name,
          decimalLatitude, decimalLongitude, geodeticDatum,
          id, institutionCode, collectionCode, occurrenceID, basisOfRecord, catalogNumber,
-         scientificNameAuthorship, identifiedBy, dateIdentified, recordedBy, associatedCollectors)
+         scientificNameAuthorship, identifiedBy, dateIdentified, recordedBy, associatedCollectors) %>%
+  filter(institutionCode != "iNaturalist")
 
 write_csv(plants_keep, "Josie/Data/DraftData_20210823.csv")
 ```
