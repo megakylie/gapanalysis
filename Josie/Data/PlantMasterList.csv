@@ -31,12 +31,14 @@ Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Acmispon argophyllus,Acmispo
 Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lotus argophyllus,Acmispon argophyllus,12,,,,,Elim,,,,,,,,
 Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lotus argophyllus var. adsurgens,Acmispon argophyllus var. adsurgens,14,,,,,Keep,,,,,,,1,
 Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Acmispon argophyllus var. adsurgens,Acmispon argophyllus var. adsurgens,33,,,,,Keep,,,,,,,1,
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lotus argophyllus argenteus,Lotus argophyllus argenteus,,Acmispon argophyllus var. argenteus,,,,Keep,,1,,,1,1,1,1
 Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lotus argophyllus var. ornithopus,Acmispon argophyllus var. argenteus,23,,,,,Keep,,1,,,1,1,1,1
 Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lotus argophyllus var. argenteus,Acmispon argophyllus var. argenteus,40,,,,,Keep,,1,,,1,1,1,1
 Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lotus argophyllus subsp. ornithopus,Acmispon argophyllus var. argenteus,86,,,,,Keep,,1,,,1,1,1,1
 Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Acmispon argophyllus var. argenteus,Acmispon argophyllus var. argenteus,246,,,,,Keep,,1,,,1,1,1,1
 Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lotus argophyllus var. argophyllus,Acmispon argophyllus var. argophyllus,2,,,,,Elim,,,,,,,,
 Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Acmispon argophyllus var. argophyllus,Acmispon argophyllus var. argophyllus,16,,,,,Elim,,,,,,,,
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lotus argophyllus niveus,Lotus argophyllus niveus,,Acmispon argophyllus var. niveus,,,,Keep,,,1,,,,,
 Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lotus argophyllus subsp. niveus,Acmispon argophyllus var. niveus,2,,,,,Keep,,,1,,,,,
 Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lotus argophyllus var. niveus,Acmispon argophyllus var. niveus,15,,,,,Keep,,,1,,,,,
 Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Acmispon argophyllus var. niveus,Acmispon argophyllus var. niveus,58,,,,,Keep,,,1,,,,,
@@ -102,6 +104,7 @@ Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Amblyopappus pusillus,Am
 Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Ambrosia acanthicarpa,Ambrosia acanthicarpa,3,,,,,Keep,,,,,,,,1
 Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Ambrosia chamissonis var. bipinnatisecta,Ambrosia chamissonis,2,,,,,Keep,1,1,1,1,,1,1,1
 Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Franseria chamissonis subsp. bipinnatisecta,Ambrosia chamissonis,2,,,,,Keep,1,1,1,1,,1,1,1
+,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Ambrosia chamissonis var. chamissonis,Ambrosia chamissonis var. chamissonis,,Ambrosia chamissonis,,,,Keep,1,1,1,1,,1,1,1
 Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Ambrosia chamissonis,Ambrosia chamissonis,292,,,,,Keep,1,1,1,1,,1,1,1
 Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Ambrosia psilostachya,Ambrosia psilostachya,49,,,,,Keep,1,1,1,,,1,1,1
 Plantae,Tracheophyta,Magnoliopsida,Myrtales,Lythraceae,Ammannia robusta,Ammannia robusta,2,,,,,Keep,,,,,,,,1
@@ -546,7 +549,10 @@ Plantae,Tracheophyta,Magnoliopsida,Solanales,Convolvulaceae,Cressa truxillensis,
 Plantae,Tracheophyta,Magnoliopsida,Solanales,Convolvulaceae,Cressa truxillensis var. vallicola,Cressa truxillensis var. vallicola,5,,,,,Elim,,,,,,,,
 Plantae,Tracheophyta,Magnoliopsida,Malvales,Cistaceae,Helianthemum greenei,Crocanthemum greenei,15,,,,,Keep,1,1,1,,,,,1
 Plantae,Tracheophyta,Magnoliopsida,Malvales,Cistaceae,Helianthemum scoparium var. vulgare,Crocanthemum scoparium,16,,,,,Keep,,1,1,,,,1,1
+Plantae,Tracheophyta,Magnoliopsida,Malvales,Cistaceae,Helianthemum scoparium var. scoparium,Helianthemum scoparium var. scoparium,,Crocanthemum scoparium,,,,Keep,,1,1,,,,1,1
 Plantae,Tracheophyta,Magnoliopsida,Malvales,Cistaceae,Helianthemum scoparium,Crocanthemum scoparium,59,,,,,Keep,,1,1,,,,1,1
+Plantae,Tracheophyta,Magnoliopsida,Malvales,Cistaceae,Crocanthemum scoparium var. scoparium,Crocanthemum scoparium var. scoparium,,Crocanthemum scoparium,,,,Keep,,1,1,,,,1,1
+Plantae,Tracheophyta,Magnoliopsida,Malvales,Cistaceae,Crocanthemum scoparium var. vulgare,Crocanthemum scoparium var. vulgare,,Crocanthemum scoparium,,,,Keep,,1,1,,,,1,1
 Plantae,Tracheophyta,Magnoliopsida,Crossosomatales,Crossosomataceae,Crossosoma californica,Crossosoma californicum,8,,,,,Keep,,,,,,,1,1
 Plantae,Tracheophyta,Magnoliopsida,Crossosomatales,Crossosomataceae,Crossosoma californicum,Crossosoma californicum,282,,,,,Keep,,,,,,,1,1
 Plantae,Tracheophyta,Magnoliopsida,Malpighiales,Euphorbiaceae,Croton californicus,Croton californicus,1,,,,,Keep,,,,,,,,1
@@ -775,6 +781,7 @@ Plantae,Tracheophyta,Magnoliopsida,Lamiales,Phrymaceae,Erythranthe cardinalis,Er
 ,,,,Phrymaceae,,Erythranthe nasuta,0,,missing from dataset - josie to check ,,,Keep,,,1,,,,,
 Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Papaveraceae,Eschscholzia caespitosa,Eschscholzia caespitosa,12,,,,,Elim,,,,,,,,
 Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Papaveraceae,Eschscholzia californica var. maritima,Eschscholzia californica,8,,,,,Keep,1,1,1,,,1,1,1
+Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Papaveraceae,Eschscholzia californica var. californica,Eschscholzia californica var. californica,,Eschscholzia californica,,,,Keep,1,1,1,,,1,1,1
 Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Papaveraceae,Eschscholzia californica subsp. californica,Eschscholzia californica,10,,,,,Keep,1,1,1,,,1,1,1
 Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Papaveraceae,Eschscholzia californica var. peninsularis,Eschscholzia californica,28,,,,,Keep,1,1,1,,,1,1,1
 Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Papaveraceae,Eschscholzia californica,Eschscholzia californica,298,,,,,Keep,1,1,1,,,1,1,1
@@ -864,6 +871,7 @@ Plantae,Tracheophyta,Magnoliopsida,Gentianales,Rubiaceae,Galium californicum sub
 Plantae,Tracheophyta,Magnoliopsida,Gentianales,Rubiaceae,Galium californicum subsp. miguelense,Galium californicum subsp. miguelense,45,,,,,Keep,1,1,,,,,,
 Plantae,Tracheophyta,Magnoliopsida,Gentianales,Rubiaceae,Galium murale,Galium murale,3,,,,,Keep,,,,,,,,1
 Plantae,Tracheophyta,Magnoliopsida,Gentianales,Rubiaceae,Galium nuttallii,Galium nuttallii,74,Galium nuttallii subsp. insulare,,,,Keep,,1,1,,,,,1
+Plantae,Tracheophyta,Magnoliopsida,Gentianales,Rubiaceae,Galium nuttallii var. insulare,Galium nuttallii var. insulare,74,Galium nuttallii subsp. insulare,,,,Keep,,1,1,,,,,1
 Plantae,Tracheophyta,Magnoliopsida,Gentianales,Rubiaceae,Galium nuttallii subsp. insulare,Galium nuttallii subsp. insulare,236,,,,,Keep,,1,1,,,,,1
 Plantae,Tracheophyta,Magnoliopsida,Gentianales,Rubiaceae,Galium parisiense,Galium parisiense,67,,,,,Keep,,1,,,,,,1
 Plantae,Tracheophyta,Magnoliopsida,Gentianales,Rubiaceae,Galium porrigens,Galium porrigens var. porrigens,9,,,,,Keep,,1,1,,,,,1
@@ -1149,9 +1157,11 @@ Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lupinus sparsiflorus subsp. 
 Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lupinus subvexus,Lupinus microcarpus,1,,,,,Keep,,1,1,,,,,
 Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lupinus subvexus var. subvexus,Lupinus microcarpus,2,,,,,Keep,,1,1,,,,,
 Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lupinus densiflorus var. palustris,Lupinus microcarpus,3,,,,,Keep,,1,1,,,,,
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lupinus microcarpus subsp. microcarpus,Lupinus microcarpus subsp. microcarpus,47,Lupinus microcarpus,,,,Keep,,1,1,,,,,
 Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lupinus microcarpus,Lupinus microcarpus,47,,,,,Keep,,1,1,,,,,
 Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lupinus succulentus var. succulentus,Lupinus succulentus,5,,,,,Keep,1,1,1,1,,1,1,1
 Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lupinus succulentus,Lupinus succulentus,328,,,,,Keep,1,1,1,1,,1,1,1
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lupinus truncatus var. truncatus,Lupinus truncatus var. truncatus,,Lupinus truncatus,,,,Keep,,1,1,1,,,1,1
 Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lupinus truncatus,Lupinus truncatus,276,,,,,Keep,,1,1,1,,,1,1
 Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lupinus variicolor,Lupinus variicolor,1,,,,,Keep,1,,,,,,,
 Plantae,Tracheophyta,Magnoliopsida,Poales,Juncaceae,Luzula spicata,Luzula spicata,1,,,,,Elim,,,,,,,,
