@@ -73,7 +73,7 @@ plants_isl <- plants_isl1 %>%
          isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "geronimo"), "Geronimo", isl_name)) %>%
   filter(!is.na(isl_name)) %>%
   filter(isl_name == "San Nicolas" | isl_name == "Santa Catalina" | isl_name == "Santa Rosa" | isl_name == "Santa Barbara" | 
-           isl_name == "Anacapa" | isl_name == "Santa Cruz" | isl_name == "San Clemente" | isl_name == "San Miguel")
+           isl_name == "Anacapa" | isl_name == "Santa Cruz" | isl_name == "San Clemente" | isl_name == "San Miguel") 
 
 remove(plants_raw_1)
 remove(plants_raw_2)
@@ -86,15 +86,16 @@ In step 2, we'll remove any obvious horticulture species from the dataset and fi
 
 ```{r intial cleanup pass - plant data}
 plants_genus <- plants_isl %>%
-  filter(!is.na(scientificName),
-         !is.na(specificEpithet)) %>%
+  mutate(epithetfilter =  scientificName) %>%
+  separate(epithetfilter, sep = " ", into = c("genus_filter", "epithet_filter"), extra = "merge") %>%
+  filter(!is.na(epithet_filter)) %>%
   # fix poaceae - they need to chill tf out
   mutate(family = ifelse(family == "POACEAE", "Poaceae", family),
          scientificName = str_to_lower(scientificName)) %>%
   filter(phylum == "Tracheophyta")
 
 # isolate by-island species
-by_isl <- read_csv("Josie/byislsp.csv", col_types = cols(.default = "c")) %>%
+by_isl <- read_csv("Josie/Data/byislsp.csv", col_types = cols(.default = "c")) %>%
   rename(scientificName = old_name) %>%
   mutate(scientificName = str_to_lower(scientificName)) %>%
   dplyr::select(scientificName, assign_by_island)
@@ -176,15 +177,21 @@ plants_combo4_orders <- plants_combo4 %>%
          family = ifelse(genus == "Athyrium", "Athyriaceae", family)) %>%
   rename(old_name = scientificName)
 
-plants_nonisl_initialclean <- plants_combo4_orders %>%
-  filter(Eliminate == "Keep")
+test <- plants_combo4_orders %>%
+  select(old_name, sciname_4, Eliminate) %>%
+  filter(is.na(sciname_4)) %>%
+  distinct()
 
 ```
+
 
 ### Main data cleanup by island
 After fixing synonyms and removing the major problem species, we also want to remove specimens that were assigned the incorrect island based on their known occurrences. 
 
 ```{r cleanup for main islands by island}
+
+plants_nonisl_initialclean <- plants_combo4_orders %>%
+  filter(Eliminate == "Keep")
 
 SMI <- plants_nonisl_initialclean %>%
   filter(isl_name == "San Miguel",
@@ -483,7 +490,7 @@ plants_keep <- plants_nonisl_clean %>%
          scientificNameAuthorship, identifiedBy, dateIdentified, recordedBy, associatedCollectors) %>%
   filter(institutionCode != "iNaturalist")
 
-write_csv(plants_keep, "Josie/Data/DraftData_20210823.csv")
+write_csv(plants_keep, "Josie/Data/DraftData_20210825.csv")
 ```
 
 
