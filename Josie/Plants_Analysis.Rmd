@@ -12,12 +12,14 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(raster)
 library(sf)
+library(sp)
 library(rgdal)
 library(raster)
 library(rgeos)
 library(CoordinateCleaner)
 library(scrubr)
 library(scales)
+library(rasterVis)
 
 ### --- Set functions for code --- ###
 makeAccum <- function(x,ci,nm){
@@ -59,7 +61,12 @@ text(0,length(unique(x)),labels=nm,adj=0,cex=1.5)
 ```
 
 ```{r import data}
-data <- read_csv("Josie/Data/DraftData_20210823.csv")
+data <- read_csv("Josie/Data/DraftData_20210823.csv")%>%
+  dplyr::filter(institutionCode != "iNaturalist")
+
+all_data <- data 
+  rename(Latitude = decimalLatitude,
+         Longitude = decimalLongitude) 
 ```
 
 # File Goal
@@ -69,15 +76,11 @@ To use the plant data to produce an analysis of where on the islands plants have
 # Summaries and Barcharts
 
 # Island heat map
-```{r}
-
+```{r Cleaning up data}
 # create a dataframe of all complete cases of name, lat/long, island, and year
-all_data <- data %>%
-  filter(institutionCode != "iNaturalist") %>%
-  dplyr::select(Sci_Name, isl_name, decimalLatitude, decimalLongitude, year) %>%
-  rename(Latitude = decimalLatitude,
-         Longitude = decimalLongitude) %>%
-  filter(!is.na(Latitude), !is.na(Longitude))
+
+all_data_coords <- all_data %>%
+  dplyr::filter(!is.na(Latitude), !is.na(Longitude))
 
 ############### drop points with meaningless coords - this removes any specimens that have long/lats that are not in the vicinity of the islands
 
@@ -85,72 +88,75 @@ all_data <- data %>%
 
 ## JL: will do this with the coord cleaner package 
 
-flags <- clean_coordinates(x = all_data, lon = "Longitude", lat = "Latitude",
+flags <- clean_coordinates(x = all_data_coords, lon = "Longitude", lat = "Latitude",
                           species = "Sci_Name",
                           tests = c("capitals", "centroids", "equal","gbif", "institutions",
                                      "zeros"))
-all_data <- all_data[flags$.summary,] 
+all_data_coords <- all_data_coords[flags$.summary,] 
 
-all_data_coords <- all_data %>%
+all_data_coords <- all_data_coords %>%
   filter(Longitude <= -118, Longitude >= -120.5,
          Latitude <= 34.1, Latitude >= 32.7)
+
   
 plot(all_data_coords$Longitude, all_data_coords$Latitude, asp=1)
 
 # using Ben's modified code and a shapefile found online to isolate counties of interest, 
 # Albers projection is used in order to have grids in km^2
 
-ibis <- st_read("Heatmap_files/Master_IslandNames.shp")
-chis_ibis <- ibis %>%
-  filter(Name %in% c("Santa Rosa", "Santa Cruz", "San Miguel", "Anacapa", "San Clemente", "Santa Barbara", "Santa Catalina", "San Nicolas"))
-
-ggplot(chis_ibis) +
-  geom_sf()
 
 counties <- readOGR("Heatmap_files", layer="cnty24k09_1_line")
-chis_counties<-counties[counties$NAME%in%c("Ventura", "Santa Barbara","Los Angeles","San Diego","Orange")]
-is.map<-crop(counties, extent(-1.5e+05,2.5e+05,-6e+05,-4e+05))
+chis_counties <- counties[counties$NAME%in%c("Ventura", "Santa Barbara","Los Angeles","San Diego","Orange")]
+is.map <- crop(counties, extent(-1.5e+05,2.5e+05,-6e+05,-4e+05))
 
 plot(is.map, col="black")
 rm(counties)
 rm(chis_counties)
 
-####### project long lat coords into Albers (island maps are in Albers)
+####### Project Long + Lat Coords into Albers (Island maps are in Albers)
 P4S.latlon <- CRS("+proj=longlat +datum=WGS84")
 new_proj <- "+proj=aea +lat_1=34 +lat_2=40.5 +lat_0=0 +lon_0=-120 +x_0=0 +y_0=-4000000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
 
 sp <- SpatialPointsDataFrame(coords = cbind(as.numeric(all_data_coords$Longitude),
-                                            as.numeric(all_data_coords$Latitude)),
-                           data = all_data_coords, proj4string = P4S.latlon)
+                                            as.numeric(all_data_coords$Latitude)), 
+                             data = all_data_coords, proj4string = P4S.latlon)
 pointsX <- spTransform(sp, CRS(new_proj))
 
+
 # attach projected points to 'all_data'
-all_data_coords <- cbind(all_data_coords,pointsX@coords)
+all_data_coords1 <- cbind(all_data_coords,pointsX@coords) %>%
+  mutate(Lat_alb = coords.x2,
+         Lon_alb = coords.x1)
 
+### --- Remove things in the middle of the ocean --- ###
+  
+# Import island polygons
+ibis <- st_read("Heatmap_files/Master_Islands.shp")
 
-plot(is.map, col="gray50") +
-  points(all_data_coords$coords.x1, all_data_coords$coords.x2, cex=.3) 
+chis_ibis <- ibis %>%
+  filter(ISL_NAME %in% c("Santa Rosa", "Santa Cruz", "San Miguel", "Anacapa", "San Clemente", "Santa Barbara", "Santa Catalina", "San Nicolas")) 
 
-write_csv(all_data_coords, "Josie/Data/DraftData_Cleaner.csv")
+chis_ibis <- st_transform(chis_ibis, crs = st_crs(new_proj))
+
+# Remove points waaaaaay off of the islands, josie-style
+all_data_coords2 <- st_as_sf(all_data_coords1, coords = c("coords.x1", "coords.x2"), crs = new_proj)
+
+all_data_coords3 <- st_join(all_data_coords2, chis_ibis, join = st_intersects) %>%
+  filter(!is.na(ISL_NAME))
+
+ggplot(chis_ibis) +
+  geom_sf(data = all_data_coords3, color = "red", size = 0.3) +
+  geom_sf(fill = alpha("black", 0.2)) 
+
+write_csv(all_data_coords3, "Josie/Data/DraftData_SpatialClean.csv")
 
 ```
 
-
-
-```{r accumulation curves and grid}
+```{r accumulation curves}
 ###### Load data
 
-# 2 col matrix indicating which cells from islandRaster correspond to which island
-island.cells<-read.csv("Heatmap_files/islandCells.csv")
-
-# binary raster of the islands and coastline
-isl.rast<-raster("Heatmap_files/islandRaster.asc")
-
 # the cleaned specimen data
-occ <- read_csv("Josie/Data/DraftData_Cleaner.csv")
-
-# the xlim & ylim (in albers) for plotting each island
-plot.lims <- read.csv("Heatmap_files/islandPlotLimits.csv")
+occ <- read_csv("Josie/Data/DraftData_SpatialClean.csv") 
 
 isl.names <- c("Anacapa","Santa Cruz","Santa Rosa","San Miguel",
 "Santa Catalina","San Clemente","San Nicolas","Santa Barbara")
@@ -161,14 +167,14 @@ isl.names <- c("Anacapa","Santa Cruz","Santa Rosa","San Miguel",
 #                ci =c('r','s') for plotting smooth or rough 90% Confidence Intervals
 
 # make Accum is a custom function that is defined at the bottom of this file
-
-# k is a number 1:8 corresponding to isl.names (line 22)
+# k is a number 1:8 corresponding to isl.names
 k=1
 makeAccum(occ$Sci_Name[occ$isl_name==isl.names[k]],'r',nm=isl.names[k])
 
 ######### combined accumulation curve plot
-plot(0, 0, col=0, xlim=c(0,10000), ylim=c(0,650),
+plot(0, 0, col=0, xlim=c(0,19000), ylim=c(0,650),
      ylab="Richness", xlab="Number of collections")
+
 for(k in 1:8) {
 	x <- occ$Sci_Name[occ$isl_name == isl.names[k]]
 	resampling.result <- matrix(nrow=length(x), ncol=100)
@@ -188,28 +194,54 @@ for(k in 1:8) {
 	c(lowerCI,rev(upperCI)),col="grey90",border=0)	
 	lines(1:length(x),curve.mean,col=k)
 }
+
 legend("bottomright", legend=isl.names[1:8], 
-       lty=1, col=c(1:8))
+       lty=0.75, col=c(1:8))
 
+?legend
 ####### end combined accumulation curve
+```
 
+
+```{r grid}
 ################# Grid maps ############
+# Matrix indicating which cells from islandRaster correspond to which island
+island.cells <- read.csv("Heatmap_files/islandCells.csv")
 
+# binary raster of the islands and coastline
+isl.rast <- raster("Heatmap_files/islandRaster.asc")
+ 
+# Data
+occ <- read_csv("Josie/Data/DraftData_SpatialClean.csv") 
+
+# The xlim & ylim (in albers) for plotting each island
+plot.lims <- read.csv("Heatmap_files/islandPlotLimits.csv")
+
+# Lines for island edges
+counties <- readOGR("Heatmap_files", layer="cnty24k09_1_line")
+chis_counties <- counties[counties$NAME%in%c("Ventura", "Santa Barbara","Los Angeles","San Diego","Orange")]
+is.map <- crop(counties, extent(-1.5e+05,2.5e+05,-6e+05,-4e+05))
+
+
+isl.names <- c("Anacapa","Santa Cruz","Santa Rosa","San Miguel",
+"Santa Catalina","San Clemente","San Nicolas","Santa Barbara")
+
+### Analysis - Build Tables/Rasters
 # get cellIDs for each occurrence
-cellID <- cellFromXY(isl.rast,cbind(occ$coords.x1, occ$coords.x2))
+cellID <- cellFromXY(isl.rast, xy = cbind(occ$Lon_alb, occ$Lat_alb))
 occ <- cbind(occ,cellID); rm(cellID)
 length(unique(occ$cellID))
 
 # make a big grid
 w <- which(!is.na(isl.rast[]))
-taxa <- sort(unique(occ$binom))
+taxa <- sort(unique(occ$Sci_Name))
 taxGrid <- matrix(nrow=length(taxa),ncol=length(w))
 colnames(taxGrid) <- w
 rownames(taxGrid) <- taxa
 taxGrid[] <- 0
 
 for(i in 1:dim(taxGrid)[1]){
-	spCells <- occ$cellID[occ$binom==taxa[i]]
+	spCells <- occ$cellID[occ$Sci_Name==taxa[i]]
 	for(j in 1:length(spCells)){
 		taxGrid[i,w %in% spCells[j]]<-taxGrid[i,w %in% spCells[j]]+1
 	}
@@ -221,77 +253,205 @@ binaryGrid[binaryGrid>0] <- 1
 
 # make corresponding rasters
 rich.rast <- isl.rast
-rich.rast[rich.rast==1] <- 0
+rich.rast[rich.rast == 1] <- 0
 rich.rast[w] <- colSums(binaryGrid)
 coll.rast <- isl.rast
-coll.rast[coll.rast==1] <- 0
+coll.rast[coll.rast == 1] <- 0
 coll.rast[w] <- colSums(taxGrid)
 
 plot(rich.rast)
 plot(coll.rast)
 
-################# Calculate %empty and redundacy for islands ##
+### Calculate % Empty and Redundancy for Islands ##
+
 k=1
-is.cel <- island.cells$isl.rastCell[island.cells$island==isl.names[k]]
+is.cel <- island.cells$isl.rastCell[island.cells$island == isl.names[k]]
 rich.cel <- rich.rast[is.cel]
 coll.cel <- coll.rast[is.cel]
 
-coll.Summary <- matrix(nrow=8,ncol=9)
-# Red=  1-R/N
+k=2
+is.cel<-island.cells$isl.rastCell[island.cells$island==isl.names[k]]
+rich.cel<-rich.rast[is.cel]
+coll.cel<-coll.rast[is.cel]
+
+k=3
+is.cel<-island.cells$isl.rastCell[island.cells$island==isl.names[k]]
+rich.cel<-rich.rast[is.cel]
+coll.cel<-coll.rast[is.cel]
+
+k=4
+is.cel<-island.cells$isl.rastCell[island.cells$island==isl.names[k]]
+rich.cel<-rich.rast[is.cel]
+coll.cel<-coll.rast[is.cel]
+
+k=5
+is.cel<-island.cells$isl.rastCell[island.cells$island==isl.names[k]]
+rich.cel<-rich.rast[is.cel]
+coll.cel<-coll.rast[is.cel]
+
+k=6
+is.cel<-island.cells$isl.rastCell[island.cells$island==isl.names[k]]
+rich.cel<-rich.rast[is.cel]
+coll.cel<-coll.rast[is.cel]
+
+k=7
+is.cel<-island.cells$isl.rastCell[island.cells$island==isl.names[k]]
+rich.cel<-rich.rast[is.cel]
+coll.cel<-coll.rast[is.cel]
+
+k=8
+is.cel<-island.cells$isl.rastCell[island.cells$island==isl.names[k]]
+rich.cel<-rich.rast[is.cel]
+coll.cel<-coll.rast[is.cel]
+
+
+coll.Summary<-matrix(nrow=8,ncol=9)
+
+# Red =  1-R/N
 rownames(coll.Summary) <- isl.names
 colnames(coll.Summary) <- c("totCells","totColls","totRich","Empty","perEmpty",
-"mnRich","mnColl","mnRedund","mnRedundwE")
-for(i in 1:7){
-	is.cel <- island.cells$isl.rastCell[island.cells$island == isl.names[i]]
-	rich.cel <- rich.rast[is.cel]
-	coll.cel <- coll.rast[is.cel]
-	coll.Summary[i, "totCells"] <- length(rich.cel)
-	coll.Summary[i, "totColls"] <- sum(coll.cel)
-	coll.Summary[i, "Empty"]<-length(which(rich.cel==0))
-	coll.Summary[i, "perEmpty"] <- round(length(which(rich.cel==0))/ 
-		length(rich.cel),3)
-	coll.Summary[i, "mnRich"] <- mean(rich.cel[rich.cel!=0])
-	coll.Summary[i, "mnColl"] <- mean(coll.cel[rich.cel!=0])
-	coll.Summary[i, "totRich"] <- length(unique( 
-		occ$binom[occ$island==isl.names[i]]))
+                            "mnRich","mnColl","mnRedund","mnRedundwE")
+for(i in 1:8){
+	is.cel<-island.cells$isl.rastCell[island.cells$island==isl.names[i]]
+	rich.cel<-rich.rast[is.cel]
+	coll.cel<-coll.rast[is.cel]
+	coll.Summary[i,"totCells"] <- length(rich.cel)
+	coll.Summary[i,"totColls"] <- sum(coll.cel)
+	coll.Summary[i,"Empty"] <- length(which(rich.cel==0))
+	coll.Summary[i,"perEmpty"] <- round(length(which(rich.cel==0))/length(rich.cel),3)
+	coll.Summary[i,"mnRich"] <- mean(rich.cel[rich.cel!=0])
+	coll.Summary[i,"mnColl"] <- mean(coll.cel[rich.cel!=0])
+	coll.Summary[i,"totRich"] <- length(unique(occ$Sci_Name[occ$isl_name==isl.names[i]]))
 	coll.Summary[i,"mnRedund"] <- round(mean(1-(rich.cel[rich.cel!=0]/coll.cel[rich.cel!=0])),3)
-	# coll.Summary[i,"mnRedundwE"] <- round(1/mean((coll.cel-
-	# 	rich.cel)),3)
+	coll.Summary[i,"mnRedundwE"] <- round(1/mean((coll.cel-rich.cel)),3)
 }
 
+sum_table <- as.data.frame(coll.Summary) %>%
+  rownames_to_column(var = "islands") %>%
+  select(islands, totRich)
+
 ######### Make Grid-based maps ##################
-colorfunc<-colorRampPalette(c("white","dodgerblue"))
-colRamp<-colorfunc(20)
+colorfunc <- colorRampPalette(c("gray90","cornflowerblue"))
+colRamp <- colorfunc(20)
 
 # richness
 i=1
-plot(rich.rast,col=colRamp,xlim=c(plot.lims[i,1]))
+plot(rich.rast, col=colRamp, xlim=c(50000,61000), ylim=c(-450000,-440000),
+     xaxt = "n", yaxt = "n") +
+  plot(is.map, add=T) +
+  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="sienna3", pch=19) 
+
+i=2
+plot(rich.rast, col = colRamp, xlim=c(5000,46000), ylim=c(-460000,-420000),
+     xaxt = "n", yaxt = "n") +
+  plot(is.map, add=T) +
+  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="sienna3", pch=19) 
+
+i=3
+plot(rich.rast, col=colRamp, xlim=c(-25000,5000), ylim=c(-470000,-430000),
+     xaxt = "n", yaxt = "n") +
+  plot(is.map, add=T) +
+  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="sienna3", pch=19) 
+
+i=4
+plot(rich.rast,col=colRamp,xlim=c(-45000,-25000),ylim=c(-450000,-430000),
+     xaxt = "n", yaxt = "n") +
+  plot(is.map, add=T) +
+  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="sienna3", pch=19)  
+
+i=5
+plot(rich.rast,col=colRamp,xlim=c(125000,165000),ylim=c(-530000,-500000),
+     xaxt = "n", yaxt = "n") +
+  plot(is.map, add=T) +
+  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="sienna3", pch=19)  
+
+i=6
+plot(rich.rast,col=colRamp,xlim=c(125000,160000),ylim=c(-580000,-550000),
+     xaxt = "n", yaxt = "n") +
+  plot(is.map, add=T) +
+  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="sienna3", pch=19) 
+
+i=7
+plot(rich.rast,col=colRamp,xlim=c(35000,58000),ylim=c(-540000,-520000),
+     xaxt = "n", yaxt = "n") +
+  plot(is.map, add=T) +
+  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="sienna3", pch=19) 
+
+i=8
+plot(rich.rast,col=colRamp,xlim=c(86000,94000),ylim=c(-508000,-500000),
+     xaxt = "n", yaxt = "n") +
+  plot(is.map, add=T) +
+  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="sienna3", pch=19)
+
+### Sampling intensity
+i=1
+plot(coll.rast, col=colRamp, xlim=c(50000,61000), ylim=c(-450000,-440000),
+     xaxt = "n", yaxt = "n") +
+  plot(is.map, add=T) +
+  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="sienna3", pch=19) 
+
+i=2
+plot(coll.rast, col = colRamp, xlim=c(5000,46000), ylim=c(-460000,-420000),
+     xaxt = "n", yaxt = "n") +
+  plot(is.map, add=T) +
+  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="sienna3", pch=19) 
+
+i=3
+plot(coll.rast, col=colRamp, xlim=c(-25000,5000), ylim=c(-470000,-430000),
+     xaxt = "n", yaxt = "n") +
+  plot(is.map, add=T) +
+  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="sienna3", pch=19) 
+
+i=4
+plot(coll.rast, col=colRamp,xlim=c(-45000,-25000),ylim=c(-450000,-430000),
+     xaxt = "n", yaxt = "n") +
+  plot(is.map, add=T) +
+  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="sienna3", pch=19)  
+
+i=5
+plot(coll.rast, col=colRamp,xlim=c(125000,165000),ylim=c(-530000,-500000),
+     xaxt = "n", yaxt = "n") +
+  plot(is.map, add=T) +
+  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="sienna3", pch=19)  
+
+i=6
+plot(coll.rast, col=colRamp,xlim=c(125000,160000),ylim=c(-580000,-550000),
+     xaxt = "n", yaxt = "n") +
+  plot(is.map, add=T) +
+  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="sienna3", pch=19) 
+
+i=7
+plot(coll.rast, col=colRamp,xlim=c(35000,58000),ylim=c(-540000,-520000),
+     xaxt = "n", yaxt = "n") +
+  plot(is.map, add=T) +
+  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="sienna3", pch=19) 
+
+i=8
+plot(coll.rast, col=colRamp,xlim=c(86000,94000),ylim=c(-508000,-500000),
+     xaxt = "n", yaxt = "n") +
+  plot(is.map, add=T) +
+  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="sienna3", pch=19)
+
+
 ```
 
 ```{r basic graphs}
+isl_size <- read_csv("Josie/Data/Isl_size.csv") %>%
+  rename(isl_name = island,
+         isl_size = island_size)
 
-occ <- occ %>%
-  filter(year > 1800)
+all_data_size <- left_join(all_data, isl_size)
 
-plants_islandsum <- occ %>%
+all_data_summary <- all_data_size %>%
+  filter(year > 1800) %>%
+  group_by(isl_name) %>%
+  summarise(sprich = n_distinct(Sci_Name))
+
+### By Island and Year
+plants_islandsum <- all_data_size %>%
   mutate(no_sample = 1) %>%
   group_by(isl_name, year) %>%
-  summarise(samples = sum(no_sample))
-
-plants_island_time <- ggplot(data = plants_islandsum, aes(y = samples, x = year, fill = isl_name)) + 
-  annotation_logticks() +
-  geom_bar(stat = "identity") +
-  labs(x ="Year", 
-       y = "Number of Specimens Collected",
-       fill = "Island") +
-  theme_bw() + 
-  theme(axis.text.x = element_text(angle = -45, hjust = 0.5, vjust = 0.25),
-        legend.position = "none",
-        strip.background = element_rect(fill = "white")) +
-  scale_y_log10(breaks = log_breaks(), expand = c(0,0)) +
-  scale_x_continuous(limits = c(1850,2025), expand = c(0,0)) +
-  scale_fill_brewer(palette = "Dark2") +
-  facet_wrap(~isl_name, ncol = 4)
+  summarise(samples = sum(no_sample)) 
 
 ggplot(data = plants_islandsum, aes(y = samples, x = year, fill = isl_name)) + 
   geom_bar(stat = "identity") +
@@ -302,14 +462,89 @@ ggplot(data = plants_islandsum, aes(y = samples, x = year, fill = isl_name)) +
   theme(axis.text.x = element_text(angle = -45, hjust = 0.5, vjust = 0.25),
         legend.position = "none",
         strip.background = element_rect(fill = "white")) +
-  scale_y_continuous(limits = c(0,1500), expand = c(0,0)) +
+  scale_y_continuous(expand = expansion(mult = c(0, .1))) +
+  scale_x_continuous(limits = c(1850,2025), expand = c(0,0)) +
+  scale_fill_brewer(palette = "Dark2") +
+  facet_wrap(~isl_name, ncol = 4, scales = "free_y")
+
+ggplot(data = plants_islandsum, aes(y = samples, x = year, fill = isl_name)) + 
+  geom_bar(stat = "identity") +
+  labs(x ="Year", 
+       y = "Number of Specimens Collected/km^2",
+       fill = "Island") +
+  theme_bw() + 
+  theme(axis.text.x = element_text(angle = -45, hjust = 0.5, vjust = 0.25),
+        legend.position = "none",
+        strip.background = element_rect(fill = "white")) +
+  scale_y_continuous(expand = expansion(mult = c(0, .1))) +
   scale_x_continuous(limits = c(1850,2025), expand = c(0,0)) +
   scale_fill_brewer(palette = "Dark2") +
   facet_wrap(~isl_name, ncol = 4)
 
-plants_island_time
+# ggsave(plants_island_time, filename = "Josie/Figures_Spec_Isl_Time", height = 1800, width = 2400, units = "px", dpi = 300)
 
-ggsave(plants_island_time, filename = "Josie/Figures_Spec_Isl_Time", height = 1800, width = 2400, units = "px", dpi = 300)
+### By Month
+by_month <- all_data_size %>%
+  filter(month > 0) %>%
+  mutate(no_sample = 1) %>%
+  group_by(month, isl_name, isl_size) %>%
+  summarise(samples = sum(no_sample)) %>%
+  ungroup() %>%
+  mutate(sampl_per_area = samples/isl_size)
+
+ggplot(by_month, aes(x = month, y = samples, fill = isl_name)) + 
+  geom_bar(stat = "identity") + 
+  theme_bw() +  
+  labs(x="Month", y ="Number of Specimens Samples") +
+  theme(legend.position = "none",
+        strip.background = element_rect(fill = "white")) +
+  scale_y_continuous(expand = expansion(mult = c(0, .1))) +
+  scale_x_continuous(breaks = seq(1, 12, by=1)) +
+  scale_fill_brewer(palette = "Dark2") +
+  facet_wrap(~isl_name, ncol = 4, scales="free_y")  
+
+ggplot(by_month, aes(x = month, y = sampl_per_area, fill = isl_name)) + 
+  geom_bar(stat = "identity") + 
+  theme_bw() +  
+  labs(x="Month", y ="Number of Specimens Samples per km^2") +
+  theme(legend.position = "none",
+        strip.background = element_rect(fill = "white")) +
+  scale_y_continuous(expand = expansion(mult = c(0, .1))) +
+  scale_x_continuous(breaks = seq(1, 12, by=1)) +
+  scale_fill_brewer(palette = "Dark2") +
+  facet_wrap(~isl_name, ncol = 4, scales="free_y")
+  
+
+
+### By last time collected
+last_coll_date <- all_data_size %>%
+  group_by(order_final, family_final, Sci_Name, isl_name) %>%
+  summarise(max(year)) %>%
+  rename(last_seen = "max(year)") %>%
+  ungroup() %>%
+  mutate(year_since_seen = 2021 - last_seen) %>%
+  filter(year_since_seen >= 60) 
+
+missing60yrs <- last_coll_date %>%
+  distinct(Sci_Name) %>% dplyr::select(Sci_Name)
+
+data_60yr <- inner_join(all_data_size, missing60yrs) %>%
+  group_by(order_final, family_final, Sci_Name, isl_name) %>%
+  summarise(max(year)) %>%
+  rename(last_seen = "max(year)") %>%
+  spread(isl_name, last_seen)
+write_csv(data_60yr, "Josie/ForMatt/table_60yr.csv")
+
+ggplot(last_coll_date, aes(y = family_final, x = n, fill = order_final)) + 
+  geom_bar(stat = "identity") + 
+  theme_bw() +  
+  labs(x="Number of taxa not seen in >35 years", y ="Family") +
+  theme(legend.position = "none",
+        strip.background = element_rect(fill = "white"),
+        axis.text.x = element_text(angle = -45, hjust = 0.5, vjust = 0.25)) +
+  scale_x_continuous(limits = c(0,19), breaks = seq(0, 18, 3), expand = c(0, 0)) +
+  scale_y_discrete(limits = rev) +
+  facet_wrap(~isl_name, ncol = 8)
 
 
 ```
