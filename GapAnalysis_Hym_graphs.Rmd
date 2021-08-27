@@ -93,6 +93,28 @@ islandplot = ggplot(data = mastersynisland, aes(x = fct_infreq(island), fill=sou
 islandplot = islandplot + theme_bw() + labs(x="Island", y= "Number of Specimens Sampled") 
 islandplot = islandplot + coord_flip() + scale_y_continuous(limits = c(0, 10200), expand=c(0,0))
 islandplot
+
+hym_islandsum <- hym_master_syn %>%
+  mutate(no_sample = 1) %>%
+  group_by(island, source) %>%
+  summarise(samples = sum(no_sample))
+
+island_size = read_csv("island_size.csv")
+hym_island = merge(hym_islandsum, island_size, by="island", all.y=TRUE)
+hym_islandprop = hym_island %>% group_by(island) %>% mutate(by_area = samples/island_size_85)
+
+hym_island_prop <- ggplot(data = hym_islandprop, aes(x = by_area, y = fct_rev(island), fill = source)) + 
+  geom_bar(stat = "identity") +
+  labs(x ="Island", 
+       y = "Number of Specimens Collected Proportional to Island Size",
+       fill = "Data Source") +
+  theme_bw() + 
+  scale_x_continuous(limits =c(0,70), expand = c(0,0)) +
+  scale_fill_brewer(palette = "Dark2")
+
+hym_island_prop 
+
+ggsave(plot=hym_island_prop, filename="diptera/DipteraGraphs/hym_island_prop.png", height=5, width=8, units="in", dpi=300)
 ```
 
 ##Graphing the temporal gaps in collections (mastersyb = database)
@@ -296,3 +318,92 @@ hymsp2 = unique(c(as.character(mastersyn$acceptedName)))
 
 ```
 
+
+##Hym Step. 3 Make Graphs! New Standardized code with edits 
+
+### Island Graph 
+```{r Graphing by island}
+
+ hym_islandsum <- mastersyn %>%
+   mutate(no_sample = 1) %>%
+   group_by(island, source) %>%
+   summarise(samples = sum(no_sample)) %>%
+   filter(!is.na(island)) %>%
+   ungroup() %>%
+   mutate(source2 = fct_relevel(source, "Cal-IBIS", "iNaturalist", "LACM", "Bohart"))
+
+hym_islandsum = hym_islandsum[c(2:33),] 
+
+hym_island <- ggplot(data = hym_islandsum, aes(x = samples, y = fct_rev(island), fill = source)) + 
+  geom_bar(stat = "identity") +
+  labs(y ="Island", 
+       x = "Number of Hymenoptera Specimens Sampled",
+       fill = "Data Source") +
+  theme_bw() + 
+  scale_x_continuous(limits =c(0,11000), expand = c(0,0)) +
+  scale_fill_brewer(palette = "Dark2")
+
+hym_island 
+
+ggsave(plot=hym_island, filename="hymenoptera/HymenopteraGraphs/hym_island.png", height=5, width=8, units="in", dpi=300)
+
+```
+
+```{r Graphing by island proportional}
+island_size = read_csv("island_size.csv")
+hym_islandsum2 = merge(hym_islandsum, island_size, by="island", all.y=TRUE)
+hym_islandprop = hym_islandsum2 %>% group_by(island) %>% mutate(by_area = samples/island_size_85)
+
+hym_island_prop <- ggplot(data = hym_islandprop, aes(x = by_area, y = fct_rev(island), fill = source2)) + 
+  geom_bar(stat = "identity") +
+  labs(y ="Island", 
+       x = "Hymenoptera Specimens Sampled/Island Area (km^2)",
+       fill = "Data Source") +
+  theme_bw() + 
+  scale_x_continuous(limits =c(0,150), expand = c(0,0)) +
+  scale_fill_brewer(palette = "Dark2")
+
+hym_island_prop 
+
+ggsave(plot=hym_island_prop, filename="hymenoptera/HymenopteraGraphs/hym_island_prop.png", height=5, width=8, units="in", dpi=300)
+```
+
+
+### Temporal Graph
+```{r Graphing by year}
+
+hymyear =  mastersyn %>% mutate(source2 = fct_relevel(source, "Cal-IBIS", "iNaturalist", "LACM", "Bohart"))
+
+hym_year = ggplot(hymyear, aes(x=year, fill=source2)) + 
+  geom_bar() + 
+  theme_bw() + 
+  scale_y_continuous(expand=c(0,0), limits = c(0, 3500)) + 
+  scale_x_continuous(expand=c(0,0), limits=c(1890, 2025), breaks=c(1900, 1915, 1930, 1945, 1960, 1975, 1990, 2005, 2020)) + 
+  labs(x="Year", y ="Number of Hymenoptera Specimens Sampled") +   scale_fill_brewer(palette = "Dark2")
+
+hym_year
+
+ggsave(plot=hym_year, filename="hymenoptera/HymenopteraGraphs/hym_year.png", height=5, width=9, units="in", dpi=300)
+
+```
+
+###Graphing the seasonal gaps in collections. 
+
+```{r Graphing by month}
+# by month and island 
+mastersyn$month <- as.factor(mastersyn$month)
+hym_month <- na.omit(subset(mastersyn, select = c(island, month)))
+hym_month <- hym_month[c(1:1371, 1373:16323),]
+
+hym_ismonth <- ggplot(hym_month, aes(x=month, fill=month)) + 
+  geom_bar() + 
+  theme_bw() + 
+  scale_y_continuous(expand=c(0,0.5)) + 
+  labs(x="Hymenoptera Sampling per Island by Month", y ="Number of Specimens Sampled") +  
+  facet_wrap(vars(island), nrow=2, scales="free_y")
+
+hym_ismonth 
+
+ggsave(plot=hym_ismonth, filename="hymenoptera/HymenopteraGraphs/hym_seasonal.png", height=5, width=9, units="in", dpi=300)
+
+```
