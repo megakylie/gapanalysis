@@ -1,0 +1,946 @@
+kingdom_final,phylum_final,class_final,order_final,family_final,Sci_Name,Anacapa,San Clemente,San Miguel,San Nicolas,Santa Barbara,Santa Catalina,Santa Cruz,Santa Rosa
+Plantae,Tracheophyta,Lycopodiopsida,Isoetales,Isoetaceae,Isoetes orcuttii,0,3,0,0,0,0,0,0
+Plantae,Tracheophyta,Lycopodiopsida,Selaginellales,Selaginellaceae,Selaginella bigelovii,5,53,0,0,0,51,84,15
+Plantae,Tracheophyta,Magnoliopsida,Alismatales,Potamogetonaceae,Potamogeton crispus,0,0,0,0,0,4,0,0
+Plantae,Tracheophyta,Magnoliopsida,Alismatales,Potamogetonaceae,Potamogeton foliosus subsp. foliosus,0,1,0,0,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Alismatales,Potamogetonaceae,Stuckenia pectinata,0,0,0,0,0,24,15,2
+Plantae,Tracheophyta,Magnoliopsida,Alismatales,Zannichelliaceae,Zannichellia palustris,0,0,0,0,0,3,3,0
+Plantae,Tracheophyta,Magnoliopsida,Alismatales,Zosteraceae,Phyllospadix scouleri,0,9,6,12,13,9,24,0
+Plantae,Tracheophyta,Magnoliopsida,Alismatales,Zosteraceae,Phyllospadix torreyi,4,6,12,19,7,40,30,6
+Plantae,Tracheophyta,Magnoliopsida,Alismatales,Zosteraceae,Zostera marina,0,1,0,0,0,14,0,0
+Plantae,Tracheophyta,Magnoliopsida,Alismatales,Zosteraceae,Zostera pacifica,0,0,0,0,0,0,6,0
+Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Apiastrum angustifolium,11,21,10,14,1,50,34,6
+Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Apium graveolens,0,3,0,30,0,0,9,10
+Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Berula erecta,0,0,4,4,0,0,9,0
+Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Bowlesia incana,0,53,0,0,0,46,52,29
+Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Conium maculatum,0,1,0,19,0,0,28,0
+Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Daucus pusillus,21,63,36,71,7,61,48,28
+Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Foeniculum vulgare,0,30,5,13,0,53,63,14
+Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Lomatium caruifolium var. caruifolium,0,0,20,0,0,0,48,21
+Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Lomatium insulare,0,1,0,121,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Lomatium utriculatum,0,0,2,0,0,0,4,1
+Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Sanicula arguta,24,76,19,46,0,73,109,31
+Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Sanicula crassicaulis,0,0,0,0,0,42,0,0
+Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Sanicula hoffmannii,0,0,0,0,0,0,33,5
+Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Torilis arvensis,0,0,0,0,0,33,4,0
+Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Torilis nodosa,0,0,18,4,0,28,58,16
+Plantae,Tracheophyta,Magnoliopsida,Apiales,Apiaceae,Yabea microcarpa,0,3,0,0,0,54,35,0
+Plantae,Tracheophyta,Magnoliopsida,Apiales,Pittosporaceae,Pittosporum undulatum,0,0,0,0,0,13,0,0
+Plantae,Tracheophyta,Magnoliopsida,Arecales,Arecaceae,Phoenix canariensis,0,0,0,0,0,5,0,0
+Plantae,Tracheophyta,Magnoliopsida,Arecales,Arecaceae,Washingtonia robusta,0,0,0,0,0,4,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asparagales,Agavaceae,Agave americana,0,0,0,0,0,7,6,0
+Plantae,Tracheophyta,Magnoliopsida,Asparagales,Agavaceae,Chlorogalum pomeridianum var. pomeridianum,0,0,0,0,0,4,0,6
+Plantae,Tracheophyta,Magnoliopsida,Asparagales,Alliaceae,Allium lacunosum var. lacunosum,0,0,0,0,0,0,3,15
+Plantae,Tracheophyta,Magnoliopsida,Asparagales,Alliaceae,Allium praecox,0,67,25,0,0,50,76,11
+Plantae,Tracheophyta,Magnoliopsida,Asparagales,Asparagaceae,Asparagus asparagoides,0,0,0,0,0,27,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asparagales,Asparagaceae,Asparagus officinalis subsp. officinalis,0,0,0,0,0,9,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asparagales,Asphodelaceae,Asphodelus fistulosus,0,19,0,0,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asparagales,Iridaceae,Sisyrinchium bellum,0,0,37,0,0,20,35,36
+Plantae,Tracheophyta,Magnoliopsida,Asparagales,Orchidaceae,Epipactis gigantea,0,0,0,0,0,2,30,0
+Plantae,Tracheophyta,Magnoliopsida,Asparagales,Orchidaceae,Piperia cooperi,0,1,0,0,0,26,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asparagales,Orchidaceae,Piperia elongata,0,0,0,0,0,4,26,12
+Plantae,Tracheophyta,Magnoliopsida,Asparagales,Orchidaceae,Piperia michaelii,0,0,0,0,0,0,1,0
+Plantae,Tracheophyta,Magnoliopsida,Asparagales,Orchidaceae,Piperia unalascensis,0,0,0,0,0,6,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asparagales,Themidaceae,Bloomeria crocea var. crocea,0,0,0,0,0,62,52,13
+Plantae,Tracheophyta,Magnoliopsida,Asparagales,Themidaceae,Brodiaea jolonensis,0,0,5,0,0,20,12,9
+Plantae,Tracheophyta,Magnoliopsida,Asparagales,Themidaceae,Brodiaea kinkiensis,0,76,0,0,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asparagales,Themidaceae,Dipterostemon capitatus subsp. capitatus,22,88,9,53,20,77,100,16
+Plantae,Tracheophyta,Magnoliopsida,Asparagales,Themidaceae,Triteleia clementina,0,89,0,0,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Achillea millefolium,25,63,44,70,27,74,101,39
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Achyrachaena mollis,0,48,0,0,0,13,48,17
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Acourtia microcephala,0,0,0,0,0,45,73,23
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Agoseris apargioides,0,0,0,0,0,0,0,2
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Agoseris grandiflora var. grandiflora,0,0,9,0,0,0,28,18
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Agoseris heterophylla,0,0,0,0,0,0,0,5
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Amblyopappus pusillus,44,95,31,75,28,65,50,37
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Ambrosia acanthicarpa,0,0,0,0,0,1,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Ambrosia chamissonis,13,81,30,65,0,29,58,20
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Ambrosia psilostachya,0,2,2,6,0,31,4,4
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Anthemis cotula,0,0,0,0,0,34,7,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Arctium minus,0,0,0,0,0,0,0,1
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Artemisia californica,51,77,30,24,13,82,103,25
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Artemisia douglasiana,0,0,0,0,0,37,36,27
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Artemisia dracunculus,0,0,0,0,0,7,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Artemisia nesiotica,0,74,0,72,37,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Baccharis glutinosa,0,0,10,0,0,31,65,28
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Baccharis pilularis subsp. consanguinea,27,68,13,32,9,30,92,40
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Baccharis plummerae subsp. plummerae,0,0,0,0,0,0,82,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Baccharis salicifolia,8,22,0,18,0,42,92,12
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Baccharis salicina,0,2,0,0,1,8,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Baccharis sarothroides,0,0,0,0,0,3,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Blennosperma nanum var. nanum,0,0,0,0,0,0,9,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Brickellia californica,19,5,0,0,0,27,70,7
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Carduus pycnocephalus subsp. pycnocephalus,0,0,1,0,0,22,2,10
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Centaurea benedicta,0,0,0,0,0,0,3,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Centaurea cineraria,0,0,0,0,0,13,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Centaurea melitensis,9,20,13,28,8,30,22,5
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Centaurea solstitialis,0,0,0,13,0,12,44,4
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Centromadia fitchii,0,0,0,0,0,0,37,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Centromadia pungens subsp. pungens,0,0,0,0,0,2,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Chaenactis glabriuscula,0,0,0,0,0,0,0,39
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Cichorium intybus,0,0,0,0,0,0,30,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Cirsium brevistylum,0,0,0,0,0,0,9,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Cirsium occidentale,0,40,24,26,0,78,27,59
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Cirsium vulgare,0,0,5,0,0,16,6,19
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Constancea nevinii,0,168,0,0,36,78,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Corethrogyne filaginifolia,60,0,37,0,0,52,91,61
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Cotula australis,9,5,4,0,3,18,45,8
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Cotula coronopifolia,3,0,5,19,0,33,59,32
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Crepis setosa,0,0,0,0,0,4,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Cynara cardunculus subsp. flavescens,0,0,0,13,0,4,5,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Deinandra clementina,0,175,0,102,48,106,1,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Deinandra fasciculata,12,46,0,0,15,84,111,14
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Deinandra increscens subsp. increscens,0,0,0,0,0,0,10,30
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Delairea odorata,1,0,0,0,0,9,0,1
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Encelia californica,0,60,0,17,1,87,52,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Ericameria ericoides,0,0,0,0,0,0,7,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Ericameria palmeri var. pachylepis,0,0,0,0,0,17,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Erigeron bonariensis,8,18,2,12,5,15,16,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Erigeron canadensis,3,10,6,14,3,14,23,11
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Erigeron foliosus var. foliosus,11,0,3,0,0,34,64,11
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Erigeron glaucus,43,0,43,0,0,0,82,52
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Erigeron sanctarum,0,0,0,0,0,0,1,12
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Erigeron sumatrensis,0,0,0,0,0,0,1,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Eriophyllum confertiflorum var. confertiflorum,23,90,25,0,0,59,119,53
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Eriophyllum staechadifolium,35,0,5,0,0,0,69,6
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Eurybia radulina,0,0,0,0,0,0,23,1
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Euthamia occidentalis,0,0,0,0,0,7,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Gamochaeta ustulata,3,0,9,0,0,66,24,28
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Glebionis coronaria,0,1,0,6,0,2,1,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Gnaphalium palustre,0,23,0,3,0,35,25,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Grindelia hirsutula,39,0,0,4,0,0,0,47
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Hazardia cana,0,81,0,0,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Hazardia detonsa,30,0,0,0,0,0,212,34
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Hazardia squarrosa var. grindelioides,4,0,1,0,0,34,89,12
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Helenium puberulum,0,0,0,0,0,9,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Helianthus annuus,0,11,0,6,0,3,12,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Helminthotheca echioides,0,0,0,29,0,22,7,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Hesperevax sparsiflora,0,1,0,0,0,0,0,3
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Heterotheca grandiflora,0,39,0,18,0,53,37,10
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Hieracium argutum,0,0,0,0,0,0,53,14
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Hypochaeris glabra,14,22,10,0,0,15,45,28
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Hypochaeris radicata,0,6,0,1,0,3,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Isocoma menziesii,52,33,52,87,0,120,147,71
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Jaumea carnosa,0,0,5,0,0,47,11,17
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Lactuca saligna,0,0,0,1,0,9,55,25
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Lactuca serriola,7,27,2,31,0,14,29,8
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Laennecia coulteri,0,14,0,0,1,2,2,1
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Lasthenia glabrata subsp. coulteri,18,0,0,0,0,0,0,13
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Lasthenia gracilis,47,86,29,61,22,46,93,41
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Layia platyglossa,1,80,41,0,0,50,118,85
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Lepidospartum squamatum,0,0,0,0,0,0,29,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Leptosyne gigantea,40,9,40,83,30,103,203,41
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Logfia arizonica,0,45,0,0,2,53,4,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Logfia filaginoides,22,67,4,5,0,61,62,32
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Logfia gallica,0,17,0,0,0,45,31,2
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Madia exigua,0,0,0,0,0,42,91,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Madia gracilis,0,0,0,0,0,61,25,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Madia sativa,0,5,0,0,0,15,36,3
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Malacothrix clevelandii,0,0,0,0,0,1,0,5
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Malacothrix coulteri,0,0,0,0,0,0,3,3
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Malacothrix foliosa subsp. foliosa,0,54,0,0,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Malacothrix foliosa subsp. philbrickii,0,0,0,0,53,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Malacothrix foliosa subsp. polycephala,0,0,0,83,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Malacothrix incana,0,0,103,61,0,0,0,38
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Malacothrix indecora,0,0,7,0,0,0,8,3
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Malacothrix saxatilis var. implicata,25,0,73,53,4,0,83,27
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Malacothrix saxatilis var. tenuifolia,0,11,0,10,0,65,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Malacothrix similis,0,0,0,0,0,0,1,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Malacothrix squalida,0,0,0,0,0,0,7,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Matricaria discoidea,1,0,0,0,0,9,27,14
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Matricaria occidentalis,0,0,0,0,0,2,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Micropus californicus var. californicus,0,0,0,0,0,11,79,7
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Microseris douglasii,0,25,0,8,0,27,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Microseris douglasii subsp. douglasii,0,5,0,11,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Microseris douglasii subsp. platycarpha,0,24,0,0,0,22,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Microseris douglasii subsp. tenella,0,0,4,2,0,0,4,1
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Microseris elegans,0,5,1,5,0,0,11,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Munzothamnus blairii,0,130,0,0,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Pentachaeta lyonii,0,0,0,0,0,7,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Perityle emoryi,29,97,0,0,29,84,72,4
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Pluchea odorata var. odorata,0,0,0,0,0,26,27,3
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Pluchea sericea,0,0,0,0,0,18,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Pseudognaphalium beneolens,2,0,0,0,0,4,10,12
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Pseudognaphalium biolettii,25,107,11,40,5,95,64,36
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Pseudognaphalium californicum,3,37,11,7,2,50,73,7
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Pseudognaphalium canescens,0,5,0,0,0,0,2,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Pseudognaphalium luteoalbum,1,23,15,10,3,46,52,20
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Pseudognaphalium microcephalum,8,23,0,0,1,13,60,10
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Pseudognaphalium ramosissimum,0,0,0,0,0,0,15,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Pseudognaphalium stramineum,17,6,42,89,0,31,33,33
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Psilocarphus brevissimus var. brevissimus,0,7,0,0,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Psilocarphus tenellus,0,22,0,0,0,3,58,4
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Pulicaria paludosa,0,0,0,0,0,4,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Rafinesquia californica,17,36,0,0,4,39,40,6
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Senecio aphanactis,0,0,0,0,0,1,14,2
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Senecio flaccidus var. douglasii,0,1,0,0,0,0,70,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Senecio glomeratus,0,0,5,0,0,0,53,2
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Senecio lyonii,0,146,0,0,0,86,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Senecio vulgaris,14,16,13,29,0,15,34,7
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Silybum marianum,2,0,0,8,3,10,38,7
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Solidago velutina subsp. californica,0,0,0,0,0,5,13,4
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Soliva sessilis,0,0,0,0,0,3,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Sonchus asper subsp. asper,9,14,9,5,0,19,25,12
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Sonchus oleraceus,27,42,29,31,26,43,43,12
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Sonchus tenerrimus,0,0,0,4,5,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Stebbinsoseris heterocarpa,4,62,0,1,0,68,19,14
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Stephanomeria cichoriacea,0,0,0,0,0,0,90,1
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Stephanomeria diegensis,0,33,0,0,0,17,8,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Stephanomeria exigua subsp. coronaria,0,0,2,0,0,0,22,1
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Stephanomeria virgata subsp. virgata,0,10,0,0,0,20,15,9
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Stylocline gnaphaloides,0,11,0,0,0,47,47,14
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Symphyotrichum chilense,0,0,0,0,0,0,10,9
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Symphyotrichum subulatum,0,0,0,0,0,0,2,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Taraxacum erythrospermum,0,0,0,0,0,1,2,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Taraxacum officinale,0,0,0,2,0,10,9,4
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Tragopogon porrifolius,0,19,0,9,0,9,48,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Uropappus lindleyi,29,53,0,0,3,37,60,13
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Urospermum picroides,0,0,0,0,0,0,5,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Venegasia carpesioides,0,0,0,0,0,0,126,27
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Xanthium spinosum,0,0,9,0,1,30,35,6
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Asteraceae,Xanthium strumarium,0,1,0,3,0,15,4,2
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Campanulaceae,Githopsis diffusa subsp. diffusa,0,0,0,0,0,0,16,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Campanulaceae,Lobelia dunnii var. serrata,0,0,0,0,0,3,0,0
+Plantae,Tracheophyta,Magnoliopsida,Asterales,Campanulaceae,Triodanis biflora,0,2,0,0,0,26,30,3
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Amsinckia intermedia,29,74,12,20,35,64,114,35
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Amsinckia menziesii,0,6,1,0,0,19,29,0
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Amsinckia spectabilis var. spectabilis,9,46,24,58,4,4,33,25
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Cryptantha clevelandii,42,6,73,0,32,38,136,71
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Cryptantha hipidissima,1,0,4,0,0,0,0,3
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Cryptantha intermedia,0,72,0,0,0,22,0,0
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Cryptantha leiocarpa,0,0,0,0,0,0,2,3
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Cryptantha maritima,0,19,0,63,30,6,0,0
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Cryptantha micromeres,0,0,0,0,0,3,13,3
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Cryptantha microstachys,0,0,0,0,0,1,0,0
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Cryptantha muricata,0,0,0,0,0,0,9,0
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Cryptantha traskiae,0,35,0,97,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Echium candicans,0,0,0,0,0,6,0,0
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Harpagonella palmeri,0,0,0,0,0,90,0,0
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Pectocarya heterocarpa,0,0,0,0,0,0,4,0
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Pectocarya linearis subsp. ferocula,7,30,0,25,0,53,72,1
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Pectocarya penicillata,0,0,0,0,0,2,1,0
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Plagiobothrys acanthocarpus,0,0,0,0,0,10,2,0
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Plagiobothrys canescens var. catalinensis,1,14,0,0,0,94,53,16
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Plagiobothrys collinus var. californicus,0,0,0,0,0,2,6,0
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Boraginaceae,Plagiobothrys collinus var. gracilis,0,30,1,0,0,42,39,0
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Heliotropaceae,Heliotropium curassavicum var. oculatum,8,4,13,20,0,75,45,24
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Hydrophyllaceae,Emmenanthe penduliflora var. penduliflora,0,13,0,0,0,35,9,0
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Hydrophyllaceae,Eucrypta chrysanthemifolia var. chrysanthemifolia,20,12,10,0,0,56,65,19
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Hydrophyllaceae,Nemophila menziesii var. menziesii,0,0,0,0,0,11,0,0
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Hydrophyllaceae,Nemophila pedunculata,0,0,20,12,0,0,15,13
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Hydrophyllaceae,Phacelia cicutaria var. hispida,10,1,0,0,0,63,77,5
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Hydrophyllaceae,Phacelia ciliata,0,0,0,0,0,1,0,0
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Hydrophyllaceae,Phacelia distans,50,34,65,4,28,7,38,61
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Hydrophyllaceae,Phacelia douglasii,0,0,0,0,0,1,0,0
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Hydrophyllaceae,Phacelia floribunda,0,82,0,0,8,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Hydrophyllaceae,Phacelia grandiflora,0,0,0,0,0,8,10,1
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Hydrophyllaceae,Phacelia hubbyi,0,0,0,0,0,0,7,0
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Hydrophyllaceae,Phacelia insularis var. insularis,0,0,17,0,0,0,0,13
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Hydrophyllaceae,Phacelia lyonii,0,40,0,0,0,64,0,0
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Hydrophyllaceae,Phacelia minor,0,0,0,0,0,1,0,0
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Hydrophyllaceae,Phacelia ramosissima,0,0,5,0,0,0,22,32
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Hydrophyllaceae,Phacelia viscida,2,0,0,0,0,3,49,6
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Hydrophyllaceae,Pholistoma auritum var. auritum,0,49,0,0,13,37,55,0
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Hydrophyllaceae,Pholistoma racemosum,0,85,0,0,20,84,57,0
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Namaceae,Eriodictyon traskiae subsp. traskiae,0,0,0,0,0,45,0,0
+Plantae,Tracheophyta,Magnoliopsida,Boraginales,Namaceae,Nama stenocarpa,0,1,0,0,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Bataceae,Batis maritima,0,1,0,0,0,1,0,0
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Athysanus pusillus,0,4,0,0,0,9,53,0
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Boechera hoffmannii,0,0,0,0,0,0,18,1
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Brassica nigra,2,15,0,7,3,23,47,1
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Brassica rapa,0,4,5,0,0,7,30,0
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Brassica tournefortii,0,6,0,25,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Cakile edentula,0,0,16,4,0,0,0,2
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Cakile maritima subsp. maritima,12,34,30,44,0,28,61,30
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Capsella bursa-pastoris,0,17,15,0,0,24,70,13
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Cardamine californica,7,0,3,0,0,20,73,19
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Cardamine oligosperma,0,0,0,0,0,0,1,0
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Caulanthus lasiophyllus,35,31,33,0,8,37,64,24
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Descurainia pinnata,1,7,0,0,0,26,26,1
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Dithyrea maritima,0,0,6,30,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Draba cuneifolia,0,0,0,10,0,1,2,0
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Erysimum ammophilum,0,0,3,0,0,0,0,6
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Erysimum cheiri,0,0,0,0,0,4,0,0
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Erysimum insulare,9,0,41,0,0,0,2,10
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Hirschfeldia incana,0,23,15,24,0,13,30,7
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Hornungia procumbens,8,4,44,32,2,0,6,16
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Lepidium didymum,0,1,0,0,0,14,0,0
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Lepidium draba,0,0,0,0,0,0,39,10
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Lepidium lasiocarpum subsp. lasiocarpum,0,71,0,99,0,9,0,0
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Lepidium latipes,0,4,0,0,0,10,55,0
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Lepidium nitidum,59,44,1,45,39,37,102,35
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Lepidium oblongum,43,3,22,71,0,5,74,30
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Lepidium strictum,0,0,0,0,0,43,0,0
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Lepidium virginicum subsp. menziesii,0,7,0,0,0,19,35,0
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Lobularia maritima,0,3,0,28,0,10,0,0
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Nasturtium officinale,0,0,0,14,0,33,4,0
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Raphanus raphanistrum,0,12,0,0,0,20,20,23
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Raphanus sativus,0,3,3,3,0,23,61,16
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Sibara filifolia,0,17,0,0,0,20,3,0
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Sinapis arvensis,0,0,0,0,0,19,24,0
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Sisymbrium altissimum,0,0,0,0,0,7,0,0
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Sisymbrium irio,0,19,0,8,0,17,0,0
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Sisymbrium officinale,0,0,0,0,0,42,52,6
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Sisymbrium orientale,0,22,0,62,0,29,0,0
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Thysanocarpus conchuliferus,0,0,0,0,0,0,49,0
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Thysanocarpus curvipes,0,12,0,0,0,7,34,0
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Thysanocarpus laciniatus,0,60,0,0,0,58,143,18
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Tropidocarpum gracile,0,8,0,0,0,6,0,0
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Brassicaceae,Turritis glabra,0,0,0,0,0,3,3,0
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Cleomaceae,Peritoma arborea,0,16,0,0,0,108,0,58
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Resedaceae,Oligomeris linifolia,12,19,23,45,16,23,17,9
+Plantae,Tracheophyta,Magnoliopsida,Brassicales,Tropaeolaceae,Tropaeolum majus,0,6,0,0,1,10,0,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Aizoaceae,Aptenia cordifolia,0,0,0,0,0,7,0,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Aizoaceae,Carpobrotus chilensis,7,4,22,13,0,3,12,10
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Aizoaceae,Carpobrotus edulis,2,10,0,6,0,4,3,3
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Aizoaceae,Delosperma litorale,0,0,0,2,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Aizoaceae,Malephora crocea,0,8,0,8,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Aizoaceae,Mesembryanthemum crystallinum,22,32,13,24,16,40,39,24
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Aizoaceae,Mesembryanthemum nodiflorum,12,42,8,30,21,79,40,14
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Aizoaceae,Sesuvium verrucosum,0,12,0,0,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Aizoaceae,Tetragonia tetragonioides,10,0,21,1,0,6,21,5
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Amaranthaceae,Amaranthus albus,1,0,0,0,0,23,26,1
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Amaranthaceae,Amaranthus blitoides,0,0,0,0,0,0,10,1
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Amaranthaceae,Amaranthus deflexus,0,0,0,0,0,9,15,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Amaranthaceae,Amaranthus powellii,0,0,0,0,0,0,5,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Cactaceae,Bergerocactus emoryi,0,59,0,0,0,15,0,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Cactaceae,Cylindropuntia prolifera,7,66,0,15,7,20,19,9
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Cactaceae,Opuntia ficus-indica,0,3,0,1,0,2,1,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Cactaceae,Opuntia littoralis,5,52,1,15,2,62,44,3
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Cactaceae,Opuntia oricola,4,8,3,6,7,4,15,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Cardionema ramosissimum,0,1,6,0,0,0,42,22
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Cerastium glomeratum,1,25,4,0,0,13,41,6
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Herniaria hirsuta var. cinerea,0,19,10,4,2,22,0,1
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Loeflingia squarrosa,0,0,0,7,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Minuartia douglasii,0,1,0,0,0,9,9,2
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Polycarpon depressum,0,1,3,0,0,5,1,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Polycarpon tetraphyllum,1,2,2,0,2,14,9,2
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Sagina apetala,0,0,12,7,0,4,4,1
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Sagina decumbens subsp. occidentalis,0,0,2,0,0,1,25,2
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Silene antirrhina,0,40,2,0,0,24,22,4
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Silene gallica,36,62,18,21,18,80,69,28
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Silene laciniata subsp. laciniata,22,4,16,0,0,1,183,66
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Silene multinervia,0,0,0,0,0,0,3,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Spergula arvensis,0,0,0,0,0,3,0,23
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Spergularia bocconi,8,38,3,5,5,54,37,4
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Spergularia macrotheca,41,120,35,82,12,48,87,43
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Spergularia marina,4,11,0,47,2,42,45,7
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Spergularia villosa,0,30,0,3,0,35,16,15
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Stellaria media,13,7,16,0,0,25,40,14
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Stellaria nitens,0,0,0,0,0,3,22,2
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Caryophyllaceae,Stellaria pallida,0,7,0,0,0,3,2,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Chenopodiaceae,Aphanisma blitoides,4,65,0,10,38,33,10,3
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Chenopodiaceae,Arthrocnemum subterminale,0,23,3,0,0,24,17,9
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Chenopodiaceae,Atriplex argentea var. expansa,0,42,0,2,0,4,8,2
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Chenopodiaceae,Atriplex canescens,0,0,0,1,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Chenopodiaceae,Atriplex coulteri,5,29,8,0,0,59,64,16
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Chenopodiaceae,Atriplex lentiformis,0,15,0,7,0,4,28,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Chenopodiaceae,Atriplex leucophylla,0,28,12,34,0,45,48,18
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Chenopodiaceae,Atriplex pacifica,35,25,0,5,9,23,5,2
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Chenopodiaceae,Atriplex prostrata,0,0,3,12,0,46,32,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Chenopodiaceae,Atriplex rosea,0,0,0,0,0,2,0,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Chenopodiaceae,Atriplex semibaccata,18,61,15,34,19,55,27,15
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Chenopodiaceae,Atriplex serenana var. davidsonii,0,0,0,0,0,8,0,1
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Chenopodiaceae,Atriplex serenana var. serenana,0,0,0,0,0,3,3,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Chenopodiaceae,Atriplex suberecta,0,0,0,0,0,20,0,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Chenopodiaceae,Atriplex watsonii,1,78,12,47,0,24,31,21
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Chenopodiaceae,Bassia hyssopifolia,0,26,0,19,0,15,0,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Chenopodiaceae,Beta vulgaris subsp. maritima,2,11,12,0,0,23,17,2
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Chenopodiaceae,Chenopodium berlandieri,11,0,0,5,0,11,32,1
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Chenopodiaceae,Chenopodium californicum,28,55,24,10,22,48,59,22
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Chenopodiaceae,Chenopodium macrospermum,0,2,0,1,0,14,0,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Chenopodiaceae,Chenopodium murale,25,45,14,13,23,43,41,16
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Chenopodiaceae,Dysphania ambrosioides,0,4,0,9,0,5,34,30
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Chenopodiaceae,Dysphania multifida,0,8,0,0,0,0,0,20
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Chenopodiaceae,Dysphania pumilio,0,0,0,0,0,5,0,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Chenopodiaceae,Extriplex californica,48,75,32,63,18,67,63,40
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Chenopodiaceae,Monolepis nuttalliana,0,5,9,0,6,0,5,6
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Chenopodiaceae,Salicornia pacifica,2,16,6,20,0,27,11,31
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Chenopodiaceae,Salsola australis,0,12,0,40,0,6,16,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Chenopodiaceae,Salsola tragus,0,0,0,0,0,9,0,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Chenopodiaceae,Suaeda calceoliformis,0,0,0,0,0,7,0,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Chenopodiaceae,Suaeda taxifolia,28,54,3,68,32,32,38,15
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Frankeniaceae,Frankenia salina,39,34,15,64,0,66,44,30
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Montiaceae,Calandrinia breweri,0,0,0,0,0,0,10,1
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Montiaceae,Calandrinia menziesii,13,25,4,7,5,12,44,9
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Montiaceae,Calyptridium monandrum,0,0,0,0,0,0,2,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Montiaceae,Cistanthe maritima,24,48,0,4,22,11,44,13
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Montiaceae,Claytonia parviflora subsp. parviflora,0,0,1,11,3,36,5,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Montiaceae,Claytonia perfoliata,23,70,20,32,12,53,67,27
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Montiaceae,Montia fontana,0,0,0,0,0,0,4,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Nyctaginaceae,Abronia latifolia,0,0,4,0,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Nyctaginaceae,Abronia maritima,6,50,32,65,0,44,67,30
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Nyctaginaceae,Abronia umbellata var. umbellata,0,74,51,91,0,9,44,74
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Nyctaginaceae,Mirabilis laevis var. crassifolia,32,99,0,0,16,90,101,1
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Plumbaginaceae,Armeria maritima subsp. californica,0,0,0,0,0,0,0,27
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Plumbaginaceae,Limonium perezii,0,4,0,0,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Plumbaginaceae,Limonium sinuatum,0,0,0,0,0,7,0,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Chorizanthe staticoides,0,0,0,0,0,8,0,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Chorizanthe wheeleri,0,0,0,0,0,0,150,18
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Eriogonum arborescens,48,0,0,0,0,0,332,84
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Eriogonum cinereum,0,0,0,12,0,0,0,1
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Eriogonum fasciculatum,0,0,0,7,0,23,0,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Lastarriaea coriacea,0,0,0,0,0,2,12,16
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Persicaria lapathifolia,0,0,0,0,0,0,29,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Polygonum argyrocoleon,0,15,0,11,0,27,1,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Polygonum aviculare,14,21,0,5,0,24,48,16
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Pterostegia drymarioides,25,49,23,32,14,32,59,30
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Rumex acetosella,0,0,0,0,0,0,8,5
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Rumex conglomeratus,0,8,0,0,0,52,16,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Rumex crispus,12,10,22,12,0,18,17,15
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Rumex obtusifolius,0,0,0,2,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Rumex pulcher,0,0,0,0,0,0,35,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Rumex salicifolius,0,26,4,27,0,60,38,8
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Portulacaceae,Portulaca oleracea,0,0,0,0,0,5,7,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Tamaricaceae,Tamarix aphylla,0,0,0,0,0,0,0,2
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Tamaricaceae,Tamarix parviflora,0,0,0,0,0,3,0,0
+Plantae,Tracheophyta,Magnoliopsida,Caryophyllales,Tamaricaceae,Tamarix ramosissima,1,5,0,13,0,16,34,1
+Plantae,Tracheophyta,Magnoliopsida,Cornales,Cornaceae,Cornus glabrata,0,1,0,0,0,31,0,0
+Plantae,Tracheophyta,Magnoliopsida,Cornales,Loasaceae,Mentzelia affinis,0,19,0,17,0,2,4,0
+Plantae,Tracheophyta,Magnoliopsida,Cornales,Loasaceae,Mentzelia micrantha,0,7,0,0,0,48,14,1
+Plantae,Tracheophyta,Magnoliopsida,Crossosomatales,Crossosomataceae,Crossosoma californicum,0,32,0,0,0,258,0,0
+Plantae,Tracheophyta,Magnoliopsida,Cucurbitales,Cucurbitaceae,Cucurbita foetidissima,0,0,0,0,0,0,14,0
+Plantae,Tracheophyta,Magnoliopsida,Cucurbitales,Cucurbitaceae,Marah fabacea,0,9,1,2,0,5,51,0
+Plantae,Tracheophyta,Magnoliopsida,Cucurbitales,Cucurbitaceae,Marah macrocarpa,35,60,32,24,20,84,135,22
+Plantae,Tracheophyta,Magnoliopsida,Dipsacales,Adoxaceae,Sambucus nigra subsp. caerulea,0,22,0,0,0,58,63,17
+Plantae,Tracheophyta,Magnoliopsida,Dipsacales,Caprifoliaceae,Lonicera hispidula,0,15,0,0,0,113,31,3
+Plantae,Tracheophyta,Magnoliopsida,Dipsacales,Caprifoliaceae,Lonicera interrupta,0,0,0,0,0,0,2,0
+Plantae,Tracheophyta,Magnoliopsida,Dipsacales,Caprifoliaceae,Lonicera subspicata,0,0,0,0,0,5,15,0
+Plantae,Tracheophyta,Magnoliopsida,Dipsacales,Caprifoliaceae,Lonicera subspicata var. denudata,0,0,0,0,0,6,6,0
+Plantae,Tracheophyta,Magnoliopsida,Dipsacales,Caprifoliaceae,Lonicera subspicata var. subspicata,0,0,0,0,0,6,1,0
+Plantae,Tracheophyta,Magnoliopsida,Dipsacales,Caprifoliaceae,Symphoricarpos mollis,0,0,0,0,0,39,63,5
+Plantae,Tracheophyta,Magnoliopsida,Dipsacales,Valerianaceae,Centranthus ruber,0,0,0,0,0,40,21,0
+Plantae,Tracheophyta,Magnoliopsida,Dipsacales,Valerianaceae,Plectritis ciliosa,0,0,0,0,0,0,4,0
+Plantae,Tracheophyta,Magnoliopsida,Ericales,Ericaceae,Arbutus menziesii,0,0,0,0,0,0,13,0
+Plantae,Tracheophyta,Magnoliopsida,Ericales,Ericaceae,Arctostaphylos catalinae,0,0,0,0,0,97,0,0
+Plantae,Tracheophyta,Magnoliopsida,Ericales,Ericaceae,Arctostaphylos confertiflora,0,0,0,0,0,0,0,79
+Plantae,Tracheophyta,Magnoliopsida,Ericales,Ericaceae,Arctostaphylos crustacea subsp. insulicola,0,0,0,0,0,0,90,12
+Plantae,Tracheophyta,Magnoliopsida,Ericales,Ericaceae,Arctostaphylos crustacea subsp. subcordata,0,0,0,0,0,0,148,17
+Plantae,Tracheophyta,Magnoliopsida,Ericales,Ericaceae,Arctostaphylos insularis,0,0,0,0,0,0,347,0
+Plantae,Tracheophyta,Magnoliopsida,Ericales,Ericaceae,Arctostaphylos viridissima,0,0,0,0,0,0,112,0
+Plantae,Tracheophyta,Magnoliopsida,Ericales,Ericaceae,Comarostaphylis diversifolia subsp. planifolia,3,0,0,0,0,41,291,28
+Plantae,Tracheophyta,Magnoliopsida,Ericales,Ericaceae,Vaccinium ovatum,0,0,0,0,0,0,66,26
+Plantae,Tracheophyta,Magnoliopsida,Ericales,Ericaceae,Xylococcus bicolor,0,0,0,0,0,89,0,0
+Plantae,Tracheophyta,Magnoliopsida,Ericales,Myrsinaceae,Lysimachia arvensis,0,6,4,4,2,20,14,3
+Plantae,Tracheophyta,Magnoliopsida,Ericales,Polemoniaceae,Allophyllum glutinosum,0,0,0,0,0,35,0,0
+Plantae,Tracheophyta,Magnoliopsida,Ericales,Polemoniaceae,Eriastrum filifolium,0,3,0,0,0,13,9,0
+Plantae,Tracheophyta,Magnoliopsida,Ericales,Polemoniaceae,Gilia achilleifolia subsp. multicaulis,0,0,0,0,1,0,0,1
+Plantae,Tracheophyta,Magnoliopsida,Ericales,Polemoniaceae,Gilia angelensis,0,0,0,0,0,55,73,0
+Plantae,Tracheophyta,Magnoliopsida,Ericales,Polemoniaceae,Gilia capitata subsp. abrotanifolia,0,0,0,0,0,3,4,0
+Plantae,Tracheophyta,Magnoliopsida,Ericales,Polemoniaceae,Gilia clivorum,16,0,8,0,0,2,78,40
+Plantae,Tracheophyta,Magnoliopsida,Ericales,Polemoniaceae,Gilia nevinii,32,142,0,2,14,21,21,5
+Plantae,Tracheophyta,Magnoliopsida,Ericales,Polemoniaceae,Gilia tenuiflora,0,0,0,0,0,0,0,1
+Plantae,Tracheophyta,Magnoliopsida,Ericales,Polemoniaceae,Gilia tenuiflora subsp. hoffmannii,0,0,0,0,0,0,0,32
+Plantae,Tracheophyta,Magnoliopsida,Ericales,Polemoniaceae,Leptosiphon bicolor,0,46,0,0,0,18,13,2
+Plantae,Tracheophyta,Magnoliopsida,Ericales,Polemoniaceae,Leptosiphon parviflorus,0,0,4,0,0,1,17,5
+Plantae,Tracheophyta,Magnoliopsida,Ericales,Polemoniaceae,Leptosiphon pygmaeus subsp. pygmaeus,0,21,0,0,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Ericales,Polemoniaceae,Linanthus dianthiflorus,0,0,0,0,0,52,25,0
+Plantae,Tracheophyta,Magnoliopsida,Ericales,Polemoniaceae,Navarretia atractyloides,0,0,0,0,0,18,73,21
+Plantae,Tracheophyta,Magnoliopsida,Ericales,Polemoniaceae,Navarretia hamata subsp. leptantha,0,22,0,0,0,97,8,0
+Plantae,Tracheophyta,Magnoliopsida,Ericales,Primulaceae,Primula clevelandii var. insularis,24,16,0,8,0,61,52,20
+Plantae,Tracheophyta,Magnoliopsida,Ericales,Theophrastaceae,Samolus parviflorus,0,0,0,0,0,0,9,0
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Acacia cyclops,0,7,0,0,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Acacia decurrens,0,0,0,0,0,4,0,0
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Acacia melanoxylon,0,0,0,0,0,8,15,0
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Acmispon americanus var. americanus,0,0,0,0,0,28,27,0
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Acmispon argophyllus var. adsurgens,0,38,0,0,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Acmispon argophyllus var. argenteus,0,131,0,102,26,132,0,1
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Acmispon argophyllus var. niveus,0,0,0,0,0,0,73,0
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Acmispon brachycarpus,0,0,0,0,0,1,0,0
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Acmispon grandiflorus var. grandiflorus,0,0,0,0,0,19,84,4
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Acmispon heermannii var. heermannii,0,0,0,0,0,1,0,0
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Acmispon maritimus var. maritimus,10,1,5,7,0,60,45,8
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Acmispon micranthus,10,27,0,0,0,82,64,6
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Acmispon parviflorus,0,0,0,0,0,0,27,0
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Acmispon strigosus,6,39,0,1,0,66,107,32
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Acmispon wrangelianus,1,0,3,0,0,51,68,16
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Astragalus curtipes,0,0,36,0,0,0,0,29
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Astragalus didymocarpus var. didymocarpus,8,3,17,0,0,10,73,35
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Astragalus gambelianus,0,0,0,0,0,43,34,0
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Astragalus miguelensis,63,142,76,0,0,0,73,85
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Astragalus nevinii,0,91,0,0,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Astragalus traskiae,0,0,0,109,48,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Astragalus trichopodus var. lonchus,26,0,1,0,0,112,98,8
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Astragalus trichopodus var. trichopodus,0,0,0,0,0,20,0,0
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Genista linifolia,0,0,0,0,0,60,0,0
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Genista monspessulana,0,0,0,0,0,30,0,0
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lathyrus odoratus,0,8,0,0,0,4,0,0
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lathyrus tingitanus,0,0,0,0,0,16,0,0
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lathyrus vestitus,13,9,0,0,0,6,30,15
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lathyrus vestitus var. alefeldii,0,0,0,0,0,44,0,0
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lathyrus vestitus var. vestitus,17,25,0,0,0,25,77,27
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lotus corniculatus,0,0,0,0,0,16,26,0
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lupinus albifrons var. albifrons,6,0,2,9,0,21,17,17
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lupinus albifrons var. douglasii,35,0,44,91,0,50,161,73
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lupinus arboreus,0,0,21,0,0,0,6,15
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lupinus bicolor subsp. bicolor,33,69,13,12,0,70,212,71
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lupinus chamissonis,0,0,6,0,0,0,0,1
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lupinus concinnus,0,43,0,0,0,83,63,13
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lupinus guadalupensis,0,92,0,0,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lupinus hirsutissimus,4,31,0,0,0,65,46,3
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lupinus microcarpus,0,0,0,0,0,0,41,12
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lupinus succulentus,42,32,29,6,0,79,102,43
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lupinus truncatus,30,88,0,0,0,65,83,10
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Lupinus variicolor,0,0,1,0,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Medicago minima,0,0,0,0,0,4,0,0
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Medicago polymorpha,18,41,19,31,22,33,108,28
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Medicago sativa,5,9,3,6,0,12,42,2
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Melilotus albus,0,14,0,28,0,15,7,0
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Melilotus indicus,19,33,22,32,11,26,24,6
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Pickeringia montana var. montana,0,0,0,0,0,0,6,1
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Pisum sativum,0,0,0,0,0,0,2,0
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Robinia pseudoacacia,0,0,0,3,0,0,20,0
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Trifolium albopurpureum,0,0,0,19,0,34,53,5
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Trifolium barbigerum,0,0,2,0,0,0,0,13
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Trifolium ciliolatum,0,0,0,0,0,11,69,4
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Trifolium depauperatum,6,35,12,29,0,61,76,22
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Trifolium fucatum,7,4,18,0,0,0,23,3
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Trifolium gracilentum,28,38,15,6,1,34,76,24
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Trifolium hirtum,0,0,0,0,0,20,0,0
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Trifolium macraei,0,0,0,0,0,33,63,15
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Trifolium microcephalum,5,43,5,40,0,69,100,18
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Trifolium microdon,0,0,0,14,0,17,0,0
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Trifolium palmeri,0,111,0,31,19,22,0,0
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Trifolium repens,0,0,0,0,0,2,0,0
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Trifolium willdenovii,20,78,22,31,24,60,83,34
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Vicia americana subsp. americana,0,0,18,0,0,0,47,45
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Vicia benghalensis,0,0,0,12,0,6,12,0
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Vicia hassei,5,27,0,1,0,37,21,4
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Vicia ludoviciana subsp. ludoviciana,5,25,0,0,0,46,19,13
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Vicia sativa,3,0,0,7,0,0,24,17
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Fabaceae,Vicia villosa subsp. varia,0,0,0,2,0,28,0,0
+Plantae,Tracheophyta,Magnoliopsida,Fabales,Polygalaceae,Polygala californica,0,0,0,0,0,0,30,0
+Plantae,Tracheophyta,Magnoliopsida,Fagales,Fagaceae,Quercus agrifolia var. agrifolia,0,0,0,0,0,0,152,42
+Plantae,Tracheophyta,Magnoliopsida,Fagales,Fagaceae,Quercus chrysolepis,0,19,0,0,0,28,84,0
+Plantae,Tracheophyta,Magnoliopsida,Fagales,Fagaceae,Quercus douglasii,0,0,0,0,0,13,16,0
+Plantae,Tracheophyta,Magnoliopsida,Fagales,Fagaceae,Quercus engelmannii,0,0,0,0,0,17,0,0
+Plantae,Tracheophyta,Magnoliopsida,Fagales,Fagaceae,Quercus kelloggii,0,0,0,0,0,0,2,0
+Plantae,Tracheophyta,Magnoliopsida,Fagales,Fagaceae,Quercus lobata,0,0,0,0,0,5,63,0
+Plantae,Tracheophyta,Magnoliopsida,Fagales,Fagaceae,Quercus pacifica,0,0,0,0,0,167,235,57
+Plantae,Tracheophyta,Magnoliopsida,Fagales,Fagaceae,Quercus parvula var. parvula,0,0,0,0,0,0,113,0
+Plantae,Tracheophyta,Magnoliopsida,Fagales,Fagaceae,Quercus tomentella,27,134,0,0,0,122,151,85
+Plantae,Tracheophyta,Magnoliopsida,Fagales,Fagaceae,Quercus x macdonaldii,0,0,0,0,0,60,152,7
+Plantae,Tracheophyta,Magnoliopsida,Fagales,Juglandaceae,Juglans californica,0,0,0,0,0,6,0,0
+Plantae,Tracheophyta,Magnoliopsida,Garryales,Garryaceae,Garrya veatchii,0,0,0,0,0,0,49,0
+Plantae,Tracheophyta,Magnoliopsida,Gentianales,Apocynaceae,Asclepias fascicularis,1,0,0,0,0,22,67,9
+Plantae,Tracheophyta,Magnoliopsida,Gentianales,Apocynaceae,Vinca major,0,0,0,0,0,17,10,0
+Plantae,Tracheophyta,Magnoliopsida,Gentianales,Gentianaceae,Zeltnera davyi,0,10,0,0,0,0,34,1
+Plantae,Tracheophyta,Magnoliopsida,Gentianales,Gentianaceae,Zeltnera venusta,0,0,0,15,0,56,0,0
+Plantae,Tracheophyta,Magnoliopsida,Gentianales,Rubiaceae,Galium aparine,24,64,17,29,18,32,58,18
+Plantae,Tracheophyta,Magnoliopsida,Gentianales,Rubiaceae,Galium buxifolium,0,0,26,0,0,0,58,1
+Plantae,Tracheophyta,Magnoliopsida,Gentianales,Rubiaceae,Galium californicum,0,0,3,0,0,0,8,3
+Plantae,Tracheophyta,Magnoliopsida,Gentianales,Rubiaceae,Galium californicum subsp. flaccidum,0,0,0,0,0,0,40,0
+Plantae,Tracheophyta,Magnoliopsida,Gentianales,Rubiaceae,Galium californicum subsp. miguelense,0,0,20,0,0,0,0,25
+Plantae,Tracheophyta,Magnoliopsida,Gentianales,Rubiaceae,Galium murale,0,0,0,0,0,3,0,0
+Plantae,Tracheophyta,Magnoliopsida,Gentianales,Rubiaceae,Galium nuttallii subsp. insulare,0,0,0,0,0,106,166,38
+Plantae,Tracheophyta,Magnoliopsida,Gentianales,Rubiaceae,Galium parisiense,0,0,0,0,0,42,0,6
+Plantae,Tracheophyta,Magnoliopsida,Gentianales,Rubiaceae,Galium porrigens var. porrigens,0,0,0,0,0,1,33,0
+Plantae,Tracheophyta,Magnoliopsida,Geraniales,Geraniaceae,California macrophylla,0,0,0,0,0,7,1,0
+Plantae,Tracheophyta,Magnoliopsida,Geraniales,Geraniaceae,Erodium botrys,0,17,0,14,0,24,39,12
+Plantae,Tracheophyta,Magnoliopsida,Geraniales,Geraniaceae,Erodium brachycarpum,0,8,0,0,0,33,4,0
+Plantae,Tracheophyta,Magnoliopsida,Geraniales,Geraniaceae,Erodium cicutarium,15,24,12,19,17,18,24,12
+Plantae,Tracheophyta,Magnoliopsida,Geraniales,Geraniaceae,Erodium moschatum,24,28,10,43,13,23,32,11
+Plantae,Tracheophyta,Magnoliopsida,Geraniales,Geraniaceae,Erodium texanum,0,0,0,0,0,1,0,0
+Plantae,Tracheophyta,Magnoliopsida,Geraniales,Geraniaceae,Geranium carolinianum,0,0,0,0,0,21,6,6
+Plantae,Tracheophyta,Magnoliopsida,Geraniales,Geraniaceae,Geranium dissectum,0,0,0,0,0,0,3,8
+Plantae,Tracheophyta,Magnoliopsida,Geraniales,Geraniaceae,Geranium molle,0,0,0,0,0,7,4,0
+Plantae,Tracheophyta,Magnoliopsida,Geraniales,Geraniaceae,Pelargonium peltatum,0,0,0,5,0,2,0,0
+Plantae,Tracheophyta,Magnoliopsida,Geraniales,Geraniaceae,Pelargonium x hortorum,0,2,1,0,0,15,6,0
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Clinopodium douglasii,0,0,1,0,0,46,4,4
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Lamium amplexicaule,0,0,0,2,0,0,5,0
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Lepechinia fragrans,0,0,0,0,0,52,31,42
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Marrubium vulgare,0,31,19,22,0,36,61,14
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Mentha spicata,0,0,0,0,0,3,5,0
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Salvia apiana,0,0,0,0,0,61,0,0
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Salvia brandegeei,0,0,0,0,0,0,0,93
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Salvia columbariae,0,25,0,0,0,27,27,4
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Salvia leucophylla,0,0,0,0,0,0,2,0
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Salvia mellifera,0,4,7,0,0,71,94,0
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Scutellaria tuberosa,0,0,0,0,0,0,65,1
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Stachys ajugoides,0,0,1,0,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Stachys bullata,19,0,0,0,0,0,147,37
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Lamiaceae,Trichostema lanceolatum,0,0,0,0,0,30,0,0
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Oleaceae,Fraxinus uhdei,0,0,0,0,0,10,0,0
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Oleaceae,Olea europaea,0,0,0,0,0,0,15,0
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Orobanchaceae,Aphyllon fasciculatum,1,0,0,0,0,0,0,3
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Orobanchaceae,Aphyllon parishii subsp. brachylobum,0,0,5,24,0,4,10,3
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Orobanchaceae,Aphyllon tuberosum,0,0,0,0,0,17,13,9
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Orobanchaceae,Castilleja affinis subsp. affinis,49,0,8,0,0,88,146,109
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Orobanchaceae,Castilleja densiflora,0,0,4,46,0,0,40,8
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Orobanchaceae,Castilleja exserta subsp. exserta,0,0,44,0,0,41,46,35
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Orobanchaceae,Castilleja foliolosa,0,0,0,0,0,73,0,0
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Orobanchaceae,Castilleja grisea,0,136,0,0,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Orobanchaceae,Castilleja hololeuca,57,0,24,0,0,0,182,43
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Orobanchaceae,Castilleja mollis,0,0,5,0,0,0,0,49
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Orobanchaceae,Kopsiopsis strobilacea,0,0,0,0,0,0,0,3
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Phrymaceae,Diplacus brandegeei,0,0,0,0,0,0,2,0
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Phrymaceae,Diplacus brevipes,0,0,0,0,0,1,0,0
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Phrymaceae,Diplacus longiflorus,0,0,0,0,0,0,125,0
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Phrymaceae,Diplacus parviflorus,30,48,1,0,0,0,190,71
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Phrymaceae,Diplacus puniceus,0,0,0,0,0,74,0,0
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Phrymaceae,Diplacus traskiae,0,0,0,0,0,2,0,0
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Phrymaceae,Erythranthe cardinalis,0,0,0,0,0,77,94,0
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Phrymaceae,Erythranthe floribunda,0,3,0,0,0,6,0,0
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Phrymaceae,Erythranthe guttata,0,15,0,0,0,11,34,10
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Plantaginaceae,Antirrhinum kelloggii,0,0,0,0,0,8,21,0
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Plantaginaceae,Antirrhinum nuttallianum subsp. subsessile,8,31,2,0,0,60,116,34
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Plantaginaceae,Antirrhinum thompsonii,0,0,0,0,0,0,11,1
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Plantaginaceae,Callitriche marginata,0,11,0,0,0,2,0,0
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Plantaginaceae,Collinsia heterophylla var. heterophylla,0,12,0,0,0,0,0,14
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Plantaginaceae,Gambelia speciosa,0,129,0,0,0,62,0,0
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Plantaginaceae,Keckiella cordifolia,6,44,0,0,0,113,150,27
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Plantaginaceae,Kickxia elatine,0,0,0,0,0,3,0,0
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Plantaginaceae,Nuttallanthus texanus,9,36,3,0,0,38,52,20
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Plantaginaceae,Plantago coronopus,0,16,1,27,0,85,0,0
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Plantaginaceae,Plantago elongata,0,0,18,3,0,0,0,12
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Plantaginaceae,Plantago erecta,17,32,0,2,0,98,45,60
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Plantaginaceae,Plantago lanceolata,1,1,2,0,0,16,72,5
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Plantaginaceae,Plantago major,0,0,0,3,0,10,42,0
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Plantaginaceae,Plantago maritima,0,0,0,0,0,0,0,2
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Plantaginaceae,Plantago ovata var. insularis,6,16,0,23,4,28,1,0
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Plantaginaceae,Plantago subnuda,0,0,0,0,0,0,15,10
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Plantaginaceae,Veronica anagallis-aquatica,0,0,0,0,0,0,27,0
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Plantaginaceae,Veronica arvensis,0,0,0,0,0,1,0,0
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Scrophulariaceae,Myoporum laetum,0,3,0,14,0,0,2,0
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Scrophulariaceae,Scrophularia californica,0,0,0,0,0,0,0,5
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Scrophulariaceae,Scrophularia villosa,0,36,0,0,0,110,0,0
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Scrophulariaceae,Verbascum thapsus,0,0,0,0,0,0,41,0
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Verbenaceae,Phyla nodiflora,0,4,0,0,0,4,4,0
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Verbenaceae,Verbena bracteata,0,17,0,0,0,56,0,8
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Verbenaceae,Verbena lasiostachys var. lasiostachys,0,24,1,1,0,4,0,0
+Plantae,Tracheophyta,Magnoliopsida,Lamiales,Verbenaceae,Verbena lasiostachys var. scabrida,0,0,0,0,0,42,49,8
+Plantae,Tracheophyta,Magnoliopsida,Liliales,Liliaceae,Calochortus albus,0,0,0,0,0,1,83,30
+Plantae,Tracheophyta,Magnoliopsida,Liliales,Liliaceae,Calochortus catalinae,0,0,0,0,0,100,58,27
+Plantae,Tracheophyta,Magnoliopsida,Liliales,Liliaceae,Calochortus luteus,0,0,0,0,0,0,34,0
+Plantae,Tracheophyta,Magnoliopsida,Liliales,Liliaceae,Calochortus splendens,0,0,0,0,0,48,0,0
+Plantae,Tracheophyta,Magnoliopsida,Liliales,Liliaceae,Calochortus venustus,0,0,0,0,0,1,0,0
+Plantae,Tracheophyta,Magnoliopsida,Liliales,Liliaceae,Lilium humboldtii subsp. ocellatum,1,0,0,0,0,0,63,5
+Plantae,Tracheophyta,Magnoliopsida,Liliales,Melanthiaceae,Toxicoscordion fremontii,18,0,6,0,0,0,42,23
+Plantae,Tracheophyta,Magnoliopsida,Malpighiales,Elatinaceae,Elatine californica,0,0,0,0,0,4,0,0
+Plantae,Tracheophyta,Magnoliopsida,Malpighiales,Euphorbiaceae,Croton californicus,0,0,0,0,0,2,0,0
+Plantae,Tracheophyta,Magnoliopsida,Malpighiales,Euphorbiaceae,Croton setiger,0,27,0,0,0,48,64,12
+Plantae,Tracheophyta,Magnoliopsida,Malpighiales,Euphorbiaceae,Euphorbia crenulata,0,0,0,0,0,2,0,0
+Plantae,Tracheophyta,Magnoliopsida,Malpighiales,Euphorbiaceae,Euphorbia maculata,0,8,0,0,0,9,5,0
+Plantae,Tracheophyta,Magnoliopsida,Malpighiales,Euphorbiaceae,Euphorbia misera,0,26,0,0,0,7,3,0
+Plantae,Tracheophyta,Magnoliopsida,Malpighiales,Euphorbiaceae,Euphorbia peplus,0,0,0,0,0,36,7,7
+Plantae,Tracheophyta,Magnoliopsida,Malpighiales,Euphorbiaceae,Euphorbia serpens,0,4,0,0,0,15,0,0
+Plantae,Tracheophyta,Magnoliopsida,Malpighiales,Euphorbiaceae,Euphorbia spathulata,0,9,0,0,0,21,2,0
+Plantae,Tracheophyta,Magnoliopsida,Malpighiales,Euphorbiaceae,Ricinus communis,0,17,0,3,0,10,0,0
+Plantae,Tracheophyta,Magnoliopsida,Malpighiales,Linaceae,Hesperolinon micranthum,0,0,0,0,0,14,0,0
+Plantae,Tracheophyta,Magnoliopsida,Malpighiales,Salicaceae,Populus fremontii subsp. fremontii,0,0,0,0,0,9,10,0
+Plantae,Tracheophyta,Magnoliopsida,Malpighiales,Salicaceae,Populus trichocarpa,0,0,0,0,0,32,51,12
+Plantae,Tracheophyta,Magnoliopsida,Malpighiales,Salicaceae,Salix exigua,0,0,0,3,0,12,35,4
+Plantae,Tracheophyta,Magnoliopsida,Malpighiales,Salicaceae,Salix gooddingii,0,2,0,0,0,5,0,0
+Plantae,Tracheophyta,Magnoliopsida,Malpighiales,Salicaceae,Salix laevigata,0,0,0,0,0,35,46,0
+Plantae,Tracheophyta,Magnoliopsida,Malpighiales,Salicaceae,Salix lasiandra var. lasiandra,0,0,0,0,0,0,3,0
+Plantae,Tracheophyta,Magnoliopsida,Malpighiales,Salicaceae,Salix lasiolepis,1,4,20,38,0,70,104,30
+Plantae,Tracheophyta,Magnoliopsida,Malpighiales,Violaceae,Viola pedunculata,0,79,0,0,0,67,94,27
+Plantae,Tracheophyta,Magnoliopsida,Malvales,Cistaceae,Crocanthemum greenei,0,0,0,0,0,2,12,1
+Plantae,Tracheophyta,Magnoliopsida,Malvales,Cistaceae,Crocanthemum scoparium,0,0,0,0,0,19,46,10
+Plantae,Tracheophyta,Magnoliopsida,Malvales,Malvaceae,Eremalche exilis,0,2,0,0,2,1,1,0
+Plantae,Tracheophyta,Magnoliopsida,Malvales,Malvaceae,Malacothamnus clementinus,0,119,0,0,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Malvales,Malvaceae,Malva nicaeensis,0,0,0,0,0,0,27,3
+Plantae,Tracheophyta,Magnoliopsida,Malvales,Malvaceae,Malva parviflora,8,35,16,21,9,18,28,12
+Plantae,Tracheophyta,Magnoliopsida,Malvales,Malvaceae,Malva pseudolavatera,6,6,2,0,0,0,0,4
+Plantae,Tracheophyta,Magnoliopsida,Malvales,Malvaceae,Malvella leprosa,0,16,0,0,0,15,0,8
+Plantae,Tracheophyta,Magnoliopsida,Malvales,Malvaceae,Sidalcea malviflora subsp. malviflora,0,0,42,0,0,0,39,54
+Plantae,Tracheophyta,Magnoliopsida,Myrtales,Lythraceae,Ammannia robusta,0,0,0,0,0,2,0,0
+Plantae,Tracheophyta,Magnoliopsida,Myrtales,Lythraceae,Lythrum californicum,0,0,0,0,0,0,13,0
+Plantae,Tracheophyta,Magnoliopsida,Myrtales,Lythraceae,Lythrum hyssopifolia,0,0,0,13,0,8,26,10
+Plantae,Tracheophyta,Magnoliopsida,Myrtales,Myrtaceae,Eucalyptus camaldulensis,0,0,0,0,0,4,15,1
+Plantae,Tracheophyta,Magnoliopsida,Myrtales,Myrtaceae,Eucalyptus cladocalyx,0,0,0,0,0,2,0,0
+Plantae,Tracheophyta,Magnoliopsida,Myrtales,Myrtaceae,Eucalyptus globulus,5,8,0,9,0,5,18,3
+Plantae,Tracheophyta,Magnoliopsida,Myrtales,Myrtaceae,Eucalyptus polyanthemos,0,0,0,0,0,10,0,0
+Plantae,Tracheophyta,Magnoliopsida,Myrtales,Myrtaceae,Eucalyptus sideroxylon,0,0,0,0,0,0,7,0
+Plantae,Tracheophyta,Magnoliopsida,Myrtales,Myrtaceae,Eucalyptus tereticornis,0,0,0,0,0,0,11,4
+Plantae,Tracheophyta,Magnoliopsida,Myrtales,Onagraceae,Camissonia strigulosa,0,0,0,0,0,0,0,18
+Plantae,Tracheophyta,Magnoliopsida,Myrtales,Onagraceae,Camissoniopsis hirtella,0,0,0,0,0,0,4,0
+Plantae,Tracheophyta,Magnoliopsida,Myrtales,Onagraceae,Camissoniopsis ignota,0,0,0,0,0,0,2,0
+Plantae,Tracheophyta,Magnoliopsida,Myrtales,Onagraceae,Camissoniopsis intermedia,0,0,3,0,0,8,17,0
+Plantae,Tracheophyta,Magnoliopsida,Myrtales,Onagraceae,Camissoniopsis micrantha,2,4,14,0,0,10,21,25
+Plantae,Tracheophyta,Magnoliopsida,Myrtales,Onagraceae,Camissoniopsis robusta,0,14,1,0,0,18,6,0
+Plantae,Tracheophyta,Magnoliopsida,Myrtales,Onagraceae,Clarkia davyi,0,0,0,0,0,0,0,42
+Plantae,Tracheophyta,Magnoliopsida,Myrtales,Onagraceae,Clarkia epilobioides,3,28,0,0,0,62,97,21
+Plantae,Tracheophyta,Magnoliopsida,Myrtales,Onagraceae,Clarkia prostrata,0,0,0,0,0,0,0,3
+Plantae,Tracheophyta,Magnoliopsida,Myrtales,Onagraceae,Clarkia purpurea subsp. quadrivulnera,0,0,0,0,0,58,6,4
+Plantae,Tracheophyta,Magnoliopsida,Myrtales,Onagraceae,Clarkia unguiculata,0,0,0,0,0,2,16,0
+Plantae,Tracheophyta,Magnoliopsida,Myrtales,Onagraceae,Epilobium brachycarpum,0,3,0,0,0,4,6,0
+Plantae,Tracheophyta,Magnoliopsida,Myrtales,Onagraceae,Epilobium canum subsp. canum,24,54,3,0,0,76,200,40
+Plantae,Tracheophyta,Magnoliopsida,Myrtales,Onagraceae,Epilobium ciliatum subsp. ciliatum,0,0,17,0,0,29,52,0
+Plantae,Tracheophyta,Magnoliopsida,Myrtales,Onagraceae,Eulobus californicus,0,0,0,0,0,6,31,1
+Plantae,Tracheophyta,Magnoliopsida,Myrtales,Onagraceae,Ludwigia peploides subsp. peploides,0,0,0,0,0,0,6,0
+Plantae,Tracheophyta,Magnoliopsida,Myrtales,Onagraceae,Oenothera elata subsp. hirsutissima,0,0,0,0,0,0,24,0
+Plantae,Tracheophyta,Magnoliopsida,Myrtales,Onagraceae,Oenothera sinuosa,0,0,0,0,0,4,0,0
+Plantae,Tracheophyta,Magnoliopsida,Oxalidales,Oxalidaceae,Oxalis articulata subsp. rubra,0,0,0,0,0,3,0,1
+Plantae,Tracheophyta,Magnoliopsida,Oxalidales,Oxalidaceae,Oxalis californica,0,0,0,0,0,15,31,0
+Plantae,Tracheophyta,Magnoliopsida,Oxalidales,Oxalidaceae,Oxalis corniculata,0,6,0,6,0,7,8,0
+Plantae,Tracheophyta,Magnoliopsida,Oxalidales,Oxalidaceae,Oxalis pes-caprae,0,8,1,11,0,29,7,0
+Plantae,Tracheophyta,Magnoliopsida,Piperales,Saururaceae,Anemopsis californica,0,1,0,3,0,29,37,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Cyperaceae,Bolboschoenus maritimus subsp. paludosus,0,0,1,0,0,21,5,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Cyperaceae,Bolboschoenus robustus,0,0,0,0,0,4,0,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Cyperaceae,Carex barbarae,0,0,0,0,0,0,13,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Cyperaceae,Carex globosa,0,0,0,0,0,1,89,27
+Plantae,Tracheophyta,Magnoliopsida,Poales,Cyperaceae,Carex gracilior,0,0,0,0,0,0,0,2
+Plantae,Tracheophyta,Magnoliopsida,Poales,Cyperaceae,Carex harfordii,0,0,0,0,0,0,12,2
+Plantae,Tracheophyta,Magnoliopsida,Poales,Cyperaceae,Carex pansa,0,0,0,0,0,0,0,18
+Plantae,Tracheophyta,Magnoliopsida,Poales,Cyperaceae,Carex praegracilis,0,0,1,0,0,2,0,10
+Plantae,Tracheophyta,Magnoliopsida,Poales,Cyperaceae,Carex senta,0,0,0,0,0,0,40,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Cyperaceae,Carex subbracteata,0,0,0,0,0,0,5,14
+Plantae,Tracheophyta,Magnoliopsida,Poales,Cyperaceae,Carex triquetra,0,0,0,0,0,32,2,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Cyperaceae,Carex tumulicola,0,29,0,0,0,0,9,4
+Plantae,Tracheophyta,Magnoliopsida,Poales,Cyperaceae,Cyperus eragrostis,0,6,0,0,0,39,0,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Cyperaceae,Cyperus esculentus var. leptostachyus,0,3,0,0,0,2,0,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Cyperaceae,Cyperus involucratus,0,0,0,0,0,0,1,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Cyperaceae,Cyperus odoratus,0,0,0,0,0,17,5,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Cyperaceae,Eleocharis macrostachya,0,12,0,19,0,18,0,8
+Plantae,Tracheophyta,Magnoliopsida,Poales,Cyperaceae,Isolepis cernua,0,0,16,0,0,0,0,18
+Plantae,Tracheophyta,Magnoliopsida,Poales,Cyperaceae,Schoenoplectus americanus,0,0,0,35,0,3,0,7
+Plantae,Tracheophyta,Magnoliopsida,Poales,Cyperaceae,Schoenoplectus californicus,0,0,0,0,0,0,35,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Cyperaceae,Schoenoplectus pungens var. longispicatus,0,0,0,0,0,2,2,7
+Plantae,Tracheophyta,Magnoliopsida,Poales,Cyperaceae,Scirpus microcarpus,0,0,0,0,0,12,0,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Juncaceae,Juncus acutus subsp. leopoldii,0,0,0,0,0,66,0,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Juncaceae,Juncus balticus subsp. ater,0,0,7,0,0,13,0,9
+Plantae,Tracheophyta,Magnoliopsida,Poales,Juncaceae,Juncus bufonius var. bufonius,5,26,21,23,0,60,56,30
+Plantae,Tracheophyta,Magnoliopsida,Poales,Juncaceae,Juncus effusus subsp. pacificus,0,0,0,0,0,0,0,1
+Plantae,Tracheophyta,Magnoliopsida,Poales,Juncaceae,Juncus mexicanus,0,0,12,0,0,24,18,11
+Plantae,Tracheophyta,Magnoliopsida,Poales,Juncaceae,Juncus patens,0,30,0,0,0,0,36,13
+Plantae,Tracheophyta,Magnoliopsida,Poales,Juncaceae,Juncus phaeocephalus var. phaeocephalus,0,0,0,0,0,0,0,17
+Plantae,Tracheophyta,Magnoliopsida,Poales,Juncaceae,Juncus textilis,0,0,0,0,0,23,0,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Juncaceae,Juncus xiphioides,0,0,0,0,0,33,27,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Juncaceae,Luzula subsessilis,0,0,0,0,0,0,40,26
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Agrostis exarata,0,0,0,0,0,0,9,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Agrostis pallens,0,0,0,0,0,41,45,13
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Agrostis stolonifera,9,0,0,0,0,1,0,2
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Aira caryophyllea,0,0,0,0,0,2,0,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Ammophila arenaria,0,0,0,16,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Andropogon glomeratus var. scabriglumis,0,0,0,0,0,3,23,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Aristida adscensionis,0,39,0,0,0,41,86,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Aristida ternipes var. gentilis,0,0,0,0,0,0,30,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Arundo donax,0,0,0,9,0,20,12,1
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Avena barbata,33,33,8,59,12,18,56,24
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Avena fatua,23,26,19,24,31,16,14,27
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Avena sativa,0,3,0,0,0,9,1,6
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Bothriochloa barbinodis,0,0,0,0,0,39,0,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Brachypodium distachyon,0,13,0,3,0,58,67,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Briza minor,0,0,0,0,0,10,0,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Bromus arizonicus,15,16,0,28,42,8,2,8
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Bromus berteroanus,1,7,0,0,16,2,3,1
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Bromus catharticus,0,11,0,43,0,34,18,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Bromus diandrus,27,22,12,43,24,52,54,23
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Bromus hordeaceus,21,38,10,52,9,50,28,20
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Bromus maritimus,18,0,25,0,0,0,7,8
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Bromus pseudolaevipes,0,0,0,0,0,13,6,4
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Bromus rubens,27,52,5,36,27,101,107,32
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Bromus sitchensis var. carinatus,46,22,15,30,0,59,81,42
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Bromus sterilis,0,0,0,0,0,1,0,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Calamagrostis rubescens,0,0,0,0,0,0,8,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Chloris virgata,0,5,0,0,0,3,0,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Cortaderia selloana,0,0,9,1,0,22,6,3
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Crypsis schoenoides,0,2,0,0,0,5,0,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Crypsis vaginiflora,0,0,0,0,0,33,0,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Cynodon dactylon,6,27,0,28,2,29,30,16
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Dactylis glomerata,0,1,0,0,0,25,3,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Dactyloctenium aegyptium,0,0,0,0,0,4,0,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Danthonia californica,0,0,0,0,0,0,0,1
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Deschampsia danthonioides,0,26,0,0,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Desmazeria rigida,0,0,0,0,0,32,0,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Distichlis littoralis,0,0,0,0,0,27,0,12
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Distichlis spicata,10,20,9,32,0,43,39,18
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Echinochloa crus-galli,0,7,0,0,0,1,0,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Ehrharta calycina,0,23,0,0,0,20,0,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Ehrharta erecta,0,0,0,0,0,45,7,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Elymus condensatus,18,1,21,1,0,21,58,16
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Elymus glaucus subsp. glaucus,0,0,0,0,0,41,57,9
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Elymus multisetus,0,0,0,0,0,2,0,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Elymus pacificus,0,0,29,0,0,0,0,5
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Elymus repens,0,0,1,0,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Elymus triticoides,8,0,18,0,0,37,30,27
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Festuca arundinacea,0,2,18,22,0,13,4,11
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Festuca bromoides,40,10,5,2,1,23,81,24
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Festuca microstachys,7,23,1,0,0,53,16,4
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Festuca myuros,15,34,5,61,20,66,76,19
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Festuca octoflora,19,15,21,67,7,12,36,9
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Festuca perennis,0,11,0,12,1,7,11,2
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Festuca temulenta,0,1,0,0,0,14,11,7
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Gastridium phleoides,0,29,0,0,0,47,75,8
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Hainardia cylindrica,0,30,14,0,0,52,14,2
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Hordeum brachyantherum subsp. californicum,45,0,46,55,0,6,83,40
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Hordeum depressum,0,0,0,0,0,0,18,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Hordeum intercedens,51,74,3,86,17,92,58,22
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Hordeum marinum subsp. gussoneanum,0,14,0,19,0,48,35,20
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Hordeum murinum,35,19,27,26,30,22,51,19
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Hordeum murinum subsp. glaucum,7,16,6,18,15,33,18,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Hordeum murinum subsp. leporinum,7,13,5,12,1,14,21,7
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Hordeum vulgare,0,7,0,8,0,15,10,5
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Koeleria gerardii,0,0,0,0,0,0,2,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Koeleria macrantha,0,0,1,0,0,0,18,32
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Lamarckia aurea,19,49,6,48,28,41,54,16
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Melica imperfecta,36,38,14,11,17,86,108,21
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Muhlenbergia microsperma,9,23,0,2,28,78,63,7
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Parapholis incurva,2,25,19,55,3,31,33,29
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Paspalum dilatatum,0,1,0,0,0,19,0,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Paspalum distichum,0,0,0,0,0,4,4,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Pennisetum clandestinum,21,0,2,5,0,28,19,6
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Phalaris aquatica,0,2,0,0,0,43,0,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Phalaris canariensis,0,0,0,0,0,7,0,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Phalaris caroliniana,0,10,0,6,1,2,2,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Phalaris lemmonii,0,41,3,0,0,1,0,3
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Phalaris minor,30,44,13,69,13,32,27,1
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Phalaris paradoxa,0,27,0,3,0,22,1,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Poa annua,7,2,5,1,2,34,18,4
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Poa douglasii,0,0,31,0,0,0,0,30
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Poa howellii,0,0,0,0,0,0,3,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Poa secunda subsp. secunda,39,32,0,20,0,45,107,36
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Poa thomasii,0,3,0,0,0,10,0,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Polypogon interruptus,0,1,33,0,0,50,53,16
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Polypogon monspeliensis,6,28,23,62,10,52,34,16
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Polypogon viridis,1,1,0,0,0,13,31,15
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Schismus arabicus,0,10,0,10,4,56,4,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Schismus barbatus,0,4,0,0,2,14,56,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Stenotaphrum secundatum,0,0,0,13,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Stipa cernua,5,26,2,26,0,22,72,15
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Stipa diegoensis,35,0,11,67,0,0,91,34
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Stipa lepida,9,14,1,36,1,56,128,12
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Stipa miliacea var. miliacea,9,19,3,31,0,15,35,6
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Stipa pulchra,28,51,13,50,8,37,99,28
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Stipa tenuissima,0,0,0,0,0,18,0,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Poaceae,Triticum aestivum,0,0,0,4,0,3,0,0
+Plantae,Tracheophyta,Magnoliopsida,Poales,Typhaceae,Typha domingensis,0,12,14,13,0,33,31,8
+Plantae,Tracheophyta,Magnoliopsida,Poales,Typhaceae,Typha latifolia,0,10,0,12,0,30,4,0
+Plantae,Tracheophyta,Magnoliopsida,Proteales,Platanaceae,Platanus racemosa,0,0,0,0,0,9,18,0
+Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Berberidaceae,Berberis pinnata subsp. insularis,9,0,0,0,0,0,59,2
+Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Papaveraceae,Dendromecon harfordii,0,0,0,0,0,105,226,39
+Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Papaveraceae,Dendromecon rigida,0,0,0,0,0,0,4,0
+Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Papaveraceae,Eschscholzia californica,0,11,51,1,0,83,138,60
+Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Papaveraceae,Eschscholzia ramosa,2,118,0,15,9,71,13,8
+Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Papaveraceae,Meconella denticulata,0,0,0,0,0,0,35,0
+Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Papaveraceae,Papaver californicum,0,0,0,0,0,4,31,1
+Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Papaveraceae,Papaver heterophyllum,10,20,7,0,8,11,5,9
+Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Papaveraceae,Papaver somniferum,0,0,0,0,0,0,3,0
+Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Papaveraceae,Platystemon californicus,4,0,38,61,18,1,144,62
+Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Papaveraceae,Romneya coulteri,0,0,0,0,0,9,0,0
+Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Clematis lasiantha,0,0,0,0,0,0,26,0
+Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Clematis ligusticifolia,0,0,0,0,0,40,35,10
+Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Clematis pauciflora,0,0,0,0,0,0,4,0
+Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Delphinium variegatum,0,37,0,0,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Delphinium variegatum subsp. kinkiense,0,33,0,0,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Delphinium variegatum subsp. thornei,0,25,0,0,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Ranunculus californicus var. cuneatus,0,0,16,0,0,0,61,21
+Plantae,Tracheophyta,Magnoliopsida,Ranunculales,Ranunculaceae,Ranunculus hebecarpus,0,0,0,0,0,34,4,0
+Plantae,Tracheophyta,Magnoliopsida,Rosales,Moraceae,Ficus carica,0,6,3,0,0,15,6,0
+Plantae,Tracheophyta,Magnoliopsida,Rosales,Rhamnaceae,Ceanothus arboreus,0,0,0,0,0,151,245,12
+Plantae,Tracheophyta,Magnoliopsida,Rosales,Rhamnaceae,Ceanothus megacarpus var. insularis,14,15,0,0,0,104,164,27
+Plantae,Tracheophyta,Magnoliopsida,Rosales,Rhamnaceae,Ceanothus megacarpus var. megacarpus,0,11,0,0,0,19,4,0
+Plantae,Tracheophyta,Magnoliopsida,Rosales,Rhamnaceae,Frangula californica subsp. californica,0,0,0,0,0,0,20,0
+Plantae,Tracheophyta,Magnoliopsida,Rosales,Rhamnaceae,Rhamnus pirifolia,0,28,0,0,0,171,155,10
+Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Adenostoma fasciculatum,0,4,0,0,0,58,105,17
+Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Adenostoma fasciculatum var. fasciculatum,0,8,0,0,0,22,39,2
+Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Adenostoma fasciculatum var. prostratum,0,0,0,0,0,1,11,9
+Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Aphanes occidentalis,0,4,0,0,0,36,45,5
+Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Cercocarpus betuloides var. blancheae,0,0,0,0,0,170,228,1
+Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Cercocarpus traskiae,0,0,0,0,0,57,0,0
+Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Cotoneaster pannosus,0,0,0,0,0,7,0,0
+Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Drymocallis glandulosa var. wrangelliana,0,0,0,0,0,3,0,0
+Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Heteromeles arbutifolia,16,84,11,3,0,143,151,58
+Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Holodiscus discolor var. discolor,0,0,0,0,0,20,19,0
+Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Potentilla anserina subsp. pacifica,0,0,1,0,0,0,1,0
+Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Poterium sanguisorba,0,0,0,0,0,11,0,0
+Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Prunus ilicifolia subsp. lyonii,41,118,0,0,0,138,207,36
+Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Rosa californica,0,0,0,0,0,35,93,15
+Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Rubus armeniacus,0,0,0,0,0,2,0,0
+Plantae,Tracheophyta,Magnoliopsida,Rosales,Rosaceae,Rubus ursinus,0,0,7,0,0,33,49,21
+Plantae,Tracheophyta,Magnoliopsida,Rosales,Urticaceae,Hesperocnide tenella,0,15,0,0,1,14,16,0
+Plantae,Tracheophyta,Magnoliopsida,Rosales,Urticaceae,Parietaria hespera var. californica,10,29,13,0,0,21,33,16
+Plantae,Tracheophyta,Magnoliopsida,Rosales,Urticaceae,Parietaria hespera var. hespera,0,0,0,0,7,15,0,0
+Plantae,Tracheophyta,Magnoliopsida,Rosales,Urticaceae,Soleirolia soleirolii,0,0,0,15,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Rosales,Urticaceae,Urtica dioica subsp. gracilis,0,0,0,0,0,0,2,0
+Plantae,Tracheophyta,Magnoliopsida,Rosales,Urticaceae,Urtica dioica subsp. holosericea,0,0,0,0,0,14,40,0
+Plantae,Tracheophyta,Magnoliopsida,Rosales,Urticaceae,Urtica urens,1,0,4,0,0,16,34,17
+Plantae,Tracheophyta,Magnoliopsida,Sapindales,Anacardiaceae,Malosma laurina,0,11,0,0,0,103,0,0
+Plantae,Tracheophyta,Magnoliopsida,Sapindales,Anacardiaceae,Rhus integrifolia,29,111,28,0,0,143,182,26
+Plantae,Tracheophyta,Magnoliopsida,Sapindales,Anacardiaceae,Rhus ovata,0,0,0,0,0,45,84,0
+Plantae,Tracheophyta,Magnoliopsida,Sapindales,Anacardiaceae,Schinus molle,0,3,0,3,0,23,17,4
+Plantae,Tracheophyta,Magnoliopsida,Sapindales,Anacardiaceae,Toxicodendron diversilobum,5,10,4,1,0,29,32,8
+Plantae,Tracheophyta,Magnoliopsida,Sapindales,Sapindaceae,Acer macrophyllum,0,0,0,0,0,0,45,0
+Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Crassulaceae,Crassula aquatica,0,0,0,0,0,10,0,0
+Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Crassulaceae,Crassula connata,30,50,12,36,16,29,27,21
+Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Crassulaceae,Crassula solieri,0,3,0,0,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Crassulaceae,Crassula tillaea,0,1,0,0,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Crassulaceae,Dudleya blochmaniae subsp. blochmaniae,0,0,0,0,0,0,3,0
+Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Crassulaceae,Dudleya blochmaniae subsp. insularis,0,0,0,0,0,0,0,13
+Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Crassulaceae,Dudleya candelabrum,0,0,1,0,0,0,59,10
+Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Crassulaceae,Dudleya gnoma,0,0,0,0,0,0,0,6
+Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Crassulaceae,Dudleya greenei,2,0,53,0,0,3,73,48
+Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Crassulaceae,Dudleya nesiotica,0,0,0,0,0,0,42,0
+Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Crassulaceae,Dudleya traskiae,0,0,0,0,30,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Grossulariaceae,Ribes malvaceum var. malvaceum,16,27,0,0,0,0,38,1
+Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Grossulariaceae,Ribes thacherianum,0,0,0,0,0,0,115,0
+Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Grossulariaceae,Ribes viburnifolium,0,0,0,0,0,127,0,0
+Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Saxifragaceae,Heuchera maxima,25,0,0,0,0,0,80,25
+Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Saxifragaceae,Jepsonia malvifolia,0,49,0,22,0,35,38,34
+Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Saxifragaceae,Lithophragma affine,0,0,0,0,0,17,0,0
+Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Saxifragaceae,Lithophragma cymbalaria,0,0,0,0,0,0,85,13
+Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Saxifragaceae,Lithophragma maximum,0,17,0,0,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Saxifragales,Saxifragaceae,Micranthes californica,0,9,0,0,0,0,48,0
+Plantae,Tracheophyta,Magnoliopsida,Solanales,Convolvulaceae,Calystegia macrostegia subsp. amplissima,0,72,0,45,9,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Solanales,Convolvulaceae,Calystegia macrostegia subsp. cyclostegia,0,0,0,0,0,10,0,0
+Plantae,Tracheophyta,Magnoliopsida,Solanales,Convolvulaceae,Calystegia macrostegia subsp. intermedia,0,0,0,0,0,23,0,0
+Plantae,Tracheophyta,Magnoliopsida,Solanales,Convolvulaceae,Calystegia macrostegia subsp. macrostegia,38,0,24,0,0,18,88,21
+Plantae,Tracheophyta,Magnoliopsida,Solanales,Convolvulaceae,Calystegia soldanella,0,1,12,10,0,0,10,3
+Plantae,Tracheophyta,Magnoliopsida,Solanales,Convolvulaceae,Convolvulus arvensis,0,0,0,19,0,37,34,2
+Plantae,Tracheophyta,Magnoliopsida,Solanales,Convolvulaceae,Convolvulus simulans,0,24,0,0,0,13,11,0
+Plantae,Tracheophyta,Magnoliopsida,Solanales,Convolvulaceae,Cressa truxillensis,4,12,3,2,0,57,27,15
+Plantae,Tracheophyta,Magnoliopsida,Solanales,Convolvulaceae,Cuscuta campestris,0,0,2,0,0,1,0,0
+Plantae,Tracheophyta,Magnoliopsida,Solanales,Convolvulaceae,Cuscuta occidentalis,0,4,0,0,0,8,0,0
+Plantae,Tracheophyta,Magnoliopsida,Solanales,Convolvulaceae,Cuscuta salina,0,0,0,0,0,0,16,0
+Plantae,Tracheophyta,Magnoliopsida,Solanales,Convolvulaceae,Dichondra micrantha,0,0,0,1,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Solanales,Convolvulaceae,Dichondra occidentalis,0,0,17,0,0,30,11,18
+Plantae,Tracheophyta,Magnoliopsida,Solanales,Solanaceae,Datura wrightii,0,7,0,0,0,21,49,9
+Plantae,Tracheophyta,Magnoliopsida,Solanales,Solanaceae,Lycium brevipes var. hassei,0,5,0,3,0,16,0,0
+Plantae,Tracheophyta,Magnoliopsida,Solanales,Solanaceae,Lycium californicum,14,65,4,46,26,45,4,3
+Plantae,Tracheophyta,Magnoliopsida,Solanales,Solanaceae,Lycium fremontii,0,0,0,0,0,0,0,4
+Plantae,Tracheophyta,Magnoliopsida,Solanales,Solanaceae,Lycium verrucosum,0,0,0,3,0,0,0,0
+Plantae,Tracheophyta,Magnoliopsida,Solanales,Solanaceae,Lycopersicon esculentum,15,4,0,3,0,3,13,2
+Plantae,Tracheophyta,Magnoliopsida,Solanales,Solanaceae,Nicotiana glauca,0,5,0,6,0,56,30,0
+Plantae,Tracheophyta,Magnoliopsida,Solanales,Solanaceae,Nicotiana quadrivalvis,0,0,0,0,0,3,0,0
+Plantae,Tracheophyta,Magnoliopsida,Solanales,Solanaceae,Petunia parviflora,0,0,0,0,0,0,0,27
+Plantae,Tracheophyta,Magnoliopsida,Solanales,Solanaceae,Solanum americanum,5,22,0,45,0,0,0,8
+Plantae,Tracheophyta,Magnoliopsida,Solanales,Solanaceae,Solanum douglasii,19,74,35,3,0,92,82,35
+Plantae,Tracheophyta,Magnoliopsida,Solanales,Solanaceae,Solanum elaeagnifolium,0,0,0,0,0,20,19,4
+Plantae,Tracheophyta,Magnoliopsida,Solanales,Solanaceae,Solanum rostratum,0,0,0,0,0,3,0,0
+Plantae,Tracheophyta,Magnoliopsida,Solanales,Solanaceae,Solanum wallacei,0,0,0,0,0,135,172,25
+Plantae,Tracheophyta,Magnoliopsida,Vitales,Vitaceae,Vitis girdiana,0,0,0,0,0,53,0,0
+Plantae,Tracheophyta,Magnoliopsida,Zygophyllales,Zygophyllaceae,Tribulus terrestris,0,0,0,0,0,19,0,0
+Plantae,Tracheophyta,Pinopsida,Pinales,Cupressaceae,Hesperocyparis macrocarpa,1,0,0,0,0,0,7,5
+Plantae,Tracheophyta,Pinopsida,Pinales,Pinaceae,Pinus canariensis,0,0,0,0,0,4,0,0
+Plantae,Tracheophyta,Pinopsida,Pinales,Pinaceae,Pinus halepensis,0,0,0,0,0,16,0,0
+Plantae,Tracheophyta,Pinopsida,Pinales,Pinaceae,Pinus muricata var. muricata,0,0,0,0,0,2,265,38
+Plantae,Tracheophyta,Pinopsida,Pinales,Pinaceae,Pinus pinea,0,0,0,0,0,0,7,0
+Plantae,Tracheophyta,Pinopsida,Pinales,Pinaceae,Pinus torreyana subsp. insularis,0,0,0,0,0,0,0,120
+Plantae,Tracheophyta,Polypodiopsida,Cyatheales,Cyatheaceae,Sphaeropteris cooperi,0,0,0,0,0,7,0,0
+Plantae,Tracheophyta,Polypodiopsida,Equisetales,Equisetaceae,Equisetum hyemale subsp. affine,0,0,0,0,0,0,12,5
+Plantae,Tracheophyta,Polypodiopsida,Equisetales,Equisetaceae,Equisetum laevigatum,0,0,0,0,0,35,45,7
+Plantae,Tracheophyta,Polypodiopsida,Equisetales,Equisetaceae,Equisetum telmateia subsp. braunii,0,0,0,0,0,45,20,0
+Plantae,Tracheophyta,Polypodiopsida,Ophioglossales,Ophioglossaceae,Ophioglossum californicum,0,0,0,0,0,1,0,0
+Plantae,Tracheophyta,Polypodiopsida,Polypodiales,Athyriaceae,Athyrium filix-femina var. cyclosorum,0,0,0,0,0,0,46,0
+Plantae,Tracheophyta,Polypodiopsida,Polypodiales,Blechnaceae,Woodwardia fimbriata,0,0,0,0,0,8,107,6
+Plantae,Tracheophyta,Polypodiopsida,Polypodiales,Dennstaedtiaceae,Pteridium aquilinum var. pubescens,0,0,0,0,0,25,50,16
+Plantae,Tracheophyta,Polypodiopsida,Polypodiales,Dryopteridaceae,Cyrtomium falcatum,0,0,0,0,0,0,3,0
+Plantae,Tracheophyta,Polypodiopsida,Polypodiales,Dryopteridaceae,Dryopteris arguta,5,20,2,0,0,44,107,38
+Plantae,Tracheophyta,Polypodiopsida,Polypodiales,Dryopteridaceae,Polystichum munitum,0,0,0,0,0,0,22,4
+Plantae,Tracheophyta,Polypodiopsida,Polypodiales,Polypodiaceae,Polypodium californicum,22,71,0,7,13,91,94,25
+Plantae,Tracheophyta,Polypodiopsida,Polypodiales,Polypodiaceae,Polypodium scouleri,0,0,0,0,0,0,18,0
+Plantae,Tracheophyta,Polypodiopsida,Polypodiales,Pteridaceae,Adiantum aleuticum,0,0,0,0,0,0,57,0
+Plantae,Tracheophyta,Polypodiopsida,Polypodiales,Pteridaceae,Adiantum capillus-veneris,5,0,0,0,0,38,57,8
+Plantae,Tracheophyta,Polypodiopsida,Polypodiales,Pteridaceae,Adiantum jordanii,16,43,8,7,0,89,114,29
+Plantae,Tracheophyta,Polypodiopsida,Polypodiales,Pteridaceae,Aspidotis californica,0,0,0,0,0,24,23,0
+Plantae,Tracheophyta,Polypodiopsida,Polypodiales,Pteridaceae,Myriopteris clevelandii,0,0,0,0,0,0,85,17
+Plantae,Tracheophyta,Polypodiopsida,Polypodiales,Pteridaceae,Notholaena californica,0,0,0,0,0,7,1,0
+Plantae,Tracheophyta,Polypodiopsida,Polypodiales,Pteridaceae,Pellaea andromedifolia,17,76,3,23,0,32,63,21
+Plantae,Tracheophyta,Polypodiopsida,Polypodiales,Pteridaceae,Pellaea mucronata subsp. mucronata,0,5,0,0,0,20,28,5
+Plantae,Tracheophyta,Polypodiopsida,Polypodiales,Pteridaceae,Pellaea mucronata var. mucronata,0,2,0,0,0,21,10,1
+Plantae,Tracheophyta,Polypodiopsida,Polypodiales,Pteridaceae,Pentagramma triangularis,15,41,14,44,0,55,71,28
+Plantae,Tracheophyta,Polypodiopsida,Polypodiales,Pteridaceae,Pentagramma viscosa,1,2,0,0,0,15,26,7
+Plantae,Tracheophyta,Polypodiopsida,Polypodiales,Pteridaceae,Pityrogramma viscosa,0,0,0,0,0,0,1,0
+Plantae,Tracheophyta,Polypodiopsida,Polypodiales,Woodsiaceae,Cystopteris fragilis,0,0,0,0,0,0,11,0
+Plantae,Tracheophyta,Polypodiopsida,Salviniales,Azollaceae,Azolla filiculoides,0,0,0,0,0,33,0,0
