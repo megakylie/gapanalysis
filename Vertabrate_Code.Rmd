@@ -379,6 +379,8 @@ amph_islandsum <- amph_master %>%
   group_by(island, source) %>%
   summarise(samples = sum(no_sample))
 amph_islandsum <- na.omit(subset(amph_islandsum, select = c(island, samples, source)))
+island_size = read_csv("island_size.csv")
+amph_islandsum2 = merge(amph_islandsum, island_size, by="island", all.y=TRUE)
 
 amph_island <- ggplot(data = amph_islandsum2, aes(x = samples, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
