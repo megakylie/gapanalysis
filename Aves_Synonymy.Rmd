@@ -34,3 +34,17 @@ write.csv(aves_ebird1, "Aves/aves_ebird1.csv")
 
 ```
 
+Denise did the synonymy for the missing lines, and I have an updated list to compare the inat and ebird data too, will repeat the same process as above with the new list and the "aves_inat1" & "aves_ebird1" files 
+
+```{r}
+aves_syn2 = read_csv("Aves/aves_syn2.csv")
+aves_syn_complete = rbind(aves_syn, aves_syn2)
+
+aves_inat2 <- left_join(aves_inat_messy, aves_syn_complete)
+aves_ebird2 <- left_join(aves_ebird_messy, aves_syn_complete)
+
+write.csv(aves_inat2, "Aves/aves_inat2.csv")
+write.csv(aves_ebird2, "Aves/aves_ebird2.csv")
+#have to do some manual corrects on inat2 due to funky characters 
+```
+
