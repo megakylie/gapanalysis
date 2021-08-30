@@ -375,16 +375,15 @@ chilo_master = rbind(chilo_inat_combine) %>%
 
 #### Island Graph 
 ```{r Graphing by island}
-diplo_master$month <- as.factor(diplo_master$island)
-diplo_master$source <- as.factor(diplo_master$source)
-
 chilo_islandsum <- chilo_master %>%
   mutate(no_sample = 1) %>%
   group_by(island, source) %>%
   summarise(samples = sum(no_sample))
 ##FF6600
+island_size = read_csv("island_size.csv")
+chilo_islandsum2 = merge(chilo_islandsum, island_size, by="island", all.y=TRUE)
 
-chilo_island <- ggplot(data = chilo_islandsum, aes(x = samples, y = fct_rev(island), fill = source)) + 
+chilo_island <- ggplot(data = chilo_islandsum2, aes(x = samples, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
   labs(y ="Island", 
        x = "Number of Chilopoda Specimens Sampled",
@@ -515,7 +514,10 @@ diplo_islandsum <- diplo_master %>%
   group_by(island, source) %>%
   summarise(samples = sum(no_sample))
 
-diplo_island <- ggplot(data = diplo_islandsum, aes(x = samples, y = fct_rev(island), fill = source)) + 
+island_size = read_csv("island_size.csv")
+diplo_islandsum2 = merge(diplo_islandsum, island_size, by="island", all.y=TRUE)
+
+diplo_island <- ggplot(data = diplo_islandsum2, aes(x = samples, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
   labs(y ="Island", 
        x = "Number of Diplopoda Specimens Sampled",
@@ -652,7 +654,10 @@ bla_islandsum <- bla_master %>%
   group_by(island, source) %>%
   summarise(samples = sum(no_sample))
 
-bla_island <- ggplot(data = bla_islandsum, aes(x = samples, y = fct_rev(island), fill = source)) + 
+island_size = read_csv("island_size.csv")
+bla_islandsum2 = merge(bla_islandsum, island_size, by="island", all.y=TRUE)
+
+bla_island <- ggplot(data = bla_islandsum2, aes(x = samples, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
   labs(y ="Island", 
        x = "Number of Blattodea Specimens Sampled",
