@@ -61,10 +61,10 @@ text(0,length(unique(x)),labels=nm,adj=0,cex=1.5)
 ```
 
 ```{r import data}
-data <- read_csv("Josie/Data/DraftData_20210823.csv")%>%
+data <- read_csv("Josie/Data/DraftData_20210825.csv")%>%
   dplyr::filter(institutionCode != "iNaturalist")
 
-all_data <- data 
+all_data <- data  %>%
   rename(Latitude = decimalLatitude,
          Longitude = decimalLongitude) 
 ```
@@ -327,8 +327,7 @@ for(i in 1:8){
 }
 
 sum_table <- as.data.frame(coll.Summary) %>%
-  rownames_to_column(var = "islands") %>%
-  select(islands, totRich)
+  rownames_to_column(var = "islands") 
 
 ######### Make Grid-based maps ##################
 colorfunc <- colorRampPalette(c("gray90","cornflowerblue"))
@@ -440,7 +439,10 @@ isl_size <- read_csv("Josie/Data/Isl_size.csv") %>%
   rename(isl_name = island,
          isl_size = island_size)
 
-all_data_size <- left_join(all_data, isl_size)
+all_data_size <- left_join(all_data, isl_size) %>%
+  mutate(isl_name = as.factor(isl_name),
+         isl_name = fct_relevel(isl_name, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "San Nicolas", "San Clemente", "Santa Catalina"))
+
 
 all_data_summary <- all_data_size %>%
   filter(year > 1800) %>%
@@ -546,6 +548,84 @@ ggplot(last_coll_date, aes(y = family_final, x = n, fill = order_final)) +
   scale_y_discrete(limits = rev) +
   facet_wrap(~isl_name, ncol = 8)
 
+```
+
+## Missing Species tables
+```{r tables for Matt}
+
+missingsp <- all_data %>%
+  mutate(sample = 1) %>%
+  group_by(isl_name, Sci_Name) %>%
+  summarise(n_samp = sum(sample)) %>%
+  spread(isl_name, n_samp) %>%
+  ungroup() %>% 
+  rename("Miguel" = "San Miguel",
+         "Rosa" = "Santa Rosa",
+         "Cruz" = "Santa Cruz",
+         "Clemente" = "San Clemente",
+         "Catalina" = "Santa Catalina",
+         "Barbara" = "Santa Barbara",
+         "Nicolas" = "San Nicolas") %>%
+  mutate(Anacapa = replace_na(Anacapa, 0),
+         Miguel = replace_na(Miguel, 0),
+         Rosa = replace_na(Rosa, 0),
+         Cruz = replace_na(Cruz, 0),
+         Clemente = replace_na(Clemente, 0),
+         Catalina = replace_na(Catalina, 0),
+         Barbara = replace_na(Barbara, 0),
+         Nicolas = replace_na(Nicolas, 0))
+
+
+# Northern Islands
+nils_anacapa <- missingsp %>%
+  dplyr::select(Sci_Name, Anacapa, Miguel, Rosa, Cruz) %>%
+  filter(Anacapa == 0, Miguel > 0 & Rosa > 0 & Cruz > 0)
+
+nils_rosa <- missingsp %>%
+  dplyr::select(Sci_Name, Anacapa, Miguel, Rosa, Cruz) %>%
+  filter(Rosa == 0, Miguel > 0 & Anacapa > 0 & Cruz > 0)
+
+nils_cruz <- missingsp %>%
+  dplyr::select(Sci_Name, Anacapa, Miguel, Rosa, Cruz) %>%
+  filter(Cruz == 0, Miguel > 0 & Anacapa > 0 & Rosa > 0)
+
+nils_miguel <- missingsp %>%
+  dplyr::select(Sci_Name, Anacapa, Miguel, Rosa, Cruz) %>%
+  filter(Miguel == 0, Cruz > 0 & Anacapa > 0 & Rosa > 0)
+
+# Southern Islands
+sils_barbara <- missingsp %>%
+  dplyr::select(Sci_Name, Barbara, Nicolas, Clemente, Catalina) %>%
+  filter(Barbara == 0, Nicolas > 0 & Clemente > 0 & Catalina > 0)
+
+sils_nicolas <- missingsp %>%
+  dplyr::select(Sci_Name, Barbara, Nicolas, Clemente, Catalina) %>%
+  filter(Nicolas == 0, Barbara > 0 & Clemente > 0 & Catalina > 0)
+
+sils_clemente <- missingsp %>%
+  dplyr::select(Sci_Name, Barbara, Nicolas, Clemente, Catalina) %>%
+  filter(Clemente == 0, Barbara > 0 & Nicolas > 0 & Catalina > 0)
+
+sils_catalina <- missingsp %>%
+  dplyr::select(Sci_Name, Barbara, Nicolas, Clemente, Catalina) %>%
+  filter(Catalina == 0, Barbara > 0 & Nicolas > 0 & Clemente > 0)
+
+# Biggest Isls
+bigs_rosa <- missingsp %>%
+  dplyr::select(Sci_Name, Rosa, Cruz, Clemente, Catalina) %>%
+  filter(Rosa == 0, Cruz > 0 & Clemente > 0 & Catalina > 0)
+
+bigs_cruz <- missingsp %>%
+  dplyr::select(Sci_Name, Rosa, Cruz, Clemente, Catalina) %>%
+  filter(Cruz == 0, Rosa > 0 & Clemente > 0 & Catalina > 0)
+
+bigs_clemente <- missingsp %>%
+  dplyr::select(Sci_Name, Rosa, Cruz, Clemente, Catalina) %>%
+  filter(Clemente == 0, Rosa > 0 & Cruz > 0 & Catalina > 0)
+
+bigs_catalina <- missingsp %>%
+  dplyr::select(Sci_Name, Rosa, Cruz, Clemente, Catalina) %>%
+  filter(Catalina == 0, Rosa > 0 & Cruz > 0 & Clemente > 0)
 
 ```
 
