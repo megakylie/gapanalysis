@@ -15,6 +15,7 @@ Includes: Diptera, Mollusks, Chilopoda, Diplopoda, Blattodea, Odonata
 library(tidyverse)
 library(lubridate)
 library(ggplot2)
+library(plyr)
 library(dplyr)
 library(RColorBrewer)
 ```
@@ -1271,7 +1272,7 @@ ggsave(plot=lep_ismonth, filename="lepidoptera/LepidopteraGraphs/lep_seasonal.pn
 
 ```
 
-###Dip Step 4. Make Tables 
+###Lep Step 4. Make Tables 
 ```{r Family by Source Table}
 leptab= table(lep_master$acceptedFamily)
 leptab = as.data.frame.table(leptab)
@@ -1296,16 +1297,18 @@ lep_table <- left_join(leptab, leptab_inat)
 lep_table2 <- left_join(lep_table, leptab_chis)
 lep_table3 <- left_join(lep_table2, leptab_lacm)
 
-lep_table_complete <- lep_table3 %>%
+lep_table_complete <-lep_table3 %>%
   rename(Sum = "Freq", Family = "Var1")
+
+lep_table_complete <- lep_table_complete %>%
+  mutate(Percentage = (Sum/9392))
+
+library(reactable)
+reactable(lep_table_complete)
+
+
+write.csv(lep_table_complete, "lepidoptera/LepidopteraGraphs/lep_table_complete.csv", na="0")
 ```
-
-```{r Source Resolution}
-ddply(dip_master_bold, "source", summarise, n = length(unique(acceptedFamily)))
-
-ddply(dip_master_bold, "source", summarise, n = length(acceptedFamily))
-ddply(dip_master_bold, "source", summarise, n = length(acceptedGenus))
-ddply(dip_master_bold, "source", summarise, n = length(acceptedName))
-
-```
+#
+#Arachnida 
 #
