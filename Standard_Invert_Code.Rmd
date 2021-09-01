@@ -179,6 +179,8 @@ table(dip_inat_combine$acceptedFamily)
 
 table(dip_nic_combine$acceptedFamily)
 
+write.csv(dip_master, "diptera/DipteraGraphs/dip_master.csv", na="")
+
 
 ```
 
@@ -572,20 +574,20 @@ ggsave(plot=diplo_year, filename="diplopoda/DiplopodaGraphs/diplo_year.png", hei
 ```{r Graphing by month}
 
 # by month and island 
-diplo_master$month <- as.factor(diplo_master$month)
 diplo_month <- na.omit(subset(diplo_master, select = c(island, month)))
+diplo_month$month2 <-as.factor(diplo_month$month)
 
 
-diplo_ismonth <- ggplot(diplo_month, aes(x=month, fill=month)) + 
+diplo_ismonth <- ggplot(diplo_month, aes(x=month, fill=month2)) + 
   geom_bar() + 
   theme_bw() + 
-  scale_y_continuous(expand=c(0,0)) + 
-  labs(x="Diplopoda Sampling per Island by Month", y ="Number of Specimens Sampled") +  
+  scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(expand=expansion(mult=c(0,0.01)), limits=c(0.5,12), breaks=c(1,2,3,4,5,6,7,8,9,10,11,12)) +
+  labs(x="Diplopoda Sampling per Island by Month", y ="Number of Specimens Sampled", fill="month") +  
   facet_wrap(vars(island), nrow=2, scales="free_y")
 
 diplo_ismonth 
 
-ggsave(plot=diplo_ismonth, filename="diplopoda/DiplopodaGraphs/diplo_seasonal.png", height=5, width=9, units="in", dpi=300)
+ggsave(plot=diplo_ismonth, filename="diplopoda/DiplopodaGraphs/diplo_seasonal.png", height=4.5, width=9, units="in", dpi=300)
 
 ```
 
@@ -613,10 +615,6 @@ ddply(dip_master_bold, "source", summarise, n = length(acceptedGenus))
 ddply(dip_master_bold, "source", summarise, n = length(acceptedName))
 
 ```
-
-
-
-
 
 
 #
@@ -712,20 +710,20 @@ ggsave(plot=bla_year, filename="blattodea/BlattodeaGraphs/bla_year.png", height=
 ```{r Graphing by month}
 
 # by month and island 
-bla_master$month <- as.factor(bla_master$month)
 bla_month <- na.omit(subset(bla_master, select = c(island, month)))
+bla_month$month2 <-as.factor(bla_month$month)
 
 
-bla_ismonth <- ggplot(bla_month, aes(x=month, fill=month)) + 
+bla_ismonth <- ggplot(bla_month, aes(x=month, fill=month2)) + 
   geom_bar() + 
   theme_bw() + 
-  scale_y_continuous(expand=c(0,0)) +
-  labs(x="Blattodea Sampling per Island by Month", y ="Number of Specimens Sampled") +  
+  scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(expand=expansion(mult=c(0,0.01)), limits=c(0.5,12), breaks=c(1,2,3,4,5,6,7,8,9,10,11,12)) +
+  labs(x="Blattodea Sampling per Island by Month", y ="Number of Specimens Sampled", fill="month") +  
   facet_wrap(vars(island), nrow=1, scales="free_y")
 
 bla_ismonth 
 
-ggsave(plot=bla_ismonth, filename="blattodea/BlattodeaGraphs/bla_seasonal.png", height=5, width=9, units="in", dpi=300)
+ggsave(plot=bla_ismonth, filename="blattodea/BlattodeaGraphs/bla_seasonal.png", height=2.4, width=9, units="in", dpi=300)
 
 ```
 
@@ -740,11 +738,6 @@ write.csv(diplotab, "diplopoda/DiplopodaGraphs/diplo_table.csv")
 table(bla_chis_combine$acceptedFamily)
 table(bla_inat_combine$acceptedFamily)
 ```
-
-
-
-
-
 
 #
 # Odonanta
@@ -836,21 +829,23 @@ ggsave(plot=odo_year, filename="odonata/OdonataGraphs/odo_year.png", height=5, w
 ####Seasonal Graph 
 
 ```{r Graphing by month}
-
 # by month and island 
-odo_master$month <- as.factor(odo_master$month)
-odo_month <- na.omit(subset(odo_master, select = c(island, month)))
 
-odo_ismonth <- ggplot(odo_month, aes(x=month, fill=month)) + 
+odo_month <- na.omit(subset(odo_master, select = c(island, month)))
+odo_month$month2 <-as.factor(odo_month$month)
+
+
+odo_ismonth <- ggplot(odo_month, aes(x=month, fill=month2)) + 
   geom_bar() + 
   theme_bw() + 
-  scale_y_continuous(expand=c(0,0)) +
-  labs(x="Odonata Sampling per Island by Month", y ="Number of Specimens Sampled") +  
+  scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(expand=expansion(mult=c(0,0.01)), limits=c(0.5,12), breaks=c(1,2,3,4,5,6,7,8,9,10,11,12)) +
+  labs(x="Odonata Sampling per Island by Month", y ="Number of Specimens Sampled", fill="month") +  
   facet_wrap(vars(island), nrow=2, scales="free_y")
+
 
 odo_ismonth 
 
-ggsave(plot=odo_ismonth, filename="odonata/OdonataGraphs/odo_seasonal.png", height=5, width=9, units="in", dpi=300)
+ggsave(plot=odo_ismonth, filename="odonata/OdonataGraphs/odo_seasonal.png", height=4.5, width=9, units="in", dpi=300)
 
 ```
 
@@ -959,19 +954,19 @@ ggsave(plot=phas_year, filename="phasmida/PhasmidaGraphs/phas_year.png", height=
 ```{r Graphing by month}
 
 # by month and island 
-phas_master$month <- as.factor(phas_master$month)
 phas_month <- na.omit(subset(phas_master, select = c(island, month)))
+phas_month$month2 <-as.factor(phas_month$month)
 
-phas_ismonth <- ggplot(phas_month, aes(x=month, fill=month)) + 
+phas_ismonth <- ggplot(phas_month, aes(x=month, fill=month2)) + 
   geom_bar() + 
   theme_bw() + 
-  scale_y_continuous(expand=c(0,0)) +
-  labs(x="Phasmida Sampling per Island by Month", y ="Number of Specimens Sampled") +  
+  scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(expand=expansion(mult=c(0,0.01)), limits=c(0.5,12), breaks=c(1,2,3,4,5,6,7,8,9,10,11,12)) +
+  labs(x="Phasmida Sampling per Island by Month", y ="Number of Specimens Sampled", fill="month") +  
   facet_wrap(vars(island), nrow=2, scales="free_y")
 
 phas_ismonth 
 
-ggsave(plot=phas_ismonth, filename="phasmida/PhasmidaGraphs/phas_seasonal.png", height=5, width=9, units="in", dpi=300)
+ggsave(plot=phas_ismonth, filename="phasmida/PhasmidaGraphs/phas_seasonal.png", height=2.25, width=4, units="in", dpi=300)
 
 ```
 
@@ -989,149 +984,167 @@ col_inat <- read_csv("coleoptera/col_inat.csv")
 col_lacm <- read_csv("coleoptera/col_lacm.csv")
 col_chis <- read_csv("coleoptera/col_chis.csv")
 
+col_inat_date <- read_csv("coleoptera/col_inat_date.csv")
 
+col_inat_fix <- col_inat_date %>%
+  select(id, year, month)
+col_inat2 <- left_join(col_inat, col_inat_fix)
 ```
 
 
 ### Col Step 2. Combine datasets HUGE ERROR, no dates in iNat data...
 ```{r Selecting columns and combining}
-col_inat_combine <- col_inat %>%
+col_inat_combine <- col_inat2 %>%
   rename(order="taxon_orde") %>%
   select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude)
 
 col_chis_combine <- col_chis %>%
-  rename(order = "order_", latitude = "decimalLat", longitude="decimalLon") %>%
+  rename(order ="order_", latitude = "decimalLat", longitude="decimalLon") %>%
   select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude)
 
-dip_master = rbind(dip_inat_combine, dip_chis_combine, dip_lacm_combine, dip_nic_combine) %>%
+col_lacm_combine <- col_lacm %>%
+  select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName)
+
+col_lacm_combine <- col_lacm %>%
+  select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName)
+
+col_coordinates = rbind(col_inat_combine, col_chis_combine)
+col_combo <- col_coordinates %>%
+  select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName)
+
+col_master = rbind(col_combo, col_lacm_combine) %>%
   # reorder the island names to show up N -> S on list
   mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente"))
 
-# bold doesn't have date info
-dip_bold_combine <-dip_bold %>%
-   select(source, island, acceptedFamily, acceptedGenus, acceptedName) 
-
-dip_combine <- dip_master %>%
-   select(source, island, acceptedFamily, acceptedGenus, acceptedName) 
-
-dip_master_bold = rbind(dip_combine, dip_bold_combine)
 ```
 
-```{r heat map}
-dip_inat_map <- dip_inat %>%
-  select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude)
-
-```
-
-###Dip Step. 3 Make Graphs! 
+###Col Step. 3 Make Graphs! 
 
 #### Island Graph 
 ```{r Graphing by island}
 
-dip_islandsum <- dip_master %>%
+col_islandsum <- na.omit(subset(col_master, select = c(island, source))) %>%
   mutate(no_sample = 1) %>%
   group_by(island, source) %>%
-  summarise(samples = sum(no_sample))
+  summarise(samples = sum(no_sample)) 
 
-dip_island <- ggplot(data = dip_islandsum, aes(x = samples, y = fct_rev(island), fill = source)) + 
+col_island <- ggplot(data = col_islandsum, aes(x = samples, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
   labs(y ="Island", 
-       x = "Number of Diptera Specimens Sampled",
+       x = "Number of Coleoptera Specimens Sampled",
        fill = "Data Source") +
   theme_bw() + 
-  scale_x_continuous(limits =c(0,1200), expand = c(0,0)) +
+  scale_x_continuous(limits =c(0,5000), expand = c(0,0)) +
   scale_fill_brewer(palette = "Dark2")
 
-dip_island 
+col_island 
 
-ggsave(plot=dip_island, filename="diptera/DipteraGraphs/dip_island.png", height=5, width=8, units="in", dpi=300)
+ggsave(plot=col_island, filename="coleoptera/ColeopteraGraphs/col_island.png", height=5, width=8, units="in", dpi=300)
 
 ```
 
 ```{r Graphing by island proportional}
 island_size = read_csv("island_size.csv")
-dip_islandsum2 = merge(dip_islandsum, island_size, by="island", all.y=TRUE)
-dip_islandprop = dip_islandsum2 %>% group_by(island) %>% mutate(by_area = samples/island_size_85)
+col_islandsum2 = merge(col_islandsum, island_size, by="island", all.y=TRUE)
+col_islandprop = col_islandsum2 %>% group_by(island) %>% mutate(by_area = samples/island_size_85)
 
-dip_island_prop <- ggplot(data = dip_islandprop, aes(x = by_area, y = fct_rev(island), fill = source)) + 
+col_island_prop <- ggplot(data = col_islandprop, aes(x = by_area, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
   labs(y ="Island", 
-       x = "Diptera Specimens Sampled/Island Area (km^2)",
+       x = "Coleoptera Specimens Sampled/Island Area (km^2)",
        fill = "Data Source") +
   theme_bw() + 
-  scale_x_continuous(limits =c(0,70), expand = c(0,0)) +
+  scale_x_continuous(limits =c(0,260), expand = c(0,0)) +
   scale_fill_brewer(palette = "Dark2")
 
-dip_island_prop 
+col_island_prop 
 
-ggsave(plot=dip_island_prop, filename="diptera/DipteraGraphs/dip_island_prop.png", height=5, width=8, units="in", dpi=300)
+ggsave(plot=col_island_prop, filename="coleoptera/ColeopteraGraphs/col_island_prop.png", height=5, width=8, units="in", dpi=300)
 ```
 
 
 #### Temporal Graph
 ```{r Graphing by year}
-
-
-dip_year = ggplot(dip_master, aes(x=year, fill=source)) + 
+col_year = ggplot(col_master, aes(x=year, fill=source)) + 
   geom_bar() + 
   theme_bw() + 
-  scale_y_continuous(expand=c(0,0), limits = c(0, 1000)) + 
-  scale_x_continuous(limits=c(1910, 2025)) + 
-  labs(x="Year", y ="Number of Diptera Specimens Sampled") +   scale_fill_brewer(palette = "Dark2")
+  scale_y_continuous(expand=c(0,0), limits = c(0, 8000)) + 
+  scale_x_continuous(limits=c(1890, 2025), breaks=c(1890, 1900, 1910,  1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020)) + 
+  labs(x="Year", y ="Number of Coleoptera Specimens Sampled") +   scale_fill_brewer(palette = "Dark2")
 
-dip_year
+col_year
 
-ggsave(plot=dip_year, filename="diptera/DipteraGraphs/dip_year.png", height=5, width=9, units="in", dpi=300)
+ggsave(plot=col_year, filename="coleoptera/ColeopteraGraphs/col_year.png", height=5, width=9, units="in", dpi=300)
+
+#logging it bc such a heavy skew
+col_yeargraph2 = ggplot(col_master, aes(x=year, fill=source)) + 
+  geom_bar() + 
+  theme_bw() + 
+  scale_y_continuous(trans='log10', expand=c(0,0)) + 
+  scale_x_continuous(expand=c(0,0), limits=c(1890, 2025), breaks=c(1890, 1900, 1910,  1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020)) + 
+  labs(x="Year", y ="Log Transformed Number of Coleoptera Specimens Sampled") +   scale_fill_brewer(palette = "Dark2")
+
+col_yeargraph2
+
+ggsave(plot=col_yeargraph2, filename="coleoptera/ColeopteraGraphs/col_year2.png", height=4.5, width=9, units="in", dpi=300)
 
 ```
 
 ####Seasonal Graph 
 
 ```{r Graphing by month}
-
-occmonth <- ggplot(mastersyn, aes(x=month, fill=source)) + 
-  geom_bar() + 
-  theme_bw() + 
-  scale_y_continuous(expand=c(0,0)) + 
-  labs(x="Month", y ="Number of Specimens Samples") +
-  scale_x_continuous(breaks = seq(1, 12, by=1)) 
-
-occmonth
-
 # by month and island 
-dip_master$month <- as.factor(dip_master$month)
-dip_month <- na.omit(subset(dip_master, select = c(island, month)))
+col_master$month <- as.factor(col_master$month)
+col_month <- na.omit(subset(col_master, select = c(island, month)))
 
 
-dip_ismonth <- ggplot(dip_month, aes(x=month, fill=month)) + 
+col_ismonth <- ggplot(col_month, aes(x=month, fill=month)) + 
   geom_bar() + 
   theme_bw() + 
-  scale_y_continuous(expand=c(0,0.5)) + 
-  labs(x="Diptera Sampling per Island by Month", y ="Number of Specimens Sampled") +  
+  scale_y_continuous(expand=expansion(mult=c(0,0.05))) + 
+  labs(x="Coleoptera Sampling per Island by Month", y ="Number of Specimens Sampled") +  
   facet_wrap(vars(island), nrow=2, scales="free_y")
 
-dip_ismonth 
+col_ismonth 
 
-ggsave(plot=dip_ismonth, filename="diptera/DipteraGraphs/dip_seasonal.png", height=5, width=9, units="in", dpi=300)
+ggsave(plot=col_ismonth, filename="coleoptera/ColeopteraGraphs/col_seasonal.png", height=5, width=9, units="in", dpi=300)
 
 ```
 
 ###Dip Step 4. Make Tables 
 ```{r Family by Source Table}
-q = table(dip_master_bold$acceptedFamily)
-q = as.data.frame.table(q)
-write.csv(q, "diptera/DipteraGraphs/dip_table.csv")
+coltab= table(col_master$acceptedFamily)
+coltab = as.data.frame.table(coltab)
 
-# include BOLD? so few 
-table(dip_bold_combine$acceptedFamily)
+coltab_inat = table(col_inat$acceptedFamily)
+coltab_inat = as.data.frame.table(coltab_inat)
+coltab_inat <- coltab_inat %>%
+  rename(iNaturalist = "Freq") 
 
-table(dip_chis_combine$acceptedFamily)
+coltab_chis = table(col_chis$acceptedFamily)
+coltab_chis = as.data.frame.table(coltab_chis)
+coltab_chis <- coltab_chis %>%
+  rename(CalIBIS = "Freq") 
 
-table(dip_lacm_combine$acceptedFamily)
+coltab_lacm = table(col_lacm$acceptedFamily)
+coltab_lacm = as.data.frame.table(coltab_lacm)
+coltab_lacm <- coltab_lacm %>%
+  rename(LACM = "Freq") 
 
-table(dip_inat_combine$acceptedFamily)
+col_table <- left_join(coltab, coltab_inat)
+col_table2 <- left_join(col_table, coltab_chis)
+col_table3 <- left_join(col_table2, coltab_lacm)
 
-table(dip_nic_combine$acceptedFamily)
+col_table_complete <-col_table3 %>%
+  rename(Sum = "Freq", Family = "Var1")
+
+col_table_complete2 <- col_table_complete %>%
+  relocate("Family", "CalIBIS", "iNaturalist", "LACM", "Sum") %>%
+  mutate(Percentage = (Sum/20925))
+
+
+write.csv(col_table_complete2, "coleoptera/ColeopteraGraphs/col_table_complete.csv", na="0")
+write.csv(col_master, "coleoptera/col_master.csv", na="")
 
 
 ```
@@ -1245,16 +1258,6 @@ ggsave(plot=lep_yeargraph, filename="lepidoptera/LepidopteraGraphs/lep_year.png"
 ####Seasonal Graph 
 
 ```{r Graphing by month}
-
-occmonth <- ggplot(lep_year, aes(x=month, fill=source)) + 
-  geom_bar() + 
-  theme_bw() + 
-  scale_y_continuous(expand=c(0,0)) + 
-  labs(x="Month", y ="Number of Lepidoptera Specimens Samples") +
-  scale_x_continuous(breaks = seq(1, 12, by=1)) 
-
-occmonth
-
 # by month and island 
 lep_year$month <- as.factor(lep_year$month)
 
@@ -1267,7 +1270,7 @@ lep_ismonth <- ggplot(lep_year, aes(x=month, fill=month)) +
 
 lep_ismonth 
 
-ggsave(plot=lep_ismonth, filename="lepidoptera/LepidopteraGraphs/lep_seasonal.png", height=5, width=9, units="in", dpi=300)
+ggsave(plot=lep_ismonth, filename="lepidoptera/LepidopteraGraphs/lep_seasonal.png", height=4.5, width=9, units="in", dpi=300)
 
 ```
 
