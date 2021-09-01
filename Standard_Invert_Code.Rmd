@@ -1299,14 +1299,16 @@ lep_table3 <- left_join(lep_table2, leptab_lacm)
 lep_table_complete <-lep_table3 %>%
   rename(Sum = "Freq", Family = "Var1")
 
-lep_table_complete <- lep_table_complete %>%
+lep_fam = read_csv("lepidoptera/lep_families.csv")
+lep_table_complete2 <- left_join(lep_table_complete, lep_fam) 
+
+lep_table_complete2 <- lep_table_complete2 %>%
+  relocate("iconic", "Family", "CalIBIS", "iNaturalist", "LACM", "Sum") %>%
   mutate(Percentage = (Sum/9392))
 
-library(reactable)
-reactable(lep_table_complete)
 
-
-write.csv(lep_table_complete, "lepidoptera/LepidopteraGraphs/lep_table_complete.csv", na="0")
+write.csv(lep_table_complete2, "lepidoptera/LepidopteraGraphs/lep_table_complete.csv", na="0")
+write.csv(lep_master, "lepidoptera/lep_master.csv", na="")
 ```
 #
 #Arachnida 
@@ -1322,12 +1324,12 @@ arac_chis <- read_csv("arachnida/arac_chis.csv")
 ```{r Selecting columns and combining}
 arac_inat_combine <- arac_inat %>%
   rename(class="iconic_taxon_name") %>%
-  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude) %>%
-  add_column(order = NA)
+  select(source, month, year, island, class, order, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude)
 
 arac_chis_combine <- arac_chis %>%
   rename(order="order_", latitude = "decimalLat", longitude="decimalLon") %>%
   select(source, month, year, island, class, order, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude) 
+
 
 arac_lacm_combine <- arac_lacm %>%
   select(source, month, year, island, class, order, acceptedFamily, acceptedGenus, acceptedName)
