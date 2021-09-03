@@ -1,0 +1,70 @@
+---
+title: "Rare and Endemic"
+output: html_notebook
+editor_options: 
+  chunk_output_type: console
+---
+
+This is an R Markdown to analysis the distribution of rare and endemic vertebrates and invertebrates in the dataset. To understand there geographic and temporal gaps. 
+
+#Packages to Download 
+```{r Download Packages}
+# load packages
+library(tidyverse)
+library(lubridate)
+library(ggplot2)
+library(dplyr)
+library(RColorBrewer)
+```
+
+
+```{r}
+mam_inat <- read_csv("mammal/mam_inat.csv")
+
+mam_chis <- read_csv("mammal/mam_chis.csv")
+
+```
+
+
+##Mam Step 2. Combine datasets 
+```{r selecting and combining}
+
+
+#inat doesn't have order listed..would need to add 
+mam_inat_combine <- mam_inat %>%
+  rename(class="iconic_tax") %>%
+  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName)
+
+#doesn't have location information!!!!
+mam_chis_combine <- mam_chis %>%
+  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName)
+
+
+mam_master = rbind(mam_inat_combine, mam_chis_combine) %>%
+  # reorder the island names to show up N -> S on list
+  mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente"))
+
+```
+
+#Trying to combine to a new data frame with just RARE/ENDEMIC
+Spoiler, it works great!! 
+```{r}
+mam_end <- read_csv("mammal/rare_endemic_mammal.csv")
+
+test = inner_join(mam_master, mam_end)
+fox = filter(test, acceptedGenus=="Urocyon")
+
+```
+
+```{r}
+fox_yearrare = ggplot(fox, aes(x=year, fill=source)) + 
+  geom_bar() + 
+  theme_bw() + 
+  labs(x="Year", y ="Number of Urocyon Occurences") +   scale_fill_brewer(palette = "Dark2") + facet_wrap(vars(acceptedName), nrow=2, scales="free") 
+fox_yearrare = fox_yearrare  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1880, 1890, 1900, 1910, 1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15)) 
+
+fox_yearrare
+
+ggsave(plot=fox_yearrare, filename="mammal/MammalGraphs/fox_rare.png", height=30, width=50, units="cm", dpi=300)
+```
+
