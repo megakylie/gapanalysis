@@ -497,8 +497,9 @@ library(RColorBrewer)
 ```{r}
 aves_inat <- read_csv("aves/aves_inat2.csv")
 aves_ebird <- read_csv("aves/aves_ebird2.csv")
-aves_chis <- read_csv("aves/aves_chis.csv")
-aves_sbmnh <- read_csv("aves/aves_sbmnh.csv")
+aves_chis <- read_csv("aves/aves_chis_replacement.csv")
+aves_sbmnh_obs <- read_csv("aves/aves_sbmnh_obs2.csv")
+aves_sbmnh_col <- read_csv("aves/aves_sbmnh_col2.csv")
 
 ```
 
@@ -507,22 +508,26 @@ aves_sbmnh <- read_csv("aves/aves_sbmnh.csv")
 ```{r selecting and combining}
 #inat doesn't have order listed..would need to add 
 aves_inat_combine <- aves_inat %>%
-  rename(class="iconic_tax") %>%
-  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, collectionType)
+  rename(class="iconic_tax", type="collectionType") %>%
+  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type)
 
 aves_chis_combine <- aves_chis %>%
-  rename(latitude = "decimalLatitude", longitude="decimalLongitude", year="year_", month="month_") %>%
-  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, collectionType)
+  rename(latitude = "decimalLatitude", longitude="decimalLongitude", year="year_", month="month_", type="collectionType2") %>%
+  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type)
 
-aves_sbmnh_combine <- aves_sbmnh %>%
-  rename(latitude = "decimalLatitude", longitude="decimalLongitude") %>%
-  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, collectionType)
+aves_sbmnh_obs_combine <- aves_sbmnh_obs %>%
+  rename(latitude = "decimalLatitude", longitude="decimalLongitude", type="collectionType2") %>%
+  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type)
+
+aves_sbmnh_col_combine <- aves_sbmnh_col %>%
+  rename(latitude = "decimalLatitude", longitude="decimalLongitude", type="collectionType2") %>%
+  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type)
 
 aves_ebird_combine <- aves_ebird %>%
-  rename(latitude = "decimalLatitude", longitude="decimalLongitude", year="year_", month="month_", collectionType = "collection Type") %>%
-  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, collectionType)
+  rename(latitude = "decimalLatitude", longitude="decimalLongitude", year="year_", month="month_", type = "collection Type") %>%
+  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type)
   
-aves_master = rbind(aves_inat_combine, aves_chis_combine, aves_sbmnh_combine, aves_ebird_combine) %>%
+aves_master = rbind(aves_inat_combine, aves_chis_combine, aves_sbmnh_obs_combine, aves_sbmnh_col_combine, aves_ebird_combine) %>%
   # reorder the island names to show up N -> S on list
   mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente"))
 ## 342351 records!!! 
@@ -540,14 +545,14 @@ aves_islandsum <- aves_master %>%
   summarise(samples = sum(no_sample)) %>%
 filter(!is.na(island)) %>%
    ungroup() %>%
-  mutate(source2 = fct_relevel(source, "Cal-IBIS", "iNaturalist", "EBIRD", "SBMNH"))
+  mutate(source2 = fct_relevel(source, "Cal-IBIS", "iNaturalist", "EBIRD", "SBMNH Collections", "SBMNH Observations"))
 
 aves_islandsum <- na.omit(subset(aves_islandsum, select = c(island, samples, source2)))
 
 aves_island <- ggplot(data = aves_islandsum, aes(x = samples, y = fct_rev(island), fill = source2)) + 
   geom_bar(stat = "identity") +
   labs(y ="Island", 
-       x = "Number of Bird Specimens Sampled",
+       x = "Number of Bird Data Points",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,120000), expand = c(0,0)) +
@@ -556,6 +561,27 @@ aves_island <- ggplot(data = aves_islandsum, aes(x = samples, y = fct_rev(island
 aves_island 
 
 ggsave(plot=aves_island, filename="aves/AvesGraphs/aves_island.png", height=5, width=8, units="in", dpi=300)
+
+#by collection type
+aves_master$type = as.character(aves_master$type)aves_islandsumty <- aves_master %>%
+  mutate(no_sample = 1) %>%
+  group_by(island, type) %>%
+  summarise(samples = sum(no_sample)) %>%
+filter(!is.na(island)) 
+aves_islandsumty <- na.omit(subset(aves_islandsumty, select = c(island, samples, type)))
+
+aves_islandtype <- ggplot(data = aves_islandsumty, aes(x = samples, y = fct_rev(island), fill = type)) + 
+  geom_bar(stat = "identity") +
+  labs(y ="Island", 
+       x = "Number of Bird Data Points",
+       fill = "Type") +
+  theme_bw() + 
+  scale_x_continuous(limits =c(0,120000), expand = c(0,0)) +
+  scale_fill_brewer(palette = "Paired")
+
+aves_islandtype
+ggsave(plot=aves_islandtype, filename="aves/AvesGraphs/aves_island_type.png", height=5, width=8, units="in", dpi=300)
+
 
 ```
 
@@ -567,7 +593,7 @@ aves_islandprop = aves_islandsum2 %>% group_by(island) %>% mutate(by_area = samp
 aves_island_prop <- ggplot(data = aves_islandprop, aes(x = by_area, y = fct_rev(island), fill = source2)) + 
   geom_bar(stat = "identity") +
   labs(y ="Island", 
-       x = "Bird Specimens Sampled/Island Area (km^2)",
+       x = "Number of Bird Data Points/Island Area (km^2)",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,10000), expand = c(0,0)) +
@@ -576,19 +602,35 @@ aves_island_prop <- ggplot(data = aves_islandprop, aes(x = by_area, y = fct_rev(
 aves_island_prop 
 
 ggsave(plot=aves_island_prop, filename="aves/AvesGraphs/aves_island_prop.png", height=5, width=8, units="in", dpi=300)
+
+aves_islandsumty2 = merge(aves_islandsumty, island_size, by="island", all.y=TRUE)
+aves_islandsumty_prop = aves_islandsumty2 %>% group_by(island) %>% mutate(by_area = samples/island_size_85)
+
+aves_island_prop_type <- ggplot(data = aves_islandsumty_prop, aes(x = by_area, y = fct_rev(island), fill = type)) + 
+  geom_bar(stat = "identity") +
+  labs(y ="Island", 
+       x = "Number of Bird Data Points/Island Area (km^2)",
+       fill = "Type") +
+  theme_bw() + 
+  scale_x_continuous(limits =c(0,10000), expand = c(0,0)) +
+  scale_fill_brewer(palette = "Paired" )
+aves_island_prop_type
+
+ggsave(plot=aves_island_prop_type, filename="aves/AvesGraphs/aves_island_prop_type.png", height=5, width=8, units="in", dpi=300)
+
 ```
 
 
 ### Temporal Graph
 ```{r Graphing by year}
-aves_year <- na.omit(subset(aves_master, select = c(island, year, source))) %>%
-  mutate(source2 = fct_relevel(source, "Cal-IBIS", "iNaturalist", "EBIRD", "SBMNH"))
+aves_year <- na.omit(subset(aves_master, select = c(island, year, source, type))) %>%
+  mutate(source2 = fct_relevel(source, "Cal-IBIS", "iNaturalist", "EBIRD", "SBMNH Collections", "SBMNH Observations"))
 aves_yeargraph = ggplot(aves_year, aes(x=year, fill=source2)) + 
   geom_bar() + 
   theme_bw() + 
   scale_y_continuous(expand=c(0,0), limits = c(0, 9000)) + 
-  scale_x_continuous(expand=c(0,0), limits=c(1810, 2021), breaks=c(1818, 1850, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + 
-  labs(x="Year", y ="Number of Bird Specimens Sampled") +   scale_fill_brewer(palette = "Dark2")
+  scale_x_continuous(expand=c(0,0), limits=c(1810, 2022), breaks=c(1818, 1850, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + 
+  labs(x="Year", y ="Number of Bird Data Points", fill="Data Source") +   scale_fill_brewer(palette = "Dark2")
 
 aves_yeargraph
 
@@ -598,13 +640,26 @@ aves_yeargraph2 = ggplot(aves_year, aes(x=year, fill=source)) +
   geom_bar() + 
   theme_bw() + 
   scale_y_continuous(trans='log10', expand=c(0,0)) + 
-  scale_x_continuous(expand=c(0,0), limits=c(1810, 2021), breaks=c(1818, 1850, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + 
-  labs(x="Year", y="Number of Bird Specimens Sampled (log scaled") +   scale_fill_brewer(palette = "Dark2")
+  scale_x_continuous(expand=c(0,0), limits=c(1810, 2022), breaks=c(1818, 1850, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + 
+  labs(x="Year", y="Number of Bird Data Points (log scaled", fill="Type") +   scale_fill_brewer(palette = "Dark2")
 
 aves_yeargraph2
 
 ggsave(plot=aves_yeargraph2, filename="aves/AvesGraphs/aves_year2.png", height=5, width=9, units="in", dpi=300)
 
+#collection type
+
+aves_yeargraph3 = ggplot(aves_year, aes(x=year, fill=source)) + 
+  geom_bar() + 
+  theme_bw() +   facet_wrap(vars(type), nrow=1, scales="free") +
+  scale_y_continuous(expand=c(0,0)) + 
+  scale_x_continuous(expand=c(0,0), n.breaks=10) +
+  labs(x="Year", y="Number of Bird Data Points", fill="Data Source") + scale_fill_brewer(palette = "Dark2") 
+
+
+aves_yeargraph3
+
+ggsave(plot=aves_yeargraph3, filename="aves/AvesGraphs/aves_year3.png", height=15, width=40, units="cm", dpi=300)
 
 ```
 
@@ -620,7 +675,7 @@ aves_ismonth <- ggplot(aves_month, aes(x=month, fill=month)) +
   geom_bar() + 
   theme_bw() + 
   scale_y_continuous(expand=c(0,0.5)) + 
-  labs(x="Bird Sampling per Island by Month", y ="Number of Specimens Sampled") +  
+  labs(x="Bird Data Points per Island by Month", y ="Number of Bird Data Points") +  
   facet_wrap(vars(island), nrow=2, scales="free_y")
 
 aves_ismonth 

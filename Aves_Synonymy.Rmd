@@ -5,7 +5,9 @@ editor_options:
   chunk_output_type: console
 ---
 
-This is an R Markdown for the TNC Gap Analysis to complete the synonymy for Aves. DAK has done the Cal-IBIS and SBMNH synonymy. Using lists created from her completed synonymy this code will complete the synonymy for the iNaturalist and eBird datasets. 
+This is an R Markdown for the TNC Gap Analysis to complete the synonymy for Aves. DAK has done the Cal-IBIS and SBMNH synonymy. Using lists created from her completed synonymy this code will complete the synonymy for the iNaturalist and eBird datasets. Then a second round was done with the synonymy list she provided. 
+
+9/3 Another round of synonymy updates for the SBMNH datasets which are new (not all the SBMNH was previously included)
 
 
 #Download Packages & Data
@@ -22,6 +24,7 @@ aves_ebird_messy = read_csv("Aves/aves_ebird_messy.csv")
 
 ```
 
+#R1 Synonymy
 ```{r}
 aves_inat1 <- left_join(aves_inat_messy, aves_syn)
 write.csv(aves_inat1, "Aves/aves_inat1.csv")
@@ -34,6 +37,7 @@ write.csv(aves_ebird1, "Aves/aves_ebird1.csv")
 
 ```
 
+#R2 Synonymy with second list.
 Denise did the synonymy for the missing lines, and I have an updated list to compare the inat and ebird data too, will repeat the same process as above with the new list and the "aves_inat1" & "aves_ebird1" files 
 
 ```{r}
@@ -43,8 +47,26 @@ aves_syn_complete = rbind(aves_syn, aves_syn2)
 aves_inat2 <- left_join(aves_inat_messy, aves_syn_complete)
 aves_ebird2 <- left_join(aves_ebird_messy, aves_syn_complete)
 
-write.csv(aves_inat2, "Aves/aves_inat2.csv")
-write.csv(aves_ebird2, "Aves/aves_ebird2.csv")
+write.csv(aves_inat2, "Aves/aves_inat2.csv", na="")
+write.csv(aves_ebird2, "Aves/aves_ebird2.csv", na="")
 #have to do some manual corrects on inat2 due to funky characters 
 ```
 
+# R3 Synonymy 9/3/21 Uploading and doing the synonymy for the new SBMNH datasets 
+```{r}
+#add synonymy lists
+aves_syn = read_csv("Aves/aves_syn.csv")
+aves_syn2 = read_csv("Aves/aves_syn2.csv")
+aves_syn_complete = rbind(aves_syn, aves_syn2)
+
+
+aves_sbmnh_obs_messy= read_csv("Aves/aves_sbmnh_obs.csv")
+aves_sbmnh_col_messy = read_csv("Aves/aves_sbmnh_col.csv")
+
+aves_sbmnh_obs2 <- left_join(aves_sbmnh_obs_messy, aves_syn_complete)
+aves_sbmnh_col2 <- left_join(aves_sbmnh_col_messy, aves_syn_complete)
+#aves obs has all syn done. 
+
+write.csv(aves_sbmnh_obs2, "Aves/aves_sbmnh_obs2.csv", na="")
+write.csv(aves_sbmnh_col2, "Aves/aves_sbmnh_col2.csv", na="")
+```
