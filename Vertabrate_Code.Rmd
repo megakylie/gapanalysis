@@ -147,7 +147,7 @@ ggsave(plot=mam_ismonth, filename="mammal/MammalGraphs/mam_seasonal.png", height
 ```{r Mammal Collection Type}
 mam_chis2 <- na.omit(subset(mam_chis, select = c(CollectionType, island, acceptedName))) 
                      
-mam_coll <- ggplot(mam_chis2, aes(x=CollectionType, fill=CollectionType)) + geom_bar() + theme_bw() + theme(legend.position = "none") + theme(axis.text.x = element_text(angle = 90))
+mam_coll <- ggplot(mam_chis2, aes(x=CollectionType, fill=CollectionType)) + geom_bar() + theme_bw() + theme(legend.position = "none") + theme(axis.text.x = element_text(angle =90)) + labs(x="Collection Type", y="Number of Mammal Specimens")
 
 mam_coll
 ggsave(plot=mam_coll, filename="mammal/MammalGraphs/mam_type.png", height=5, width=8, units="in", dpi=300)
@@ -230,7 +230,7 @@ rep_islandsum <- na.omit(subset(rep_islandsum, select = c(island, samples, sourc
 rep_island <- ggplot(data = rep_islandsum, aes(x = samples, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
   labs(y ="Island", 
-       x = "Number of Reptile Specimens Sampled",
+       x = "Number of Reptile Data Points",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,2700), expand = c(0,0)) +
@@ -250,7 +250,7 @@ rep_islandprop = rep_islandsum2 %>% group_by(island) %>% mutate(by_area = sample
 rep_island_prop <- ggplot(data = rep_islandprop, aes(x = by_area, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
   labs(y ="Island", 
-       x = "Reptile Specimens Sampled/Island Area (km^2)",
+       x = "Reptile Data Points/Island Area (km^2)",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,50), expand = c(0,0)) +
@@ -270,7 +270,7 @@ rep_year = ggplot(rep_year, aes(x=year, fill=source)) +
   theme_bw() + 
   scale_y_continuous(expand=c(0,0), limits = c(0, 500)) + 
   scale_x_continuous(expand=c(0,0), limits=c(1810, 2020), breaks=c(1818, 1840, 1855, 1870, 1885, 1900, 1915, 1930, 1945, 1960, 1975, 1990, 2005, 2020)) + 
-  labs(x="Year", y ="Number of Reptile Specimens Sampled") +   scale_fill_brewer(palette = "Dark2")
+  labs(x="Year", y ="Number of Reptile Data Points") +   scale_fill_brewer(palette = "Dark2")
 
 rep_year
 
@@ -290,7 +290,7 @@ rep_ismonth <- ggplot(rep_month, aes(x=month, fill=month)) +
   geom_bar() + 
   theme_bw() + 
   scale_y_continuous(expand=c(0,0.5)) + 
-  labs(x="Reptile Sampling per Island by Month", y ="Number of Specimens Sampled") +  
+  labs(x="Reptile Data Points per Island by Month", y ="Number of Reptile Data Points") +  
   facet_wrap(vars(island), nrow=2, scales="free_y")
 
 rep_ismonth 
@@ -385,7 +385,7 @@ amph_islandsum2 = merge(amph_islandsum, island_size, by="island", all.y=TRUE)
 amph_island <- ggplot(data = amph_islandsum2, aes(x = samples, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
   labs(y ="Island", 
-       x = "Number of Amphibian Specimens Sampled",
+       x = "Number of Amphibian Data Points",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,2500), expand = c(0,0)) +
@@ -405,7 +405,7 @@ amph_islandprop = amph_islandsum2 %>% group_by(island) %>% mutate(by_area = samp
 amph_island_prop <- ggplot(data = amph_islandprop, aes(x = by_area, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
   labs(y ="Island", 
-       x = "Amphibian Specimens Sampled/Island Area (km^2)",
+       x = "Amphibian Data Points/Island Area (km^2)",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,70), expand = c(0,0)) +
@@ -425,7 +425,7 @@ amph_yearplot = ggplot(amph_year, aes(x=year, fill=source)) +
   theme_bw() + 
   scale_y_continuous(expand=c(0,0), limits = c(0, 1200)) + 
   scale_x_continuous(expand=c(0,0), limits=c(1795, 2021), breaks=c(1800, 1818, 1875, 1900, 1915, 1930, 1945, 1960, 1975, 1990, 2005, 2020)) + 
-  labs(x="Year", y ="Number of Amphibian Specimens Sampled") +   scale_fill_brewer(palette = "Dark2")
+  labs(x="Year", y ="Number of Amphibian Data Points") +   scale_fill_brewer(palette = "Dark2")
 
 amph_yearplot
 
@@ -445,7 +445,7 @@ amph_ismonth <- ggplot(amph_month, aes(x=month, fill=month)) +
   geom_bar() + 
   theme_bw() + 
   scale_y_continuous(expand=c(0,0.5)) + 
-  labs(x="Amphibian Sampling per Island by Month", y ="Number of Specimens Sampled") +  
+  labs(x="Amphibian Data Points per Island by Month", y ="Number of Amphibian Data Points") +  
   facet_wrap(vars(island), nrow=2, scales="free_y")
 
 amph_ismonth 
