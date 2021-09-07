@@ -899,7 +899,7 @@ phas_islandsum <- phas_master %>%
   summarise(samples = sum(no_sample)) 
 phas_islandsum <- na.omit(subset(phas_islandsum, select = c(island, samples, source)))
 
-phas_island <- ggplot(data = phas_islandsum, aes(x = samples, y = fct_rev(island), fill = source)) + 
+phas_island <- ggplot(data = phas_islandsum2, aes(x = samples, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
   labs(x ="Number of Phasmida Specimens Sampled", 
        y = "Island",
@@ -1111,7 +1111,7 @@ ggsave(plot=col_ismonth, filename="coleoptera/ColeopteraGraphs/col_seasonal.png"
 
 ```
 
-###Dip Step 4. Make Tables 
+###Col Step 4. Make Tables 
 ```{r Family by Source Table}
 coltab= table(col_master$acceptedFamily)
 coltab = as.data.frame.table(coltab)
@@ -1170,7 +1170,7 @@ lep_chis <- read_csv("lepidoptera/lep_chis.csv")
 ```
 
 
-### Lep Step 2. Combine datasets HUGE ERROR, no dates in iNat data...
+### Lep Step 2. Combine datasets
 ```{r Selecting columns and combining}
 lep_inat_combine <- lep_inat %>%
   rename(order="taxon_order_name") %>%
@@ -1481,4 +1481,17 @@ arac_table_worder <- left_join(arac_table_complete, arac_combo3)
 
 
 write.csv(arac_table_worder, "arachnida/ArachnidaGraphs/arac_table_complete.csv", na="0")
+```
+
+```{r Combine all masters to check against lit list}
+
+master_m = rbind(col_master, lep_master) %>%
+  select(source, year, month, island, order, acceptedFamily, acceptedGenus, acceptedName) 
+arac = arac_master %>%
+  select(source, year, month,  island, order, acceptedFamily, acceptedGenus, acceptedName)
+master_master = rbind(master_m, arac, dip_master)
+
+write.csv(master_master, "arachnida/master_master.csv", na="")
+
+
 ```
