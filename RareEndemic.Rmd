@@ -7,6 +7,12 @@ editor_options:
 
 This is an R Markdown to analysis the distribution of rare and endemic vertebrates and invertebrates in the dataset. To understand there geographic and temporal gaps. 
 
+Table of Content: 
+Mammals
+Reptiles
+Amphibians
+Birds
+
 #Packages to Download 
 ```{r Download Packages}
 # load packages
@@ -107,6 +113,8 @@ ggsave(plot=bat1_yearrare, filename="mammal/MammalGraphs/mam_er_bat1.png", heigh
 
 ```{r other bat}
 bat2 = filter(mam_end_join, acceptedGenus=="Corynorhinus")
+bats = rbind(bat1, bat2) %>%
+mutate(acceptedName2 = fct_relevel(acceptedName, "Corynorhinus townsendii pallescens", "Corynorhinus townsendii townsendii", "Antrozous pallidus pacificus"))
 bat2_yearrare = ggplot(bat2, aes(x=year, fill=source)) + 
   geom_bar() + 
   theme_bw() + 
@@ -115,9 +123,19 @@ bat2_yearrare = ggplot(bat2, aes(x=year, fill=source)) +
 bat2_yearrare
 
 ggsave(plot=bat2_yearrare, filename="mammal/MammalGraphs/mam_er_bat2.png", height=10, width=30, units="cm", dpi=300)
+
+# combining bats
+bats_yearrare = ggplot(bats, aes(x=year, fill=source)) + 
+  geom_bar() + 
+  theme_bw() + 
+  labs(x="Year", y ="Number of Data Points") +   scale_fill_brewer(palette = "Dark2") + facet_wrap(vars(acceptedName2), nrow=2, scales="free_y")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1900, 1920, 1940, 1960, 1980, 2000, 2020))
+
+bats_yearrare
+
+ggsave(plot=bats_yearrare, filename="mammal/MammalGraphs/mam_er_bats.png", height=20, width=30, units="cm", dpi=300)
 ```
 
-```{r harvest mouse NO RECORDS}
+```{r harvest mouse}
 harv_mouse =  filter(mam_end_join, acceptedGenus=="Reithrodontomys")
 harvmouse_yearrare = ggplot(harv_mouse, aes(x=year, fill=source)) + 
   geom_bar() + 
@@ -157,14 +175,14 @@ sqshrew = rbind(squirrel, shrew)
 sqshrew_yearrare = ggplot(sqshrew, aes(x=year, fill=source)) + 
   geom_bar(width=0.75) + 
   theme_bw() + 
-  labs(x="Year", y ="Number of Occurences") +   scale_fill_brewer(palette = "Dark2") + facet_wrap(vars(acceptedName), nrow=1)  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(limits=c(1920, 2020), breaks=c(1890, 1900, 1920, 1940, 1960, 1980, 2000, 2020))
+  labs(x="Year", y ="Number of Data Points") +   scale_fill_brewer(palette = "Dark2") + facet_wrap(vars(acceptedName), nrow=1)  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(limits=c(1920, 2020), breaks=c(1890, 1900, 1920, 1940, 1960, 1980, 2000, 2020))
 
 sqshrew_yearrare
 
 ggsave(plot=sqshrew_yearrare, filename="mammal/MammalGraphs/mam_er_sqshrew.png", height=10, width=30, units="cm", dpi=300)
 ```
 
-```{r trying to see if island trends is relevant graph (maybe not)}
+```{r taxa by island}
 
 mam_end_islandsum <- mam_end_island %>%
   mutate(no_sample = 1) %>%
@@ -277,7 +295,7 @@ garter_yearrare
 ggsave(plot=garter_yearrare, filename="reptile/ReptileGraphs/rep_er_garter.png", height=10, width=15, units="cm", dpi=300)
 ```
 
-```{r}
+```{r taxa by island}
 rep_end_island
 rep_end_islandsum <- rep_end_join %>%
   mutate(no_sample = 1) %>%
@@ -355,7 +373,7 @@ ggsave(plot=salamander_yearrare, filename="reptile/ReptileGraphs/amph_er_salaman
 #saved in Rep folder
 ```
 
-```{r}
+```{r salamander by island}
 amph_end_islandsum <- amph_end_join %>%
   mutate(no_sample = 1) %>%
   group_by(island, acceptedName, source) %>%
@@ -381,4 +399,5 @@ amph_end_island_ex
 ggsave(plot=amph_end_island_ex, filename="reptile/ReptileGraphs/amph_end_island_ex.png", height=10, width=15, units="cm", dpi=300)
 
 ```
+
 
