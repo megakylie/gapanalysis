@@ -17,6 +17,7 @@ library(dplyr)
 library(RColorBrewer)
 ```
 
+#Mammals
 
 ```{r}
 mam_inat <- read_csv("mammal/mam_inat.csv")
@@ -46,7 +47,6 @@ mam_master = rbind(mam_inat_combine, mam_chis_combine) %>%
 
 ```
 
-#Mammal Endemics
 ```{r Creating a new datasheet with just endemics}
 mam_end <- read_csv("mammal/mam_end.csv")
 
@@ -59,7 +59,7 @@ fox = filter(mam_end_join, acceptedGenus=="Urocyon")
 fox_yearrare = ggplot(fox, aes(x=year, fill=source)) + 
   geom_bar() + 
   theme_bw() + 
-  labs(x="Year", y ="Number of Occurences") +   scale_fill_brewer(palette = "Dark2") + facet_wrap(vars(acceptedName), nrow=2, scales="free") 
+  labs(x="Year", y ="Number of Data Points") +   scale_fill_brewer(palette = "Dark2") + facet_wrap(vars(acceptedName), nrow=2, scales="free") 
 fox_yearrare = fox_yearrare  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1880, 1890, 1900, 1910, 1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15)) 
 
 fox_yearrare
@@ -73,7 +73,7 @@ mouse = filter(mam_end_join, acceptedGenus=="Peromyscus")
 mouse_yearrare = ggplot(mouse, aes(x=year, fill=source)) + 
   geom_bar() + 
   theme_bw() + 
-  labs(x="Year", y ="Number of Occurences") +   scale_fill_brewer(palette = "Dark2") + facet_wrap(vars(acceptedName), nrow=3, scales="free") 
+  labs(x="Year", y ="Number of Data Points") +   scale_fill_brewer(palette = "Dark2") + facet_wrap(vars(acceptedName), nrow=3, scales="free") 
 mouse_yearrare = mouse_yearrare  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(n.breaks=8) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15)) 
 
 mouse_yearrare
@@ -86,7 +86,7 @@ skunk = filter(mam_end_join, acceptedGenus=="Spilogale")
 skunk_yearrare = ggplot(skunk, aes(x=year, fill=source)) + 
   geom_bar() + 
   theme_bw() + 
-  labs(x="Year", y ="Number of S. gracilis amphiala Occurences") +   scale_fill_brewer(palette = "Dark2") + facet_wrap(vars(acceptedName), nrow=1, scales="free")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(n.breaks=8)
+  labs(x="Year", y ="Number of Data Points") +   scale_fill_brewer(palette = "Dark2") + facet_wrap(vars(acceptedName), nrow=1, scales="free")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(n.breaks=8)
 
 skunk_yearrare
 
@@ -98,7 +98,7 @@ bat1 = filter(mam_end_join, acceptedGenus=="Antrozous")
 bat1_yearrare = ggplot(bat1, aes(x=year, fill=source)) + 
   geom_bar() + 
   theme_bw() + 
-  labs(x="Year", y ="Number of Occurences") +   scale_fill_brewer(palette = "Dark2") + facet_wrap(vars(acceptedName), nrow=1, scales="free")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(n.breaks=8)
+  labs(x="Year", y ="Number of Data Points") +   scale_fill_brewer(palette = "Dark2") + facet_wrap(vars(acceptedName), nrow=1, scales="free")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(n.breaks=8)
 
 bat1_yearrare
 
@@ -126,7 +126,7 @@ harvmouse_yearrare = ggplot(harv_mouse, aes(x=year, fill=source)) +
 
 harvmouse_yearrare
 
-ggsave(plot=bat1_yearrare, filename="mammal/MammalGraphs/mam_er_harvmouse.png", height=10, width=15, units="cm", dpi=300)
+ggsave(plot=harvmouse_yearrare, filename="mammal/MammalGraphs/mam_er_harvmouse.png", height=10, width=15, units="cm", dpi=300)
 ```
 
 ```{r squirrel}
@@ -144,42 +144,241 @@ ggsave(plot=squirrel_yearrare, filename="mammal/MammalGraphs/mam_er_squirrel.png
 ```{r shrew}
 shrew= filter(mam_end_join, acceptedGenus=="Sorex")
 shrew_yearrare = ggplot(shrew, aes(x=year, fill=source)) + 
-  geom_bar() + 
+  geom_bar(width=0.75) + 
   theme_bw() + 
-  labs(x="Year", y ="Number of Occurences") +   scale_fill_brewer(palette = "Dark2") + facet_wrap(vars(acceptedName), nrow=1)  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(limits=c(1920, 2020), breaks=c(1941, 1983, 1991, 2004))
+  labs(x="Year", y ="Number of Occurences") +   scale_fill_brewer(palette = "Dark2") + facet_wrap(vars(acceptedName), nrow=1)  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(limits=c(1890, 2020), breaks=c(1941, 1983, 1991, 2004))
 
 shrew_yearrare
 
 ggsave(plot=shrew_yearrare, filename="mammal/MammalGraphs/mam_er_shrew.png", height=10, width=15, units="cm", dpi=300)
+
+#combine squirrel and shrew 
+sqshrew = rbind(squirrel, shrew)
+sqshrew_yearrare = ggplot(sqshrew, aes(x=year, fill=source)) + 
+  geom_bar(width=0.75) + 
+  theme_bw() + 
+  labs(x="Year", y ="Number of Occurences") +   scale_fill_brewer(palette = "Dark2") + facet_wrap(vars(acceptedName), nrow=1)  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(limits=c(1920, 2020), breaks=c(1890, 1900, 1920, 1940, 1960, 1980, 2000, 2020))
+
+sqshrew_yearrare
+
+ggsave(plot=sqshrew_yearrare, filename="mammal/MammalGraphs/mam_er_sqshrew.png", height=10, width=30, units="cm", dpi=300)
 ```
 
 ```{r trying to see if island trends is relevant graph (maybe not)}
-mammal_end_island = rbind(skunk, shrew, bat1, squirrel, harv_mouse)
-island_size = read_csv("island_size.csv")
-mammal_end_island2 = merge(mam_end_islandsum, island_size, by="island", all.y=TRUE)
 
-mam_end_islandsum <- mammal_end_island %>%
+mam_end_islandsum <- mam_end_island %>%
   mutate(no_sample = 1) %>%
   group_by(island, acceptedName, source) %>%
   summarise(samples = sum(no_sample))
+
 mam_end_islandsum <- na.omit(subset(mam_end_islandsum, select = c(island, samples, acceptedName, source)))
 island_size = read_csv("island_size.csv")
-mam_end_islandsum2 = merge(mam_end_islandsum, island_size, by="island", all.y=TRUE) %>%
-  replace_na(list(samples =0))
-mam_end_islandsum2 <- na.omit(select = c(acceptedName))
+mam_end_islandsum2 = merge(mam_end_islandsum, island_size, by="island", all.y=TRUE) 
 
-mam_end_islandsum2 <- na.omit(subset(mam_end_islandsum, select = c(samples, acceptedName, source, island)))
+#replaced NAs in acceptedName with one of the species so an NA graph doesn't appear, but doesn't impact other graphs at all
+mammal_end_island2$acceptedName[is.na(mammal_end_island2$acceptedName)] <- "Antrozous pallidus pacificus"
 
-mam_end_island_ex <- ggplot(data = mammal_end_island2, aes(x = samples, y = fct_rev(island), fill=source)) + 
-  geom_bar(stat = "identity") + facet_wrap(vars(acceptedName), nrow=2, scales="free_x") +
+
+mam_end_island_ex <- ggplot(data = mammal_end_island2, aes(x = samples, y = fct_rev(island), fill=source)) + geom_bar(stat = "identity") + facet_wrap(vars(acceptedName), ncol=2, scales="free_x") +
   labs(y ="Island", 
-       x = "Number of Occurences",
+       x = "Number of Data Points",
        fill = "Species") +
-  theme_bw() + 
- + scale_fill_brewer(palette="Paired")
+  theme_bw() +  scale_fill_brewer(palette="Paired")
 
 mam_end_island_ex
 
 #4 observations in the Cal-IBIS dataset 
-ggsave(plot=mam_end_island_ex, filename="mammal/MammalGraphs/mam_end_island_ex.png", height=5, width=8, units="in", dpi=300)
+ggsave(plot=mam_end_island_ex, filename="mammal/MammalGraphs/mam_end_island_ex.png",  height=20, width=30, units="cm", dpi=300)
 ```
+
+
+#Reptiles
+
+```{r}
+rep_inat <- read_csv("reptile/rep_inat.csv")
+
+rep_chis <- read_csv("reptile/rep_chis.csv")
+
+```
+
+
+##Rep Step 2. Combine datasets. Lat and Long included. 
+```{r selecting and combining}
+#inat doesn't have order listed..would need to add 
+rep_inat_combine <- rep_inat %>%
+  rename(class="iconic_tax") %>%
+  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude)
+
+rep_chis_combine <- rep_chis %>%
+  rename(latitude = "decimalLatitude", longitude="decimalLongitude") %>%
+  select(source_1, month, year, island_1, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude) %>%
+  rename(island = "island_1", source = "source_1")
+
+
+rep_master = rbind(rep_inat_combine, rep_chis_combine) %>%
+  # reorder the island names to show up N -> S on list
+  mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente"))
+```
+
+```{r Creating a new datasheet with just endemics}
+rep_end <- read_csv("endemic/rept_end.csv")
+
+rep_end_join = inner_join(rep_master, rep_end)
+
+#5 endemics to make graphs for, one group of two subsp
+
+```
+
+```{r night lizard}
+nightliz = filter(rep_end_join, acceptedGenus=="Xantusia")
+nightliz_yearrare = ggplot(nightliz, aes(x=year, fill=source)) + 
+  geom_bar() + 
+  theme_bw() + 
+  labs(x="Year", y ="Number of Data Points") +   scale_fill_brewer(palette = "Dark2") + facet_wrap(vars(acceptedName), nrow=1, scales="free")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1810, 1840, 1870, 1900, 1930, 1960, 1990, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15)) 
+
+nightliz_yearrare
+
+ggsave(plot=nightliz_yearrare, filename="reptile/ReptileGraphs/rep_er_nightliz.png", height=10, width=30, units="cm", dpi=300)
+```
+
+```{r spiny lizard}
+sceloporus = filter(rep_end_join, acceptedGenus=="Sceloporus")
+sceloporus_yearrare = ggplot(sceloporus, aes(x=year, fill=source)) + 
+  geom_bar() + 
+  theme_bw() + 
+  labs(x="Year", y ="Number of Data Points") +   scale_fill_brewer(palette = "Dark2") + facet_wrap(vars(acceptedName), nrow=1, scales="free")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1890, 1900, 1910, 1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15)) 
+
+sceloporus_yearrare
+
+ggsave(plot=sceloporus_yearrare, filename="reptile/ReptileGraphs/rep_er_sceloporus.png", height=10, width=15, units="cm", dpi=300)
+```
+
+```{r scr gopher snake}
+scrgopher = filter(rep_end_join, acceptedGenus=="Pituophis")
+scrgopher_yearrare = ggplot(scrgopher, aes(x=year, fill=source)) + 
+  geom_bar() + 
+  theme_bw() + 
+  labs(x="Year", y ="Number of Data Points") +   scale_fill_brewer(palette = "Dark2") + facet_wrap(vars(acceptedName), nrow=1, scales="free")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1900, 1910, 1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15)) 
+
+scrgopher_yearrare
+
+ggsave(plot=scrgopher_yearrare, filename="reptile/ReptileGraphs/rep_er_scrgopher.png", height=10, width=15, units="cm", dpi=300)
+```
+
+```{r garter snake}
+garter = filter(rep_end_join, acceptedGenus=="Thamnophis")
+garter_yearrare = ggplot(garter, aes(x=year, fill=source)) + 
+  geom_bar(width=0.5) + 
+  theme_bw() + 
+  labs(x="Year", y ="Number of Data Points") +   scale_fill_brewer(palette = "Dark2") + facet_wrap(vars(acceptedName), nrow=1, scales="free")  + scale_y_continuous(limits=c(0,5), expand=expansion(mult=c(0,0.05))) + scale_x_continuous(limits=c(1919, 1990), breaks=c(1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15)) 
+
+garter_yearrare
+
+ggsave(plot=garter_yearrare, filename="reptile/ReptileGraphs/rep_er_garter.png", height=10, width=15, units="cm", dpi=300)
+```
+
+```{r}
+rep_end_island
+rep_end_islandsum <- rep_end_join %>%
+  mutate(no_sample = 1) %>%
+  group_by(island, acceptedName, source) %>%
+  summarise(samples = sum(no_sample))
+
+mam_end_islandsum <- na.omit(subset(mam_end_islandsum, select = c(island, samples, acceptedName, source)))
+island_size = read_csv("island_size.csv")
+rep_end_islandsum2 = merge(rep_end_islandsum, island_size, by="island", all.y=TRUE) 
+
+#replaced NAs in acceptedName with one of the species so an NA graph doesn't appear, but doesn't impact other graphs at all
+rep_end_islandsum2$acceptedName[is.na(rep_end_islandsum2$acceptedName)] <- "Sceloporus occidentalis becki"
+
+
+rep_end_island_ex <- ggplot(data = rep_end_islandsum2, aes(x = samples, y = fct_rev(island), fill=source)) + geom_bar(stat = "identity") + facet_wrap(vars(acceptedName), nrow=2, scales="free_x") +
+  labs(y ="Island", 
+       x = "Number of Data Points",
+       fill = "Species") +
+  theme_bw() +  scale_fill_brewer(palette="Paired")
+
+rep_end_island_ex
+
+#4 observations in the Cal-IBIS dataset 
+ggsave(plot=rep_end_island_ex, filename="reptile/ReptileGraphs/rep_end_island_ex.png",  height=20, width=40, units="cm", dpi=300)
+
+```
+
+#Amphibians 
+```{r Datasets}
+amph_inat <- read_csv("amphibian/amph_inat.csv")
+
+amph_chis <- read_csv("amphibian/amph_chis.csv")
+
+```
+
+
+##Amph Step 2. Combine datasets. Lat and Long included. 
+```{r selecting and combining}
+#inat doesn't have order listed..would need to add 
+amph_inat_combine <- amph_inat %>%
+  rename(class="iconic_tax") %>%
+  select(source, month, year, island, class, acceptedGenus, acceptedName, latitude, longitude)
+
+amph_chis_combine <- amph_chis %>%
+  rename(latitude = "decimalLatitude", longitude="decimalLongitude", month="month_", year="year_") %>%
+  select(source_1, month, year, island_1, class, acceptedGenus, acceptedName, latitude, longitude) %>%
+  rename(island = "island_1", source = "source_1")
+
+
+amph_master = rbind(amph_inat_combine, amph_chis_combine) %>%
+  # reorder the island names to show up N -> S on list
+  mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente"))
+```
+
+```{r Creating a new datasheet with just endemics}
+amph_end <- read_csv("endemic/amphib_end.csv")
+
+amph_end_join = inner_join(amph_master, amph_end)
+
+#1 endemic
+
+```
+
+```{r salamander}
+
+salamander_yearrare = ggplot(amph_end_join, aes(x=year, fill=source)) + 
+  geom_bar() + 
+  theme_bw() + 
+  labs(x="Year", y ="Number of Data Points") +   scale_fill_brewer(palette = "Dark2") + facet_wrap(vars(acceptedName), nrow=1, scales="free")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1800, 1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15)) 
+
+salamander_yearrare
+
+ggsave(plot=salamander_yearrare, filename="reptile/ReptileGraphs/amph_er_salamander.png", height=10, width=15, units="cm", dpi=300)
+
+#saved in Rep folder
+```
+
+```{r}
+amph_end_islandsum <- amph_end_join %>%
+  mutate(no_sample = 1) %>%
+  group_by(island, acceptedName, source) %>%
+  summarise(samples = sum(no_sample))
+
+
+island_size = read_csv("island_size.csv")
+amph_end_islandsum2 = merge(amph_end_islandsum, island_size, by="island", all.y=TRUE) 
+
+#replaced NAs in acceptedName with one of the species so an NA graph doesn't appear, but doesn't impact other graphs at all
+amph_end_islandsum2$acceptedName[is.na(amph_end_islandsum2$acceptedName)] <- "Batrachoseps pacificus"
+
+
+amph_end_island_ex <- ggplot(data = amph_end_islandsum2, aes(x = samples, y = fct_rev(island), fill=source)) + geom_bar(stat = "identity") + facet_wrap(vars(acceptedName), nrow=1, scales="free_x") +
+  labs(y ="Island", 
+       x = "Number of Data Points",
+       fill = "Species") +
+  theme_bw() +  scale_fill_brewer(palette="Paired")
+
+amph_end_island_ex
+
+#into rep folder
+ggsave(plot=amph_end_island_ex, filename="reptile/ReptileGraphs/amph_end_island_ex.png", height=10, width=15, units="cm", dpi=300)
+
+```
+
