@@ -1,13 +1,15 @@
 ---
-title: "Aves Synonymy"
+title: "Aves Synonymy & Hemiptera Synonymy"
 output: html_notebook
 editor_options: 
   chunk_output_type: console
 ---
 
-This is an R Markdown for the TNC Gap Analysis to complete the synonymy for Aves. DAK has done the Cal-IBIS and SBMNH synonymy. Using lists created from her completed synonymy this code will complete the synonymy for the iNaturalist and eBird datasets. Then a second round was done with the synonymy list she provided. 
+This is an R Markdown for the TNC Gap Analysis to complete the synonymy for Aves and Hemiptera. Aves: DAK has done the Cal-IBIS and SBMNH synonymy. Using lists created from her completed synonymy this code will complete the synonymy for the iNaturalist and eBird datasets. Then a second round was done with the synonymy list she provided. 
 
-9/3 Another round of synonymy updates for the SBMNH datasets which are new (not all the SBMNH was previously included)
+9/3/21 Another round of synonymy updates for the SBMNH datasets which are new (not all the SBMNH was previously included)
+
+9/7/21 Added Hemiptera Synonymy based on Miller syn done by Helen
 
 
 #Download Packages & Data
@@ -17,6 +19,7 @@ library(lubridate)
 library(stringr)
 ```
 
+#Aves
 ```{r Data}
 aves_syn = read_csv("Aves/aves_syn.csv")
 aves_inat_messy = read_csv("Aves/aves_inat_messy.csv")
@@ -24,7 +27,7 @@ aves_ebird_messy = read_csv("Aves/aves_ebird_messy.csv")
 
 ```
 
-#R1 Synonymy
+## Aves R1 Synonymy
 ```{r}
 aves_inat1 <- left_join(aves_inat_messy, aves_syn)
 write.csv(aves_inat1, "Aves/aves_inat1.csv")
@@ -37,7 +40,7 @@ write.csv(aves_ebird1, "Aves/aves_ebird1.csv")
 
 ```
 
-#R2 Synonymy with second list.
+## Aves R2 Synonymy with second list.
 Denise did the synonymy for the missing lines, and I have an updated list to compare the inat and ebird data too, will repeat the same process as above with the new list and the "aves_inat1" & "aves_ebird1" files 
 
 ```{r}
@@ -52,7 +55,7 @@ write.csv(aves_ebird2, "Aves/aves_ebird2.csv", na="")
 #have to do some manual corrects on inat2 due to funky characters 
 ```
 
-# R3 Synonymy 9/3/21 Uploading and doing the synonymy for the new SBMNH datasets 
+## Aves R3 Synonymy 9/3/21 Uploading and doing the synonymy for the new SBMNH datasets 
 ```{r}
 #add synonymy lists
 aves_syn = read_csv("Aves/aves_syn.csv")
@@ -69,4 +72,41 @@ aves_sbmnh_col2 <- left_join(aves_sbmnh_col_messy, aves_syn_complete)
 
 write.csv(aves_sbmnh_obs2, "Aves/aves_sbmnh_obs2.csv", na="")
 write.csv(aves_sbmnh_col2, "Aves/aves_sbmnh_col2.csv", na="")
+```
+
+#Hemiptera
+```{r Add Data}
+hem_syn = read_csv("hemiptera/hem_syn.csv")
+hem_inat_incomp = read_csv("hemiptera/hem_inat.csv") %>%
+  rename(scientificName ="scientific_name")
+hem_chis_incomp = read_csv("hemiptera/hem_chis.csv")
+hem_bold_incomp = read_csv("hemiptera/hem_bold.csv")
+hem_lacm_incomp = read_csv("hemiptera/hem_lacm.csv") 
+```
+
+## Hemiptera R1 Synonymy
+```{r}
+hem_inat1 <- left_join(hem_inat_incomp, hem_syn)
+write.csv(hem_inat1, "hemiptera/hem_inat1.csv", na="")
+
+hem_chis1 <- left_join(hem_chis_incomp, hem_syn)
+write.csv(hem_chis1, "hemiptera/hem_chis1.csv", na="")
+
+hem_bold1 <- left_join(hem_bold_incomp, hem_syn)
+write.csv(hem_bold1, "hemiptera/hem_bold1.csv", na="")
+
+hem_lacm1 <- left_join(hem_lacm_incomp, hem_syn)
+write.csv(hem_lacm1, "hemiptera/hem_lacm1.csv", na="")
+
+hem_inat_syn <- hem_inat1 %>%
+  select(scientificName, acceptedName, acceptedFamily, acceptedGenus)
+hem_chis_syn <- hem_chis1 %>%
+  select(scientificName, acceptedName, acceptedFamily, acceptedGenus)
+hem_bold_syn <- hem_bold1 %>%
+  select(scientificName, acceptedName, acceptedFamily, acceptedGenus)
+hem_lacm_syn <- hem_lacm1 %>%
+  select(scientificName, acceptedName, acceptedFamily, acceptedGenus)
+
+hem_syn_tocheck = rbind(hem_inat_syn, hem_chis_syn, hem_bold_syn, hem_lacm_syn)
+write.csv(hem_syn_tocheck, "hemiptera/hem_syn_tocheck.csv", na="")
 ```
