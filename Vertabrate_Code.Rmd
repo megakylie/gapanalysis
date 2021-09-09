@@ -497,9 +497,9 @@ library(RColorBrewer)
 ```{r}
 aves_inat <- read_csv("aves/aves_inat2.csv")
 aves_ebird <- read_csv("aves/aves_ebird2.csv")
-aves_chis <- read_csv("aves/aves_chis_replacement.csv")
-aves_sbmnh_obs <- read_csv("aves/aves_sbmnh_obs2.csv")
-aves_sbmnh_col <- read_csv("aves/aves_sbmnh_col2.csv")
+aves_chis <- read_csv("aves/aves_chis_090821.csv")
+aves_sbmnh_obs <- read_csv("aves/aves_sbmnh_obs_090821.csv")
+aves_sbmnh_col <- read_csv("aves/aves_sbmnh_col2_090821.csv")
 
 ```
 
@@ -512,11 +512,11 @@ aves_inat_combine <- aves_inat %>%
   select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type)
 
 aves_chis_combine <- aves_chis %>%
-  rename(latitude = "decimalLatitude", longitude="decimalLongitude", year="year_", month="month_", type="collectionType2") %>%
+  rename(latitude = "decimalLatitude", longitude="decimalLongitude", year="year_", month="month_", type="collectionType") %>%
   select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type)
 
 aves_sbmnh_obs_combine <- aves_sbmnh_obs %>%
-  rename(latitude = "decimalLatitude", longitude="decimalLongitude", type="collectionType2") %>%
+  rename(latitude = "decimalLatitude", longitude="decimalLongitude", type="collectionType") %>%
   select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type)
 
 aves_sbmnh_col_combine <- aves_sbmnh_col %>%
@@ -555,7 +555,7 @@ aves_island <- ggplot(data = aves_islandsum, aes(x = samples, y = fct_rev(island
        x = "Number of Bird Data Points",
        fill = "Data Source") +
   theme_bw() + 
-  scale_x_continuous(limits =c(0,120000), expand = c(0,0)) +
+  scale_x_continuous(limits =c(0,121000), expand = c(0,0)) +
   scale_fill_brewer(palette = "Dark2")
 
 aves_island 
@@ -563,7 +563,8 @@ aves_island
 ggsave(plot=aves_island, filename="aves/AvesGraphs/aves_island.png", height=5, width=8, units="in", dpi=300)
 
 #by collection type
-aves_master$type = as.character(aves_master$type)aves_islandsumty <- aves_master %>%
+aves_master$type = as.character(aves_master$type)
+aves_islandsumty <- aves_master %>%
   mutate(no_sample = 1) %>%
   group_by(island, type) %>%
   summarise(samples = sum(no_sample)) %>%
@@ -576,7 +577,7 @@ aves_islandtype <- ggplot(data = aves_islandsumty, aes(x = samples, y = fct_rev(
        x = "Number of Bird Data Points",
        fill = "Type") +
   theme_bw() + 
-  scale_x_continuous(limits =c(0,120000), expand = c(0,0)) +
+  scale_x_continuous(limits =c(0,121000), expand = c(0,0)) +
   scale_fill_brewer(palette = "Paired")
 
 aves_islandtype
