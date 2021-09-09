@@ -146,14 +146,14 @@ ggsave(plot=harvmouse_yearrare, filename="mammal/MammalGraphs/mam_er_harvmouse.p
 
 ```{r squirrel}
 squirrel = filter(mam_end_join, acceptedGenus=="Otospermophilus")
-squirrel_yearrare = ggplot(squirrel, aes(x=year, fill=source)) + 
+squirrel_yearrare = ggplot(mam_end_island, aes(x=year, fill=source)) + 
   geom_bar() + 
   theme_bw() + 
-  labs(x="Year", y ="Number of Occurences") +   scale_fill_brewer(palette = "Dark2") + facet_wrap(vars(acceptedName), nrow=1, scales="free")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(n.breaks=8)
-
+  labs(x="Year", y ="Number of Occurences") +   scale_fill_brewer(palette = "Dark2") + facet_wrap(vars(acceptedName), nrow=2, scales="free")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(n.breaks=8) +
+theme(axis.text = element_text(size = 8), axis.title = element_text(size=12), strip.text = element_text(size=14)) 
 squirrel_yearrare
 
-ggsave(plot=squirrel_yearrare, filename="mammal/MammalGraphs/mam_er_squirrel.png", height=10, width=15, units="cm", dpi=300)
+ggsave(plot=squirrel_yearrare, filename="mammal/MammalGraphs/mam_er_endemic_combo.png", height=20, width=30, units="cm", dpi=300)
 ```
 
 ```{r shrew}
@@ -180,7 +180,7 @@ ggsave(plot=sqshrew_yearrare, filename="mammal/MammalGraphs/mam_er_sqshrew.png",
 ```
 
 ```{r taxa by island}
-mam_end_island = rbind(harv_mouse, bat1, shrew, squirrel)
+mam_end_island = rbind(harv_mouse, shrew, squirrel, skunk)
 mam_end_islandsum <- mam_end_island %>%
   mutate(no_sample = 1) %>%
   group_by(island, acceptedName, source) %>%
@@ -191,7 +191,7 @@ island_size = read_csv("island_size.csv")
 mam_end_islandsum2 = merge(mam_end_islandsum, island_size, by="island", all.y=TRUE) 
 
 #replaced NAs in acceptedName with one of the species so an NA graph doesn't appear, but doesn't impact other graphs at all
-mam_end_islandsum2$acceptedName[is.na(mam_end_islandsum2$acceptedName)] <- "Antrozous pallidus pacificus"
+mam_end_islandsum2$acceptedName[is.na(mam_end_islandsum2$acceptedName)] <- "Sorex ornatus willetti"
 
 
 mam_end_island_ex <- ggplot(data = mam_end_islandsum2, aes(x = samples, y = fct_rev(island), fill=source)) + geom_bar(stat = "identity") + facet_wrap(vars(acceptedName), ncol=2, scales="free_x") +
@@ -203,6 +203,81 @@ mam_end_island_ex
 
 #4 observations in the Cal-IBIS dataset 
 ggsave(plot=mam_end_island_ex, filename="mammal/MammalGraphs/mam_end_island_ex.png",  height=20, width=30, units="cm", dpi=300)
+```
+
+```{r bats island}
+mam_end_island_bat 
+mam_end_islandsum_bats <- bats %>%
+  mutate(no_sample = 1) %>%
+  group_by(island, acceptedName2, source) %>%
+  summarise(samples = sum(no_sample))
+
+mam_end_islandsum_bats <- na.omit(subset(mam_end_islandsum_bats, select = c(island, samples, acceptedName2, source)))
+island_size = read_csv("island_size.csv")
+mam_end_islandsum2_bats = merge(mam_end_islandsum_bats, island_size, by="island", all.y=TRUE) 
+
+#replaced NAs in acceptedName with one of the species so an NA graph doesn't appear, but doesn't impact other graphs at all
+mam_end_islandsum2_bats$acceptedName2[is.na(mam_end_islandsum2_bats$acceptedName2)] <- "Corynorhinus townsendii pallescens"
+
+
+mam_end_island_bats <- ggplot(data = mam_end_islandsum2_bats, aes(x = samples, y = fct_rev(island), fill=source)) + geom_bar(stat = "identity") + facet_wrap(vars(acceptedName2), ncol=2, scales="free_x") +
+  labs(y ="Island", 
+       x = "Number of Data Points",
+       fill = "source") +
+  theme_bw() +  scale_fill_brewer(palette="Dark2") + scale_x_continuous(expand=expansion(mult=c(0,0.05))) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=12), strip.text = element_text(size=14)) 
+mam_end_island_bats
+
+ggsave(plot=mam_end_island_bats, filename="mammal/MammalGraphs/mam_end_island_bats.png",  height=20, width=30, units="cm", dpi=300)
+```
+
+```{r fox island}
+
+fox_end_islandsum <- fox %>%
+  mutate(no_sample = 1) %>%
+  group_by(island, acceptedName, source) %>%
+  summarise(samples = sum(no_sample))
+
+fox_end_islandsum <- na.omit(subset(fox_end_islandsum_, select = c(island, samples, acceptedName2, source)))
+island_size = read_csv("island_size.csv")
+fox_end_islandsum2 = merge(fox_end_islandsum, island_size, by="island", all.y=TRUE) 
+
+#replaced NAs in acceptedName with one of the species so an NA graph doesn't appear, but doesn't impact other graphs at all
+fox_end_islandsum2$acceptedName[is.na(fox_end_islandsum2$acceptedName)] <- "Urocyon littoralis littoralis"
+
+
+fox_end_island <- ggplot(data = fox_end_islandsum2, aes(x = samples, y = fct_rev(island), fill=source)) + geom_bar(stat = "identity") + facet_wrap(vars(acceptedName), ncol=3, scales="free_x") +
+  labs(y ="Island", 
+       x = "Number of Data Points",
+       fill = "source") +
+  theme_bw() +  scale_fill_brewer(palette="Dark2") + scale_x_continuous(expand=expansion(mult=c(0,0.05))) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=12), strip.text = element_text(size=14)) 
+fox_end_island
+
+ggsave(plot=fox_end_island, filename="mammal/MammalGraphs/fox_end_island.png",  height=20, width=45, units="cm", dpi=300)
+```
+
+```{r mouse island}
+
+mouse_end_islandsum <- mouse %>%
+  mutate(no_sample = 1) %>%
+  group_by(island, acceptedName, source) %>%
+  summarise(samples = sum(no_sample))
+
+mouse_end_islandsum <- na.omit(subset(mouse_end_islandsum_, select = c(island, samples, acceptedName2, source)))
+island_size = read_csv("island_size.csv")
+mouse_end_islandsum2 = merge(mouse_end_islandsum, island_size, by="island", all.y=TRUE) 
+
+#replaced NAs in acceptedName with one of the species so an NA graph doesn't appear, but doesn't impact other graphs at all
+fox_end_islandsum2$acceptedName[is.na(fox_end_islandsum2$acceptedName)] <- "Urocyon littoralis littoralis"
+
+
+mouse_end_island <- ggplot(data = mouse_end_islandsum, aes(x = samples, y = fct_rev(island), fill=source)) + geom_bar(stat = "identity") + facet_wrap(vars(acceptedName), ncol=3, scales="free_x") +
+  labs(y ="Island", 
+       x = "Number of Data Points",
+       fill = "source") +
+  theme_bw() +  scale_fill_brewer(palette="Dark2") + scale_x_continuous(expand=expansion(mult=c(0,0.05))) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=12), strip.text = element_text(size=14)) 
+mouse_end_island
+
+ggsave(plot=mouse_end_island, filename="mammal/MammalGraphs/mouse_end_island.png", height=30, width=45, units="cm", dpi=300)
 ```
 
 
