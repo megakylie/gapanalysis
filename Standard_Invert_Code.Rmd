@@ -1397,7 +1397,6 @@ arac_island_propgraph
 ggsave(plot=arac_island_propgraph, filename="arachnida/ArachnidaGraphs/arac_island_prop.png", height=5, width=8, units="in", dpi=300)
 ```
 
-
 #### Temporal Graph
 ```{r Graphing by year}
 
@@ -1428,7 +1427,6 @@ ggsave(plot=arac_yeargraph2, filename="arachnida/ArachnidaGraphs/arac_year2.png"
 ```
 
 ####Seasonal Graph 
-
 ```{r Graphing by month}
 # by month and island 
 arac_year$month <- as.factor(arac_year$month)
@@ -1483,13 +1481,74 @@ arac_table_worder <- left_join(arac_table_complete, arac_combo3)
 write.csv(arac_table_worder, "arachnida/ArachnidaGraphs/arac_table_complete.csv", na="0")
 ```
 
+```{r Arac Literature comparison}
+ arac_lit_miller = read_csv("arachnida/arac_lit_miller.csv")
+lit_new = read_csv("island_invert_lit_new.csv")
+arac_lit_new = filter(lit_new, class=="Arachnida") 
+
+arac_lit_fam = rbind(arac_lit_miller, arac_lit_new)
+
+arac_occ_fam = unique(c(as.character(arac_master$acceptedFamily)))
+arac_lit_fam = unique(c(as.character(arac_lit_miller$acceptedFamily)))
+aracfam = setdiff(arac_lit_fam, arac_occ_fam)
+aracfam #list of 71 different 
+
+#against new lit
+arac_lit_fam_new = unique(c(as.character(arac_lit_new$acceptedFamily)))
+aracfam_new = setdiff(arac_lit_fam_new, arac_occ_fam)
+aracfam_new
+
+arac_lit1 = as.data.frame(aracfam)
+arac_lit2 = as.data.frame(aracfam_new) %>%
+  rename(aracfam = "aracfam_new")
+arac_lit_families = rbind(arac_lit1, arac_lit2)
+
+
+#GENUS
+arac_occ_gen = unique(c(as.character(arac_master$acceptedGenus)))
+arac_lit_gen = unique(c(as.character(arac_lit_miller$acceptedGenus)))
+aracgen = setdiff(arac_lit_gen, arac_occ_gen)
+aracgen #list of 71 different 
+
+#against new lit
+arac_lit_gen_new = unique(c(as.character(arac_lit_new$genus)))
+aracgen_new = setdiff(arac_lit_gen_new, arac_occ_gen)
+aracgen_new
+
+arac_lit1gen = as.data.frame(aracgen)
+arac_lit2gen = as.data.frame(aracgen_new) %>%
+  rename(aracgen = "aracgen_new")
+arac_lit_genera = rbind(arac_lit1gen, arac_lit2gen)
+
+#SPECIES
+arac_occ_sp = unique(c(as.character(arac_master$acceptedName)))
+arac_lit_sp = unique(c(as.character(arac_lit_miller$acceptedName)))
+aracsp = setdiff(arac_lit_sp, arac_occ_sp)
+aracsp #list of 71 different 
+
+#against new lit
+arac_lit_sp_new = unique(c(as.character(arac_lit_new$scientificName)))
+aracsp_new = setdiff(arac_lit_sp_new, arac_occ_sp)
+aracsp_new
+
+arac_lit1sp = as.data.frame(aracsp)
+arac_lit2sp = as.data.frame(aracsp_new) %>%
+  rename(aracsp = "aracsp_new")
+arac_lit_species = rbind(arac_lit1sp, arac_lit2sp)
+
+write.csv(arac_lit_families, "arachnida/arac_lit_fam.csv", na="")
+write.csv(arac_lit_genera, "arachnida/arac_lit_gen.csv", na="")
+write.csv(arac_lit_species, "arachnida/arac_lit_sp.csv", na="")
+```
+
+
 ```{r Combine all masters to check against lit list}
 
 master_m = rbind(col_master, lep_master) %>%
   select(source, year, month, island, order, acceptedFamily, acceptedGenus, acceptedName) 
 arac = arac_master %>%
   select(source, year, month,  island, order, acceptedFamily, acceptedGenus, acceptedName)
-master_master = rbind(master_m, arac, dip_master)
+master_master = rbind(master_m, arac)
 
 write.csv(master_master, "arachnida/master_master.csv", na="")
 
