@@ -499,7 +499,7 @@ aves_inat <- read_csv("aves/aves_inat2.csv")
 aves_ebird <- read_csv("aves/aves_ebird2.csv")
 aves_chis <- read_csv("aves/aves_chis_090821.csv")
 aves_sbmnh_obs <- read_csv("aves/aves_sbmnh_obs_090821.csv")
-aves_sbmnh_col <- read_csv("aves/aves_sbmnh_col2_090821.csv")
+aves_sbmnh_col <- read_csv("aves/aves_sbmnh_col_09082021.csv")
 
 ```
 
@@ -685,7 +685,7 @@ ggsave(plot=aves_ismonth, filename="aves/AvesGraphs/aves_seasonal.png", height=5
 
 ```
 
-```{r Reptile Collection Type}
+```{r Aves Collection Type}
 aves_colltype = rbind(aves_sbmnh_combine, aves_chis_combine)
 aves_colltype = na.omit(subset(aves_chis_combine, select = c(collectionType, source)))
 aves_collgraph <- ggplot(aves_colltype, aes(x=collectionType, fill=source)) + geom_bar() + theme_bw()  + labs(x="Collection Type", y="Number of Bird Specimens") + scale_y_continuous(expand=c(0,0), limits=c(0,6000), breaks=c(0, 1000, 2000, 3000, 4000, 5000, 6000))
@@ -753,37 +753,61 @@ aves_master2 = aves_master %>%
   select(acceptedFamily, acceptedGenus, acceptedName)
 
 avestable = left_join(avestab2, aves_master2 )
+avestable = distinct(avestable)
 
-coltab_inat = table(col_inat$acceptedFamily)
-coltab_inat = as.data.frame.table(coltab_inat)
-coltab_inat <- coltab_inat %>%
-  rename(iNaturalist = "Freq") 
+avestab_inat = table(aves_inat$acceptedName)
+avestab_inat = as.data.frame.table(avestab_inat) %>%
+  rename(iNaturalist = "Freq", acceptedName = "Var1")
 
-coltab_chis = table(col_chis$acceptedFamily)
-coltab_chis = as.data.frame.table(coltab_chis)
-coltab_chis <- coltab_chis %>%
-  rename(CalIBIS = "Freq") 
+avestab_chis = table(aves_chis$acceptedName)
+avestab_chis = as.data.frame.table(avestab_chis) %>%
+  rename(CalIBIS = "Freq", acceptedName = "Var1") 
 
-coltab_lacm = table(col_lacm$acceptedFamily)
-coltab_lacm = as.data.frame.table(coltab_lacm)
-coltab_lacm <- coltab_lacm %>%
-  rename(LACM = "Freq") 
+avestab_ebird = table(aves_ebird$acceptedName)
+avestab_ebird = as.data.frame.table(avestab_ebird) %>%
+  rename(EBIRD = "Freq", acceptedName = "Var1") 
 
-col_table <- left_join(coltab, coltab_inat)
-col_table2 <- left_join(col_table, coltab_chis)
-col_table3 <- left_join(col_table2, coltab_lacm)
+avestab_sbmnh_col = table(aves_sbmnh_col$acceptedName)
+avestab_sbmnh_col = as.data.frame.table(avestab_sbmnh_col) %>%
+  rename(SBMNHcol= "Freq",  acceptedName = "Var1") 
 
-col_table_complete <-col_table3 %>%
-  rename(Sum = "Freq", Family = "Var1")
+avestab_sbmnh_obs = table(aves_sbmnh_obs$acceptedName)
+avestab_sbmnh_obs = as.data.frame.table(avestab_sbmnh_obs) %>%
+  rename(SBMNHobs= "Freq",  acceptedName = "Var1") 
 
-col_table_complete2 <- col_table_complete %>%
-  relocate("Family", "CalIBIS", "iNaturalist", "LACM", "Sum") %>%
-  mutate(Percentage = (Sum/20925))
+aves_table <- left_join(avestable, avestab_inat)
+aves_table2 <- left_join(aves_table, avestab_chis)
+aves_table3 <- left_join(aves_table2, avestab_ebird)
+aves_table4 <- left_join(aves_table3, avestab_sbmnh_col)
+aves_table5 <- left_join(aves_table4, avestab_sbmnh_obs)
+
+aves_table_complete <-aves_table5 %>%
+  rename(Species = "acceptedName", Family = "acceptedFamily", Genus = "acceptedGenus") %>%
+  relocate("Family", "Genus", "Species", "CalIBIS", "SBMNHcol", "SBMNHobs", "EBIRD", "iNaturalist","total") 
 
 
-write.csv(col_table_complete2, "coleoptera/ColeopteraGraphs/col_table_complete.csv", na="0")
-write.csv(col_master, "coleoptera/col_master.csv", na="")
+write.csv(aves_table_complete, "aves/AvesGraphs/ave_table_complete.csv", na="0")
 
+# NOW DOING A TABLE BY Collections v Observations
+aves_obs = rbind(aves_inat_combine, aves_ebird_combine, aves_sbmnh_obs_combine)
+aves_col = rbind(aves_chis_combine, aves_sbmnh_col_combine)
+
+avestab_obs = table(aves_obs$acceptedName)
+avestab_obs = as.data.frame.table(avestab_obs) %>%
+  rename(Observations = "Freq", acceptedName = "Var1") 
+
+avestab_col = table(aves_col$acceptedName)
+avestab_col = as.data.frame.table(avestab_col) %>%
+  rename(Collections = "Freq", acceptedName = "Var1") 
+
+avestable_combo = left_join(avestable, avestab_obs)
+avestable_combo2 = left_join(avestable_combo, avestab_col)
+
+aves_table_combo_complete <- avestable_combo2 %>%
+   rename(Species = "acceptedName", Family = "acceptedFamily", Genus = "acceptedGenus") %>%
+  relocate("Family", "Genus", "Species", "Collections", "Observations","total") 
+
+write.csv(aves_table_combo_complete, "aves/AvesGraphs/ave_table_combo_complete.csv", na="0")
 
 ```
 
