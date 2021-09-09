@@ -743,4 +743,47 @@ write.csv(aves_table4, "aves/AvesGraphs/aves_complete_table.csv")
 
 ```
 
+```{r Family by Source Table}
+avestab= table(aves_master$acceptedName)
+avestab = as.data.frame.table(avestab) 
+avestab2 = avestab %>%
+  rename(acceptedName = "Var1", total = "Freq")
+
+aves_master2 = aves_master %>%
+  select(acceptedFamily, acceptedGenus, acceptedName)
+
+avestable = left_join(avestab2, aves_master2 )
+
+coltab_inat = table(col_inat$acceptedFamily)
+coltab_inat = as.data.frame.table(coltab_inat)
+coltab_inat <- coltab_inat %>%
+  rename(iNaturalist = "Freq") 
+
+coltab_chis = table(col_chis$acceptedFamily)
+coltab_chis = as.data.frame.table(coltab_chis)
+coltab_chis <- coltab_chis %>%
+  rename(CalIBIS = "Freq") 
+
+coltab_lacm = table(col_lacm$acceptedFamily)
+coltab_lacm = as.data.frame.table(coltab_lacm)
+coltab_lacm <- coltab_lacm %>%
+  rename(LACM = "Freq") 
+
+col_table <- left_join(coltab, coltab_inat)
+col_table2 <- left_join(col_table, coltab_chis)
+col_table3 <- left_join(col_table2, coltab_lacm)
+
+col_table_complete <-col_table3 %>%
+  rename(Sum = "Freq", Family = "Var1")
+
+col_table_complete2 <- col_table_complete %>%
+  relocate("Family", "CalIBIS", "iNaturalist", "LACM", "Sum") %>%
+  mutate(Percentage = (Sum/20925))
+
+
+write.csv(col_table_complete2, "coleoptera/ColeopteraGraphs/col_table_complete.csv", na="0")
+write.csv(col_master, "coleoptera/col_master.csv", na="")
+
+
+```
 
