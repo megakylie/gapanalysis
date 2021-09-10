@@ -44,15 +44,20 @@ write.csv(aves_ebird1, "Aves/aves_ebird1.csv")
 Denise did the synonymy for the missing lines, and I have an updated list to compare the inat and ebird data too, will repeat the same process as above with the new list and the "aves_inat1" & "aves_ebird1" files 
 
 ```{r}
+aves_syn = read_csv("Aves/aves_syn.csv")
 aves_syn2 = read_csv("Aves/aves_syn2.csv")
 aves_syn_complete = rbind(aves_syn, aves_syn2)
+write.csv(aves_syn_complete, "Aves/aves_syn_complete.csv", na="")
+
+aves_syn_complete = read_csv("Aves/aves_syn_compete.csv")
 
 aves_inat2 <- left_join(aves_inat_messy, aves_syn_complete)
 aves_ebird2 <- left_join(aves_ebird_messy, aves_syn_complete)
 
 write.csv(aves_inat2, "Aves/aves_inat2.csv", na="")
 write.csv(aves_ebird2, "Aves/aves_ebird2.csv", na="")
-#have to do some manual corrects on inat2 due to funky characters 
+
+#have to do some manual corrects on inat2 due to funky characters, and removed MX islands, now inat3
 ```
 
 ## Aves R3 Synonymy 9/3/21 Uploading and doing the synonymy for the new SBMNH datasets 
@@ -61,7 +66,7 @@ write.csv(aves_ebird2, "Aves/aves_ebird2.csv", na="")
 aves_syn = read_csv("Aves/aves_syn.csv")
 aves_syn2 = read_csv("Aves/aves_syn2.csv")
 aves_syn_complete = rbind(aves_syn, aves_syn2)
-
+write.csv(aves_syn_complete, "Aves/aves_syn_compete.csv", na="")
 
 aves_sbmnh_obs_messy= read_csv("Aves/aves_sbmnh_obs.csv")
 aves_sbmnh_col_messy = read_csv("Aves/aves_sbmnh_col.csv")
@@ -72,9 +77,11 @@ aves_sbmnh_col2 <- left_join(aves_sbmnh_col_messy, aves_syn_complete)
 
 write.csv(aves_sbmnh_obs2, "Aves/aves_sbmnh_obs2.csv", na="")
 write.csv(aves_sbmnh_col2, "Aves/aves_sbmnh_col2.csv", na="")
+
+#Issues when rare taxa list came up, some were synonymized up to species and there are subspecies on the list, fixed the inat and ebird synonymy here but because there were some unkwn changes done to the the sbmnh obs and col list I will do it separately in excel
 ```
 
-#Hemiptera
+#Hemiptera R1 
 ```{r Add Data}
 hem_syn = read_csv("hemiptera/hem_syn.csv")
 hem_inat_incomp = read_csv("hemiptera/hem_inat.csv") %>%
@@ -109,4 +116,29 @@ hem_lacm_syn <- hem_lacm1 %>%
 
 hem_syn_tocheck = rbind(hem_inat_syn, hem_chis_syn, hem_bold_syn, hem_lacm_syn)
 write.csv(hem_syn_tocheck, "hemiptera/hem_syn_tocheck.csv", na="")
+```
+
+#Hemiptera R2 Synonymy
+```{r Add Data}
+hem_syn_round2 = read_csv("hemiptera/hym_syn_round2.csv") %>%
+  select(acceptedFamily, acceptedGenus, acceptedName, scientificName)
+hem_inat1 = read_csv("hemiptera/hem_inat.csv") %>%
+  rename(scientificName ="scientific_name")
+hem_chis1 = read_csv("hemiptera/hem_chis.csv")
+hem_bold1 = read_csv("hemiptera/hem_bold.csv")
+hem_lacm1 = read_csv("hemiptera/hem_lacm.csv") 
+
+hem_inat2 <- left_join(hem_inat1, hem_syn_round2)
+write.csv(hem_inat2, "hemiptera/hem_inat2.csv", na="")
+
+hem_chis2 <- left_join(hem_chis1, hem_syn_round2)
+write.csv(hem_chis2, "hemiptera/hem_chis2.csv", na="")
+
+hem_bold2 <- left_join(hem_bold1, hem_syn_round2)
+write.csv(hem_bold2, "hemiptera/hem_bold2.csv", na="")
+
+hem_lacm2 <- left_join(hem_lacm1, hem_syn_round2)
+write.csv(hem_lacm2, "hemiptera/hem_lacm2.csv", na="")
+
+
 ```

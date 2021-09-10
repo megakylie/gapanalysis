@@ -472,36 +472,37 @@ ggsave(plot=amph_end_island_ex, filename="reptile/ReptileGraphs/amph_end_island_
 #
 #BIRDS
 ```{r bird data}
-aves_end = read_csv("aves/aves_end.csv")
 
 aves_chis = read_csv("aves/aves_chis_replacement.csv")
 aves_ebird = read_csv("aves/aves_ebird2.csv")
-aves_inat = read_csv("aves/aves_inat2.csv")
-aves_sbmnh_obs = read_csv("aves/aves_sbmnh_obs2_09082021.csv")
-aves_sbmnh_col = read_csv("aves/aves_sbmnh_col_09082021.csv")
+aves_inat = read_csv("aves/aves_inat3.csv")
+aves_sbmnh_obs = read_csv("aves/aves_sbmnh_obs3.csv")
+aves_sbmnh_col = read_csv("aves/aves_sbmnh_col3.csv")
 
 ```
 
 ```{r bird master}
 aves_inat_combine <- aves_inat %>%
   rename(class="iconic_tax", type="collectionType") %>%
-  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type)
+  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, scientificName) %>%
+  add_column(family= NA, genus =NA)
 
 aves_chis_combine <- aves_chis %>%
   rename(latitude = "decimalLatitude", longitude="decimalLongitude", year="year_", month="month_", type="collectionType") %>%
-  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type)
+  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, family, genus, scientificName)
 
 aves_sbmnh_obs_combine <- aves_sbmnh_obs %>%
   rename(latitude = "decimalLatitude", longitude="decimalLongitude", type="collectionType") %>%
-  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type)
+  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, family, genus, scientificName)
 
 aves_sbmnh_col_combine <- aves_sbmnh_col %>%
   rename(latitude = "decimalLatitude", longitude="decimalLongitude", type="collectionType") %>%
-  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type)
+  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, family, genus, scientificName)
 
 aves_ebird_combine <- aves_ebird %>%
   rename(latitude = "decimalLatitude", longitude="decimalLongitude", year="year_", month="month_", type = "collection Type") %>%
-  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type)
+  select(month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, family, genus, scientificName) %>%
+  add_column(source="EBIRD")
   
 aves_master = rbind(aves_inat_combine, aves_chis_combine, aves_sbmnh_obs_combine, aves_sbmnh_col_combine, aves_ebird_combine) %>%
   # reorder the island names to show up N -> S on list
@@ -509,9 +510,10 @@ aves_master = rbind(aves_inat_combine, aves_chis_combine, aves_sbmnh_obs_combine
 ```
 
 ```{r Creating a new datasheet with just endemics and rare}
-aves_end <- read_csv("aves/aves_end2.csv")
+aves_end <- read_csv("aves/aves_end_grouped.csv")
 
-aves_end_join = inner_join(aves_master, aves_end)
+aves_end_join = inner_join(aves_master, aves_end) %>%
+ mutate(source2 = fct_relevel(source, "Cal-IBIS", "iNaturalist", "EBIRD", "SBMNH Collections", "SBMNH Observations"))
 
 #unique acceptedName to check all 51 are present
 avesdata = unique(c(as.character(aves_end_join$acceptedName)))
@@ -519,7 +521,7 @@ avesend = unique(c(as.character(aves_end$acceptedName)))
 diffaves = setdiff(avesend, avesdata)
 diffaves
 #Circus cyaneus and Rhynchops niger are not currently present in occurence data, synonymy issue?
-# Rynhops niger, changed it csv. now onlt diff by Circus cyaneus, which I think was meant to be local C. hudsonius bc C. cyaneus is native to Eurasia, just added a new row with it to csv, check with DAK
+# Rynhops niger, changed it csv. now onlt diff by Circus cyaneus, which I think was meant to be local C. hudsonius bc C. cyaneus is native to Eurasia, just added a new row with it to csv, check with DAK, hudsonius is syn, fixed and the issues with rare subsp fixed
 ```
 
 ```{r Creating endemic only graphs}
@@ -553,95 +555,626 @@ ggsave(plot=aves_end_island, filename="aves/AvesGraphs/aves_endemic_island.png",
 
 ```
 
-```{r Creating non-endemic rare only graphs}
-#FIX 
-aves_rare = filter(aves_end_join,x =="Branta") 
+
+```{r bird group A Accipitridae}
+#brewer.pal(5, name="Dark2") Color codes for the brewer colors, need 1, 2 and 4 for this one
+#[1] "#1B9E77" "#D95F02" "#7570B3" "#E7298A" "#66A61E"
+# different lighter green "#A6D96A
+aPalette <- c("#1B9E77", "#D95F02", "#7FBC41")
+
+aves_end_a = filter(aves_end_join, group=="a")
 
 #temporal
-aves_endemic_year = ggplot(aves_endemic, aes(x=year, fill=source2)) + 
+aves_a_year = ggplot(aves_end_a, aes(x=year, fill=source2)) + 
   geom_bar(width=0.5) + 
   theme_bw() + 
-  labs(x="Year", y ="Number of Data Points", fill="source") +   scale_fill_brewer(palette = "Dark2") + facet_wrap(vars(acceptedName), nrow=4, scales="free")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
-aves_endemic_year
+  labs(x="Year", y ="Number of Data Points", fill="source") + scale_fill_manual(values=aPalette) + facet_wrap(vars(acceptedName), nrow=2, scales="free_y")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+aves_a_year
 
-ggsave(plot=aves_endemic_year, filename="aves/AvesGraphs/aves_endemic_year.png", height=40, width=45, units="cm", dpi=300)
+ggsave(plot=aves_a_year, filename="aves/AvesGraphs/aves_a_year.png", height=20, width=35, units="cm", dpi=300)
 ```
-```{r endemic island}
+```{r bird A island}
 
-aves_endemic_islandsum <- aves_endemic %>%
+aves_a_islandsum <- aves_end_a %>%
   mutate(no_sample = 1) %>%
   group_by(island, acceptedName, source2) %>%
   summarise(samples = sum(no_sample))
 
-aves_endemic_islandsum2 <- na.omit(subset(aves_endemic_islandsum, select = c(island, samples, source2, acceptedName)))
+aves_a_islandsum2 <- na.omit(subset(aves_a_islandsum, select = c(island, samples, source2, acceptedName)))
 
-aves_end_island <- ggplot(data = aves_endemic_islandsum2, aes(x = samples, y = fct_rev(island), fill=source2)) + geom_bar(stat = "identity") + facet_wrap(vars(acceptedName), nrow=4, scales="free_x") +
-  labs(y ="Island",  x = "Number of Data Points", fill = "source") + theme_bw() +  scale_fill_brewer(palette="Dark2") + scale_x_continuous(expand=expansion(mult=c(0,0.5))) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+aves_a_island <- ggplot(data = aves_a_islandsum2, aes(x = samples, y = fct_rev(island), fill=source2)) + geom_bar(stat = "identity") + facet_wrap(vars(acceptedName), nrow=2, scales="free_x") +
+  labs(y ="Island",  x = "Number of Data Points", fill = "source") + theme_bw() + scale_fill_manual(values=aPalette) + scale_x_continuous(expand=expansion(mult=c(0,0.05))) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
 
-aves_end_island
+aves_a_island
 
-ggsave(plot=aves_end_island, filename="aves/AvesGraphs/aves_endemic_island.png", height=40, width=45, units="cm", dpi=300)
-
+ggsave(plot=aves_a_island, filename="aves/AvesGraphs/aves_a_island.png", height=20, width=35, units="cm", dpi=300)
 ```
 
-```{r rare seabird temporal }
-aves_rare_seabird = filter(aves_end_join, group=="2") %>%
-    mutate(source2 = fct_relevel(source, "Cal-IBIS", "iNaturalist", "EBIRD", "SBMNH Collections", "SBMNH Observations"))
+```{r bird group B Anatidae }
+#brewer.pal(5, name="Dark2") Color codes for the brewer colors, need 1, 2 and 4 for this one
+#[1] Cal-IBIS "#1B9E77" iNaturalist "#D95F02" "EBIRD #7570B3" SBMNH Col "#E7298A" SBMNH Obs "#7FBC41"
+bPalette <- c("#D95F02", "#7570B3", "#7FBC41")
+
+aves_end_b = filter(aves_end_join, group=="b")
 
 #temporal
-aves_seabird_year = ggplot(aves_rare_seabird, aes(x=year, fill=source2)) + 
+aves_b_year = ggplot(aves_end_b, aes(x=year, fill=source2)) + 
   geom_bar(width=0.5) + 
   theme_bw() + 
-  labs(x="Year", y ="Number of Data Points", fill="source") +   scale_fill_brewer(palette = "Dark2") + facet_wrap(vars(acceptedName), nrow=5, scales="free")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
-aves_seabird_year
+  labs(x="Year", y ="Number of Data Points", fill="source") +  scale_fill_manual(values=bPalette) + facet_wrap(vars(acceptedName), nrow=2, scales="free_y")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+aves_b_year
 
-ggsave(plot=aves_seabird_year, filename="aves/AvesGraphs/aves_seabird_year.png", height=50, width=45, units="cm", dpi=300)
+ggsave(plot=aves_b_year, filename="aves/AvesGraphs/aves_B_year.png", height=20, width=35, units="cm", dpi=300)
 ```
-```{r rare seabird island}
+```{r bird B island}
 
-aves_seabird_islandsum <- aves_rare_seabird %>%
+aves_b_islandsum <- aves_end_b %>%
   mutate(no_sample = 1) %>%
   group_by(island, acceptedName, source2) %>%
   summarise(samples = sum(no_sample))
 
-aves_seabird_islandsum2 <- na.omit(subset(aves_seabird_islandsum, select = c(island, samples, source2, acceptedName)))
+aves_b_islandsum2 <- na.omit(subset(aves_b_islandsum, select = c(island, samples, source2, acceptedName)))
 
-aves_seabird_island <- ggplot(data = aves_seabird_islandsum2, aes(x = samples, y = fct_rev(island), fill=source2)) + geom_bar(stat = "identity") + facet_wrap(vars(acceptedName), nrow=5, scales="free_x") +
-  labs(y ="Island",  x = "Number of Data Points", fill = "source") + theme_bw() +  scale_fill_brewer(palette="Dark2") + scale_x_continuous(expand=expansion(mult=c(0,0.5))) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+aves_b_island <- ggplot(data = aves_b_islandsum2, aes(x = samples, y = fct_rev(island), fill=source2)) + geom_bar(stat = "identity") + facet_wrap(vars(acceptedName), nrow=2, scales="free_x") +
+  labs(y ="Island",  x = "Number of Data Points", fill = "source") + theme_bw() + scale_fill_manual(values=bPalette) + scale_x_continuous(expand=expansion(mult=c(0,0.05))) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
 
-aves_seabird_island
+aves_b_island
 
-ggsave(plot=aves_seabird_island, filename="aves/AvesGraphs/aves_seabird_island.png", height=50, width=45, units="cm", dpi=300)
-
+ggsave(plot=aves_b_island, filename="aves/AvesGraphs/aves_B_island.png", height=20, width=35, units="cm", dpi=300)
 ```
 
-```{r rare bird of prey temporal }
-aves_rare_predator = filter(aves_end_join, group=="3") %>%
-    mutate(source2 = fct_relevel(source, "Cal-IBIS", "iNaturalist", "EBIRD", "SBMNH Collections", "SBMNH Observations"))
+```{r bird group C Hummingbird }
+#brewer.pal(5, name="Dark2") Color codes for the brewer colors, need 1, 2 and 4 for this one
+#[1] Cal-IBIS "#1B9E77" iNaturalist "#D95F02" "EBIRD #7570B3" SBMNH Col "#E7298A" SBMNH Obs "#7FBC41"
+cPalette <- c("#D95F02", "#E7298A", "#7FBC41")
+
+aves_end_c = filter(aves_end_join, group=="c")
 
 #temporal
-aves_predator_year = ggplot(aves_rare_predator, aes(x=year, fill=source2)) + 
-  geom_bar(width=0.7) + 
+aves_c_year = ggplot(aves_end_c, aes(x=year, fill=source2)) + 
+  geom_bar(width=0.5) + 
   theme_bw() + 
-  labs(x="Year", y ="Number of Data Points", fill="source") +   scale_fill_brewer(palette = "Dark2") + facet_wrap(vars(acceptedName), nrow=4, scales="free_y")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(limits=c(1850, 2022), breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
-aves_predator_year
+  labs(x="Year", y ="Number of Data Points", fill="source") +  scale_fill_manual(values=cPalette) + facet_wrap(vars(acceptedName), nrow=1, scales="free_y")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+aves_c_year
 
-ggsave(plot=aves_predator_year, filename="aves/AvesGraphs/aves_predator_year2.png", height=40, width=40, units="cm", dpi=300)
+ggsave(plot=aves_c_year, filename="aves/AvesGraphs/aves_C_year.png", height=10, width=20, units="cm", dpi=300)
 ```
-```{r rare bird of prey island}
+```{r bird C island}
 
-aves_predator_islandsum <- aves_rare_predator %>%
+aves_c_islandsum <- aves_end_c %>%
   mutate(no_sample = 1) %>%
   group_by(island, acceptedName, source2) %>%
   summarise(samples = sum(no_sample))
 
-aves_predator_islandsum2 <- na.omit(subset(aves_predator_islandsum, select = c(island, samples, source2, acceptedName)))
+aves_c_islandsum2 <- na.omit(subset(aves_c_islandsum, select = c(island, samples, source2, acceptedName)))
 
-aves_predator_island <- ggplot(data = aves_predator_islandsum2, aes(x = samples, y = fct_rev(island), fill=source2)) + geom_bar(stat = "identity") + facet_wrap(vars(acceptedName), nrow=4, scales="free_x") +
-  labs(y ="Island",  x = "Number of Data Points", fill = "source") + theme_bw() +  scale_fill_brewer(palette="Dark2") + scale_x_continuous(expand=expansion(mult=c(0,0.5))) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+island_size = read_csv("island_size.csv")
+aves_c_islandsum2 = merge(aves_c_islandsum, island_size, by="island", all.y=TRUE) 
 
-aves_predator_island
+#replaced NAs in acceptedName with one of the species so an NA graph doesn't appear, but doesn't impact other graphs at all
+aves_c_islandsum2$acceptedName[is.na(aves_c_islandsum2$acceptedName)] <- "Selasphorus sasin sedentarius"
 
-ggsave(plot=aves_predator_island, filename="aves/AvesGraphs/aves_seabird_island.png", height=40, width=30, units="cm", dpi=300)
 
+aves_c_island <- ggplot(data = aves_c_islandsum2, aes(x = samples, y = fct_rev(island), fill=source2)) + geom_bar(stat = "identity") + facet_wrap(vars(acceptedName), nrow=1, scales="free_x") +
+  labs(y ="Island",  x = "Number of Data Points", fill = "source") + theme_bw() + scale_fill_manual(values=cPalette) + scale_x_continuous(expand=expansion(mult=c(0,0.05))) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+
+aves_c_island
+
+ggsave(plot=aves_c_island, filename="aves/AvesGraphs/aves_C_island.png", height=10, width=20, units="cm", dpi=300)
+```
+
+```{r bird group D Charadriiformes }
+#brewer.pal(5, name="Dark2") Color codes for the brewer colors, need 1, 2 and 4 for this one
+#Cal-IBIS "#1B9E77"            iNaturalist "#D95F02"            EBIRD #7570B3"
+#SBMNH Col "#E7298A"            SBMNH Obs "#7FBC41"
+dPalette <- c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#7FBC41")
+
+aves_end_d = filter(aves_end_join, group=="d")
+
+#temporal
+aves_d_year = ggplot(aves_end_d, aes(x=year, fill=source2)) + 
+  geom_bar(width=0.5) + 
+  theme_bw() + 
+  labs(x="Year", y ="Number of Data Points", fill="source") +  scale_fill_manual(values=dPalette) + facet_wrap(vars(acceptedName), nrow=3, scales="free_y")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+aves_d_year
+
+ggsave(plot=aves_d_year, filename="aves/AvesGraphs/aves_D_year.png", height=30, width=45, units="cm", dpi=300)
+```
+```{r bird D island}
+aves_d_islandsum <- aves_end_d %>%
+  mutate(no_sample = 1) %>%
+  group_by(island, acceptedName, source2) %>%
+  summarise(samples = sum(no_sample))
+
+aves_d_islandsum2 <- na.omit(subset(aves_d_islandsum, select = c(island, samples, source2, acceptedName)))
+
+aves_d_island <- ggplot(data = aves_d_islandsum2, aes(x = samples, y = fct_rev(island), fill=source2)) + geom_bar(stat = "identity") + facet_wrap(vars(acceptedName), nrow=3, scales="free_x") +
+  labs(y ="Island",  x = "Number of Data Points", fill = "source") + theme_bw() + scale_fill_manual(values=dPalette) + scale_x_continuous(expand=expansion(mult=c(0,0.05))) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+
+aves_d_island
+
+ggsave(plot=aves_d_island, filename="aves/AvesGraphs/aves_D_island.png", height=30, width=45, units="cm", dpi=300)
+```
+
+```{r bird group E Cuckoo and Falcon.. }
+#brewer.pal(5, name="Dark2") Color codes for the brewer colors, need 1, 2 and 4 for this one
+#Cal-IBIS "#1B9E77"            iNaturalist "#D95F02"            EBIRD #7570B3"
+#SBMNH Col "#E7298A"            SBMNH Obs "#7FBC41"
+
+
+aves_end_e = filter(aves_end_join, group=="e")
+
+#temporal
+aves_e_year = ggplot(aves_end_e, aes(x=year, fill=source2)) + 
+  geom_bar(width=0.5) + 
+  theme_bw() + 
+  labs(x="Year", y ="Number of Data Points", fill="source") +  scale_fill_manual(values=dPalette) + facet_wrap(vars(acceptedName), nrow=1, scales="free_y")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+aves_e_year
+
+ggsave(plot=aves_e_year, filename="aves/AvesGraphs/aves_E_year.png", height=10, width=35, units="cm", dpi=300)
+```
+```{r bird E island}
+aves_e_islandsum <- aves_end_e %>%
+  mutate(no_sample = 1) %>%
+  group_by(island, acceptedName, source2) %>%
+  summarise(samples = sum(no_sample))
+
+aves_e_islandsum2 <- na.omit(subset(aves_e_islandsum, select = c(island, samples, source2, acceptedName)))
+
+aves_e_island <- ggplot(data = aves_e_islandsum2, aes(x = samples, y = fct_rev(island), fill=source2)) + geom_bar(stat = "identity") + facet_wrap(vars(acceptedName), nrow=1, scales="free_x") +
+  labs(y ="Island",  x = "Number of Data Points", fill = "source") + theme_bw() + scale_fill_manual(values=dPalette) + scale_x_continuous(expand=expansion(mult=c(0,0.05))) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+
+aves_e_island
+
+ggsave(plot=aves_e_island, filename="aves/AvesGraphs/aves_E_island.png", height=10, width=30, units="cm", dpi=300)
+```
+
+```{r bird group F Quail and Loon }
+#brewer.pal(5, name="Dark2") Color codes for the brewer colors, need 1, 2 and 4 for this one
+#Cal-IBIS "#1B9E77"            iNaturalist "#D95F02"            EBIRD #7570B3"
+#SBMNH Col "#E7298A"            SBMNH Obs "#7FBC41"
+
+aves_end_f = filter(aves_end_join, group=="f")
+
+#temporal
+aves_f_year = ggplot(aves_end_f, aes(x=year, fill=source2)) + 
+  geom_bar(width=0.5) + 
+  theme_bw() + 
+  labs(x="Year", y ="Number of Data Points", fill="source") +  scale_fill_manual(values=dPalette) + facet_wrap(vars(acceptedName), nrow=1, scales="free_y")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+aves_f_year
+
+ggsave(plot=aves_f_year, filename="aves/AvesGraphs/aves_F_year.png", height=10, width=35, units="cm", dpi=300)
+```
+```{r bird F island}
+aves_f_islandsum <- aves_end_f %>%
+  mutate(no_sample = 1) %>%
+  group_by(island, acceptedName, source2) %>%
+  summarise(samples = sum(no_sample))
+
+aves_f_islandsum2 <- na.omit(subset(aves_f_islandsum, select = c(island, samples, source2, acceptedName)))
+
+aves_f_island <- ggplot(data = aves_f_islandsum2, aes(x = samples, y = fct_rev(island), fill=source2)) + geom_bar(stat = "identity") + facet_wrap(vars(acceptedName), nrow=1, scales="free_x") +
+  labs(y ="Island",  x = "Number of Data Points", fill = "source") + theme_bw() + scale_fill_manual(values=dPalette) + scale_x_continuous(expand=expansion(mult=c(0,0.05))) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+
+aves_f_island
+
+ggsave(plot=aves_f_island, filename="aves/AvesGraphs/aves_F_island.png", height=10, width=30, units="cm", dpi=300)
+```
+
+```{r bird group G Lark, Tanager, Jay}
+#brewer.pal(5, name="Dark2") Color codes for the brewer colors, need 1, 2 and 4 for this one
+#Cal-IBIS "#1B9E77"            iNaturalist "#D95F02"            EBIRD #7570B3"
+#SBMNH Col "#E7298A"            SBMNH Obs "#7FBC41"
+
+
+aves_end_g = filter(aves_end_join, group=="g")
+
+#temporal
+aves_g_year = ggplot(aves_end_g, aes(x=year, fill=source2)) + 
+  geom_bar(width=0.5) + 
+  theme_bw() + 
+  labs(x="Year", y ="Number of Data Points", fill="source") +  scale_fill_manual(values=dPalette) + facet_wrap(vars(acceptedName), nrow=2, scales="free_y")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+aves_g_year
+
+ggsave(plot=aves_g_year, filename="aves/AvesGraphs/aves_G_year.png", height=20, width=35, units="cm", dpi=300)
+```
+```{r bird G island}
+
+aves_g_islandsum <- aves_end_g %>%
+  mutate(no_sample = 1) %>%
+  group_by(island, acceptedName, source2) %>%
+  summarise(samples = sum(no_sample))
+
+aves_g_islandsum2 <- na.omit(subset(aves_g_islandsum, select = c(island, samples, source2, acceptedName)))
+
+aves_g_island <- ggplot(data = aves_g_islandsum2, aes(x = samples, y = fct_rev(island), fill=source2)) + geom_bar(stat = "identity") + facet_wrap(vars(acceptedName), nrow=2, scales="free_x") +
+  labs(y ="Island",  x = "Number of Data Points", fill = "source") + theme_bw() + scale_fill_manual(values=dPalette) + scale_x_continuous(expand=expansion(mult=c(0,0.05))) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+
+aves_g_island
+
+ggsave(plot=aves_g_island, filename="aves/AvesGraphs/aves_G_island.png", height=20, width=35, units="cm", dpi=300)
+```
+
+```{r bird group H Sparrow and Towhee}
+#brewer.pal(5, name="Dark2") Color codes for the brewer colors, need 1, 2 and 4 for this one
+#Cal-IBIS "#1B9E77"            iNaturalist "#D95F02"            EBIRD #7570B3"
+#SBMNH Col "#E7298A"            SBMNH Obs "#7FBC41"
+dPalette <- c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#7FBC41")
+
+aves_end_h = filter(aves_end_join, group=="h")
+
+#temporal
+aves_h_year = ggplot(aves_end_h, aes(x=year, fill=source2)) + 
+  geom_bar(width=0.5) + 
+  theme_bw() + 
+  labs(x="Year", y ="Number of Data Points", fill="source") +  scale_fill_manual(values=dPalette) + facet_wrap(vars(acceptedName), nrow=2, scales="free_y")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+aves_h_year
+
+ggsave(plot=aves_h_year, filename="aves/AvesGraphs/aves_H_year.png", height=20, width=45, units="cm", dpi=300)
+```
+```{r bird H island}
+aves_h_islandsum <- aves_end_h %>%
+  mutate(no_sample = 1) %>%
+  group_by(island, acceptedName, source2) %>%
+  summarise(samples = sum(no_sample))
+
+aves_h_islandsum2 <- na.omit(subset(aves_h_islandsum, select = c(island, samples, source2, acceptedName)))
+
+aves_h_island <- ggplot(data = aves_h_islandsum2, aes(x = samples, y = fct_rev(island), fill=source2)) + geom_bar(stat = "identity") + facet_wrap(vars(acceptedName), nrow=2, scales="free_x") +
+  labs(y ="Island",  x = "Number of Data Points", fill = "source") + theme_bw() + scale_fill_manual(values=dPalette) + scale_x_continuous(expand=expansion(mult=c(0,0.05))) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+
+aves_h_island
+
+ggsave(plot=aves_h_island, filename="aves/AvesGraphs/aves_H_island.png", height=20, width=45, units="cm", dpi=300)
+```
+
+```{r bird group I Martin and Bank Swallow}
+#brewer.pal(5, name="Dark2") Color codes for the brewer colors, need 1, 2 and 4 for this one
+#Cal-IBIS "#1B9E77"            iNaturalist "#D95F02"            EBIRD #7570B3"
+#SBMNH Col "#E7298A"            SBMNH Obs "#7FBC41"
+iPalette <- c("#D95F02", "#7570B3", "#7FBC41")
+
+aves_end_i = filter(aves_end_join, group=="i")
+
+#temporal
+aves_i_year = ggplot(aves_end_i, aes(x=year, fill=source2)) + 
+  geom_bar(width=0.5) + 
+  theme_bw() + 
+  labs(x="Year", y ="Number of Data Points", fill="source") +  scale_fill_manual(values=iPalette) + facet_wrap(vars(acceptedName), nrow=1, scales="free_y")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+aves_i_year
+
+ggsave(plot=aves_i_year, filename="aves/AvesGraphs/aves_I_year.png", height=10, width=35, units="cm", dpi=300)
+```
+```{r bird I island}
+aves_i_islandsum <- aves_end_i %>%
+  mutate(no_sample = 1) %>%
+  group_by(island, acceptedName, source2) %>%
+  summarise(samples = sum(no_sample))
+
+aves_i_islandsum2 <- na.omit(subset(aves_i_islandsum, select = c(island, samples, source2, acceptedName)))
+
+island_size = read_csv("island_size.csv")
+aves_i_islandsum2 = merge(aves_i_islandsum, island_size, by="island", all.y=TRUE) 
+
+#replaced NAs in acceptedName with one of the species so an NA graph doesn't appear, but doesn't impact other graphs at all
+aves_i_islandsum2$acceptedName[is.na(aves_i_islandsum2$acceptedName)] <- "Riparia riparia"
+
+
+aves_i_island <- ggplot(data = aves_i_islandsum2, aes(x = samples, y = fct_rev(island), fill=source2)) + geom_bar(stat = "identity") + facet_wrap(vars(acceptedName), nrow=1, scales="free_x") +
+  labs(y ="Island",  x = "Number of Data Points", fill = "source") + theme_bw() + scale_fill_manual(values=iPalette) + scale_x_continuous(expand=expansion(mult=c(0,0.05))) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+
+aves_i_island
+
+ggsave(plot=aves_i_island, filename="aves/AvesGraphs/aves_I_island.png", height=10, width=35, units="cm", dpi=300)
+```
+
+```{r bird group J Blackbird}
+#brewer.pal(5, name="Dark2") Color codes for the brewer colors, need 1, 2 and 4 for this one
+#Cal-IBIS "#1B9E77"            iNaturalist "#D95F02"            EBIRD #7570B3"
+#SBMNH Col "#E7298A"            SBMNH Obs "#7FBC41"
+dPalette <- c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#7FBC41")
+
+aves_end_j = filter(aves_end_join, group=="j")
+
+#temporal
+aves_j_year = ggplot(aves_end_j, aes(x=year, fill=source2)) + 
+  geom_bar(width=0.5) + 
+  theme_bw() + 
+  labs(x="Year", y ="Number of Data Points", fill="source") +  scale_fill_manual(values=dPalette) + facet_wrap(vars(acceptedName), nrow=1, scales="free_y")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+aves_j_year
+
+ggsave(plot=aves_j_year, filename="aves/AvesGraphs/aves_J_year.png", height=10, width=35, units="cm", dpi=300)
+```
+```{r bird J island}
+aves_j_islandsum <- aves_end_j %>%
+  mutate(no_sample = 1) %>%
+  group_by(island, acceptedName, source2) %>%
+  summarise(samples = sum(no_sample))
+
+aves_j_islandsum2 <- na.omit(subset(aves_j_islandsum, select = c(island, samples, source2, acceptedName)))
+
+aves_j_island <- ggplot(data = aves_j_islandsum2, aes(x = samples, y = fct_rev(island), fill=source2)) + geom_bar(stat = "identity") + facet_wrap(vars(acceptedName), nrow=1, scales="free_x") +
+  labs(y ="Island",  x = "Number of Data Points", fill = "source") + theme_bw() + scale_fill_manual(values=dPalette) + scale_x_continuous(expand=expansion(mult=c(0,0.05))) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+
+aves_j_island
+
+ggsave(plot=aves_j_island, filename="aves/AvesGraphs/aves_J_island.png", height=10, width=35, units="cm", dpi=300)
+```
+
+```{r bird group K Shrike}
+#brewer.pal(5, name="Dark2") Color codes for the brewer colors, need 1, 2 and 4 for this one
+#Cal-IBIS "#1B9E77"            iNaturalist "#D95F02"            EBIRD #7570B3"
+#SBMNH Col "#E7298A"            SBMNH Obs "#7FBC41"
+kPalette <- c("#D95F02", "#E7298A", "#7FBC41")
+
+aves_end_k = filter(aves_end_join, group=="k")
+
+#temporal
+aves_k_year = ggplot(aves_end_k, aes(x=year, fill=source2)) + 
+  geom_bar(width=0.5) + 
+  theme_bw() + 
+  labs(x="Year", y ="Number of Data Points", fill="source") +  scale_fill_manual(values=kPalette) + facet_wrap(vars(acceptedName), nrow=1, scales="free_y")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+aves_k_year
+
+ggsave(plot=aves_k_year, filename="aves/AvesGraphs/aves_K_year.png", height=10, width=20, units="cm", dpi=300)
+```
+```{r bird K island}
+aves_k_islandsum <- aves_end_k %>%
+  mutate(no_sample = 1) %>%
+  group_by(island, acceptedName, source2) %>%
+  summarise(samples = sum(no_sample))
+
+aves_k_islandsum2 <- na.omit(subset(aves_k_islandsum, select = c(island, samples, source2, acceptedName)))
+
+island_size = read_csv("island_size.csv")
+aves_k_islandsum2 = merge(aves_k_islandsum, island_size, by="island", all.y=TRUE) 
+
+#replaced NAs in acceptedName with one of the species so an NA graph doesn't appear, but doesn't impact other graphs at all
+aves_k_islandsum2$acceptedName[is.na(aves_k_islandsum2$acceptedName)] <- "Lanius ludovicianus anthonyi"
+
+aves_k_island <- ggplot(data = aves_k_islandsum2, aes(x = samples, y = fct_rev(island), fill=source2)) + geom_bar(stat = "identity") + facet_wrap(vars(acceptedName), nrow=1, scales="free_x") +
+  labs(y ="Island",  x = "Number of Data Points", fill = "source") + theme_bw() + scale_fill_manual(values=iPalette) + scale_x_continuous(expand=expansion(mult=c(0,0.05))) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+
+aves_k_island
+
+ggsave(plot=aves_k_island, filename="aves/AvesGraphs/aves_K_island.png", height=10, width=20, units="cm", dpi=300)
+```
+
+```{r bird group L Chat and Warbler}
+#brewer.pal(5, name="Dark2") Color codes for the brewer colors, need 1, 2 and 4 for this one
+#Cal-IBIS "#1B9E77"            iNaturalist "#D95F02"            EBIRD #7570B3"
+#SBMNH Col "#E7298A"            SBMNH Obs "#7FBC41"
+lPalette <- c("#D95F02", "#7570B3", "#E7298A", "#7FBC41")
+
+aves_end_l = filter(aves_end_join, group=="l")
+
+#temporal
+aves_l_year = ggplot(aves_end_l, aes(x=year, fill=source2)) + 
+  geom_bar(width=0.5) + 
+  theme_bw() + 
+  labs(x="Year", y ="Number of Data Points", fill="source") +  scale_fill_manual(values=lPalette) + facet_wrap(vars(acceptedName), nrow=2, scales="free_y")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+aves_l_year
+
+ggsave(plot=aves_l_year, filename="aves/AvesGraphs/aves_L_year.png", height=20, width=35, units="cm", dpi=300)
+```
+```{r bird L island}
+aves_l_islandsum <- aves_end_l %>%
+  mutate(no_sample = 1) %>%
+  group_by(island, acceptedName, source2) %>%
+  summarise(samples = sum(no_sample))
+
+aves_l_islandsum2 <- na.omit(subset(aves_l_islandsum, select = c(island, samples, source2, acceptedName)))
+
+aves_l_island <- ggplot(data = aves_l_islandsum2, aes(x = samples, y = fct_rev(island), fill=source2)) + geom_bar(stat = "identity") + facet_wrap(vars(acceptedName), nrow=2, scales="free_x") +
+  labs(y ="Island",  x = "Number of Data Points", fill = "source") + theme_bw() + scale_fill_manual(values=dPalette) + scale_x_continuous(expand=expansion(mult=c(0,0.05))) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+
+aves_l_island
+
+ggsave(plot=aves_l_island, filename="aves/AvesGraphs/aves_L_island.png", height=20, width=35, units="cm", dpi=300)
+```
+
+```{r bird group M Wren }
+#brewer.pal(5, name="Dark2") Color codes for the brewer colors, need 1, 2 and 4 for this one
+#Cal-IBIS "#1B9E77"            iNaturalist "#D95F02"            EBIRD #7570B3"
+#SBMNH Col "#E7298A"            SBMNH Obs "#7FBC41"
+mPalette <- c("#D95F02", "#E7298A", "#7FBC41")
+
+aves_end_m = filter(aves_end_join, group=="m")
+
+#temporal
+aves_m_year = ggplot(aves_end_m, aes(x=year, fill=source2)) + 
+  geom_bar(width=0.5) + 
+  theme_bw() + 
+  labs(x="Year", y ="Number of Data Points", fill="source") +  scale_fill_manual(values=mPalette) + facet_wrap(vars(acceptedName), nrow=1, scales="free_y")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+aves_m_year
+
+ggsave(plot=aves_m_year, filename="aves/AvesGraphs/aves_M_year.png", height=10, width=20, units="cm", dpi=300)
+```
+```{r bird M island}
+aves_m_islandsum <- aves_end_m %>%
+  mutate(no_sample = 1) %>%
+  group_by(island, acceptedName, source2) %>%
+  summarise(samples = sum(no_sample))
+
+aves_m_islandsum2 <- na.omit(subset(aves_m_islandsum, select = c(island, samples, source2, acceptedName)))
+
+island_size = read_csv("island_size.csv")
+aves_m_islandsum2 = merge(aves_m_islandsum, island_size, by="island", all.y=TRUE) 
+
+#replaced NAs in acceptedName with one of the species so an NA graph doesn't appear, but doesn't impact other graphs at all
+aves_m_islandsum2$acceptedName[is.na(aves_m_islandsum2$acceptedName)] <- "Thryomanes bewickii charienturus"
+
+aves_m_island <- ggplot(data = aves_m_islandsum2, aes(x = samples, y = fct_rev(island), fill=source2)) + geom_bar(stat = "identity") + facet_wrap(vars(acceptedName), nrow=1, scales="free_x") +
+  labs(y ="Island",  x = "Number of Data Points", fill = "source") + theme_bw() + scale_fill_manual(values=iPalette) + scale_x_continuous(expand=expansion(mult=c(0,0.05))) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+
+aves_m_island
+
+ggsave(plot=aves_m_island, filename="aves/AvesGraphs/aves_M_island.png", height=10, width=20, units="cm", dpi=300)
+```
+
+```{r bird group N Flycatcher}
+#brewer.pal(5, name="Dark2") Color codes for the brewer colors, need 1, 2 and 4 for this one
+#Cal-IBIS "#1B9E77"            iNaturalist "#D95F02"            EBIRD #7570B3"
+#SBMNH Col "#E7298A"            SBMNH Obs "#7FBC41"
+
+aves_end_n = filter(aves_end_join, group=="n")
+
+#temporal
+aves_n_year = ggplot(aves_end_n, aes(x=year, fill=source2)) + 
+  geom_bar(width=0.5) + 
+  theme_bw() + 
+  labs(x="Year", y ="Number of Data Points", fill="source") +  scale_fill_manual(values=dPalette) + facet_wrap(vars(acceptedName), nrow=2, scales="free_y")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+aves_n_year
+
+ggsave(plot=aves_n_year, filename="aves/AvesGraphs/aves_N_year.png", height=20, width=35, units="cm", dpi=300)
+```
+```{r bird N island}
+aves_n_islandsum <- aves_end_n %>%
+  mutate(no_sample = 1) %>%
+  group_by(island, acceptedName, source2) %>%
+  summarise(samples = sum(no_sample))
+
+aves_n_islandsum2 <- na.omit(subset(aves_n_islandsum, select = c(island, samples, source2, acceptedName)))
+
+aves_n_island <- ggplot(data = aves_n_islandsum2, aes(x = samples, y = fct_rev(island), fill=source2)) + geom_bar(stat = "identity") + facet_wrap(vars(acceptedName), nrow=2, scales="free_x") +
+  labs(y ="Island",  x = "Number of Data Points", fill = "source") + theme_bw() + scale_fill_manual(values=dPalette) + scale_x_continuous(expand=expansion(mult=c(0,0.05))) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+
+aves_n_island
+
+ggsave(plot=aves_n_island, filename="aves/AvesGraphs/aves_N_island.png", height=20, width=35, units="cm", dpi=300)
+```
+
+```{r bird group O Vireo}
+#brewer.pal(5, name="Dark2") Color codes for the brewer colors, need 1, 2 and 4 for this one
+#Cal-IBIS "#1B9E77"            iNaturalist "#D95F02"            EBIRD #7570B3"
+#SBMNH Col "#E7298A"            SBMNH Obs "#7FBC41"
+oPalette <- c("#D95F02", "#7570B3", "#E7298A", "#7FBC41")
+
+aves_end_o = filter(aves_end_join, group=="o")
+
+#temporal
+aves_o_year = ggplot(aves_end_o, aes(x=year, fill=source2)) + 
+  geom_bar(width=0.5) + 
+  theme_bw() + 
+  labs(x="Year", y ="Number of Data Points", fill="source") +  scale_fill_manual(values=oPalette) + facet_wrap(vars(acceptedName), nrow=1, scales="free_y")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+aves_o_year
+
+ggsave(plot=aves_o_year, filename="aves/AvesGraphs/aves_O_year.png", height=10, width=35, units="cm", dpi=300)
+```
+```{r bird O island}
+aves_o_islandsum <- aves_end_o %>%
+  mutate(no_sample = 1) %>%
+  group_by(island, acceptedName, source2) %>%
+  summarise(samples = sum(no_sample))
+aves_o_islandsum2 <- na.omit(subset(aves_o_islandsum, select = c(island, samples, source2, acceptedName)))
+
+island_size = read_csv("island_size.csv")
+aves_o_islandsum2 = merge(aves_o_islandsum, island_size, by="island", all.y=TRUE) 
+
+#replaced NAs in acceptedName with one of the species so an NA graph doesn't appear, but doesn't impact other graphs at all
+aves_o_islandsum2$acceptedName[is.na(aves_o_islandsum2$acceptedName)] <- "Vireo vicinior"
+
+aves_o_island <- ggplot(data = aves_o_islandsum2, aes(x = samples, y = fct_rev(island), fill=source2)) + geom_bar(stat = "identity") + facet_wrap(vars(acceptedName), nrow=1, scales="free_x") +
+  labs(y ="Island",  x = "Number of Data Points", fill = "source") + theme_bw() + scale_fill_manual(values=oPalette) + scale_x_continuous(expand=expansion(mult=c(0,0.05))) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+
+aves_o_island
+
+ggsave(plot=aves_o_island, filename="aves/AvesGraphs/aves_O_island.png", height=10, width=35, units="cm", dpi=300)
+```
+
+```{r bird group P Pelican}
+#brewer.pal(5, name="Dark2") Color codes for the brewer colors, need 1, 2 and 4 for this one
+#Cal-IBIS "#1B9E77"            iNaturalist "#D95F02"            EBIRD #7570B3"
+#SBMNH Col "#E7298A"            SBMNH Obs "#7FBC41"
+dPalette <- c("#1B9E77","#D95F02", "#7570B3", "#E7298A", "#7FBC41")
+
+aves_end_p = filter(aves_end_join, group=="p")
+
+#temporal
+aves_p_year = ggplot(aves_end_p, aes(x=year, fill=source2)) + 
+  geom_bar(width=0.5) + 
+  theme_bw() + 
+  labs(x="Year", y ="Number of Data Points", fill="source") +  scale_fill_manual(values=dPalette) + facet_wrap(vars(acceptedName), nrow=1, scales="free_y")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+aves_p_year
+
+ggsave(plot=aves_p_year, filename="aves/AvesGraphs/aves_P_year.png", height=10, width=35, units="cm", dpi=300)
+```
+```{r bird P island}
+aves_p_islandsum <- aves_end_p %>%
+  mutate(no_sample = 1) %>%
+  group_by(island, acceptedName, source2) %>%
+  summarise(samples = sum(no_sample))
+aves_p_islandsum2 <- na.omit(subset(aves_p_islandsum, select = c(island, samples, source2, acceptedName)))
+
+aves_p_island <- ggplot(data = aves_p_islandsum2, aes(x = samples, y = fct_rev(island), fill=source2)) + geom_bar(stat = "identity") + facet_wrap(vars(acceptedName), nrow=1, scales="free_x") +
+  labs(y ="Island",  x = "Number of Data Points", fill = "source") + theme_bw() + scale_fill_manual(values=dPalette) + scale_x_continuous(expand=expansion(mult=c(0,0.05))) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+
+aves_p_island
+
+ggsave(plot=aves_p_island, filename="aves/AvesGraphs/aves_P_island.png", height=10, width=35, units="cm", dpi=300)
+```
+
+```{r bird group Q Albatross Petrel}
+#brewer.pal(5, name="Dark2") Color codes for the brewer colors, need 1, 2 and 4 for this one
+#Cal-IBIS "#1B9E77"            iNaturalist "#D95F02"            EBIRD #7570B3"
+#SBMNH Col "#E7298A"            SBMNH Obs "#7FBC41"
+
+aves_end_q = filter(aves_end_join, group=="q")
+
+#temporal
+aves_q_year = ggplot(aves_end_q, aes(x=year, fill=source2)) + 
+  geom_bar(width=0.5) + 
+  theme_bw() + 
+  labs(x="Year", y ="Number of Data Points", fill="source") +  scale_fill_manual(values=dPalette) + facet_wrap(vars(acceptedName), nrow=2, scales="free_y")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+aves_q_year
+
+ggsave(plot=aves_q_year, filename="aves/AvesGraphs/aves_Q_year.png", height=20, width=35, units="cm", dpi=300)
+```
+```{r bird Q island}
+aves_q_islandsum <- aves_end_q %>%
+  mutate(no_sample = 1) %>%
+  group_by(island, acceptedName, source2) %>%
+  summarise(samples = sum(no_sample))
+
+aves_q_islandsum2 <- na.omit(subset(aves_q_islandsum, select = c(island, samples, source2, acceptedName)))
+
+aves_q_island <- ggplot(data = aves_q_islandsum2, aes(x = samples, y = fct_rev(island), fill=source2)) + geom_bar(stat = "identity") + facet_wrap(vars(acceptedName), nrow=2, scales="free_x") +
+  labs(y ="Island",  x = "Number of Data Points", fill = "source") + theme_bw() + scale_fill_manual(values=dPalette) + scale_x_continuous(expand=expansion(mult=c(0,0.05))) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+
+aves_q_island
+
+ggsave(plot=aves_q_island, filename="aves/AvesGraphs/aves_Q_island.png", height=20, width=35, units="cm", dpi=300)
+```
+
+```{r bird group R Owl}
+#brewer.pal(5, name="Dark2") Color codes for the brewer colors, need 1, 2 and 4 for this one
+#Cal-IBIS "#1B9E77"            iNaturalist "#D95F02"            EBIRD #7570B3"
+#SBMNH Col "#E7298A"            SBMNH Obs "#7FBC41"
+
+
+aves_end_r = filter(aves_end_join, group=="r")
+
+#temporal
+aves_r_year = ggplot(aves_end_r, aes(x=year, fill=source2)) + 
+  geom_bar(width=0.5) + 
+  theme_bw() + 
+  labs(x="Year", y ="Number of Data Points", fill="source") +  scale_fill_manual(values=dPalette) + facet_wrap(vars(acceptedName), nrow=2, scales="free_y")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+aves_r_year
+
+ggsave(plot=aves_r_year, filename="aves/AvesGraphs/aves_R_year.png", height=20, width=35, units="cm", dpi=300)
+```
+```{r bird R island}
+aves_r_islandsum <- aves_end_r %>%
+  mutate(no_sample = 1) %>%
+  group_by(island, acceptedName, source2) %>%
+  summarise(samples = sum(no_sample))
+
+aves_r_islandsum2 <- na.omit(subset(aves_r_islandsum, select = c(island, samples, source2, acceptedName)))
+
+aves_r_island <- ggplot(data = aves_r_islandsum2, aes(x = samples, y = fct_rev(island), fill=source2)) + geom_bar(stat = "identity") + facet_wrap(vars(acceptedName), nrow=2, scales="free_x") +
+  labs(y ="Island",  x = "Number of Data Points", fill = "source") + theme_bw() + scale_fill_manual(values=dPalette) + scale_x_continuous(expand=expansion(mult=c(0,0.05))) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+
+aves_r_island
+
+ggsave(plot=aves_r_island, filename="aves/AvesGraphs/aves_R_island.png", height=20, width=35, units="cm", dpi=300)
 ```

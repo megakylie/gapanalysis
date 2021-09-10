@@ -495,11 +495,11 @@ library(RColorBrewer)
 ```
 
 ```{r}
-aves_inat <- read_csv("aves/aves_inat2.csv")
+aves_inat <- read_csv("aves/aves_inat3.csv")
 aves_ebird <- read_csv("aves/aves_ebird2.csv")
 aves_chis <- read_csv("aves/aves_chis_090821.csv")
-aves_sbmnh_obs <- read_csv("aves/aves_sbmnh_obs_090821.csv")
-aves_sbmnh_col <- read_csv("aves/aves_sbmnh_col_09082021.csv")
+aves_sbmnh_obs <- read_csv("aves/aves_sbmnh_obs3.csv")
+aves_sbmnh_col <- read_csv("aves/aves_sbmnh_col3.csv")
 
 ```
 
@@ -509,27 +509,29 @@ aves_sbmnh_col <- read_csv("aves/aves_sbmnh_col_09082021.csv")
 #inat doesn't have order listed..would need to add 
 aves_inat_combine <- aves_inat %>%
   rename(class="iconic_tax", type="collectionType") %>%
-  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type)
+  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, scientificName) %>%
+  add_column(family= NA, genus =NA)
 
 aves_chis_combine <- aves_chis %>%
   rename(latitude = "decimalLatitude", longitude="decimalLongitude", year="year_", month="month_", type="collectionType") %>%
-  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type)
+  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, family, genus, scientificName)
 
 aves_sbmnh_obs_combine <- aves_sbmnh_obs %>%
   rename(latitude = "decimalLatitude", longitude="decimalLongitude", type="collectionType") %>%
-  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type)
+  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, family, genus, scientificName)
 
 aves_sbmnh_col_combine <- aves_sbmnh_col %>%
-  rename(latitude = "decimalLatitude", longitude="decimalLongitude", type="collectionType2") %>%
-  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type)
+  rename(latitude = "decimalLatitude", longitude="decimalLongitude", type="collectionType") %>%
+  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, family, genus, scientificName)
 
 aves_ebird_combine <- aves_ebird %>%
   rename(latitude = "decimalLatitude", longitude="decimalLongitude", year="year_", month="month_", type = "collection Type") %>%
-  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type)
+  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, family, genus, scientificName)
   
 aves_master = rbind(aves_inat_combine, aves_chis_combine, aves_sbmnh_obs_combine, aves_sbmnh_col_combine, aves_ebird_combine) %>%
   # reorder the island names to show up N -> S on list
-  mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente"))
+  mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente")) %>%
+ mutate(source2 = fct_relevel(source, "Cal-IBIS", "iNaturalist", "EBIRD", "SBMNH Collections", "SBMNH Observations"))
 ## 342351 records!!! 
 ```
 
@@ -538,7 +540,6 @@ aves_master = rbind(aves_inat_combine, aves_chis_combine, aves_sbmnh_obs_combine
 
 ### Island Graph 
 ```{r Graphing by island}
-
 aves_islandsum <- aves_master %>%
   mutate(no_sample = 1) %>%
   group_by(island, source) %>%
