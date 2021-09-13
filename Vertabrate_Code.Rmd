@@ -497,7 +497,7 @@ library(RColorBrewer)
 ```{r}
 aves_inat <- read_csv("aves/aves_inat3.csv")
 aves_ebird <- read_csv("aves/aves_ebird2.csv")
-aves_chis <- read_csv("aves/aves_chis_090821.csv")
+aves_chis <- read_csv("aves/aves_chis_onlyeggs.csv")
 aves_sbmnh_obs <- read_csv("aves/aves_sbmnh_obs3.csv")
 aves_sbmnh_col <- read_csv("aves/aves_sbmnh_col3.csv")
 
@@ -521,18 +521,20 @@ aves_sbmnh_obs_combine <- aves_sbmnh_obs %>%
   select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, family, genus, scientificName)
 
 aves_sbmnh_col_combine <- aves_sbmnh_col %>%
-  rename(latitude = "decimalLatitude", longitude="decimalLongitude", type="collectionType") %>%
+  rename(latitude = "decimalLatitude", longitude="decimalLongitude", type="collectionType2") %>%
   select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, family, genus, scientificName)
 
 aves_ebird_combine <- aves_ebird %>%
   rename(latitude = "decimalLatitude", longitude="decimalLongitude", year="year_", month="month_", type = "collection Type") %>%
-  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, family, genus, scientificName)
+  select(month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, family, genus, scientificName) %>%
+  add_column(source="EBIRD")
   
-aves_master = rbind(aves_inat_combine, aves_chis_combine, aves_sbmnh_obs_combine, aves_sbmnh_col_combine, aves_ebird_combine) %>%
+aves_master_na = rbind(aves_inat_combine, aves_chis_combine, aves_sbmnh_obs_combine, aves_sbmnh_col_combine, aves_ebird_combine) %>%
   # reorder the island names to show up N -> S on list
   mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente")) %>%
  mutate(source2 = fct_relevel(source, "Cal-IBIS", "iNaturalist", "EBIRD", "SBMNH Collections", "SBMNH Observations"))
-## 342351 records!!! 
+#filter out all NA rows 
+aves_master <- filter(aves_master_na, rowSums(is.na(aves_master_na)) != ncol(aves_master_na)) # Apply 
 ```
 
 
@@ -631,19 +633,19 @@ aves_yeargraph = ggplot(aves_year, aes(x=year, fill=source2)) +
   geom_bar() + 
   theme_bw() + 
   scale_y_continuous(expand=c(0,0), limits = c(0, 9000)) + 
-  scale_x_continuous(expand=c(0,0), limits=c(1810, 2022), breaks=c(1818, 1850, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + 
+  scale_x_continuous(expand=c(0,0), limits=c(1840, 2022), breaks=c(1818, 1850, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + 
   labs(x="Year", y ="Number of Bird Data Points", fill="Data Source") +   scale_fill_brewer(palette = "Dark2")
 
 aves_yeargraph
 
 ggsave(plot=aves_yeargraph, filename="aves/AvesGraphs/aves_year.png", height=5, width=9, units="in", dpi=300)
 
-aves_yeargraph2 = ggplot(aves_year, aes(x=year, fill=source)) + 
+aves_yeargraph2 = ggplot(aves_year, aes(x=year, fill=source2)) + 
   geom_bar() + 
   theme_bw() + 
   scale_y_continuous(trans='log10', expand=c(0,0)) + 
-  scale_x_continuous(expand=c(0,0), limits=c(1810, 2022), breaks=c(1818, 1850, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + 
-  labs(x="Year", y="Number of Bird Data Points (log scaled", fill="Type") +   scale_fill_brewer(palette = "Dark2")
+  scale_x_continuous(expand=c(0,0), limits=c(1840, 2022), breaks=c(1818, 1850, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + 
+  labs(x="Year", y="Number of Bird Data Points (log scaled)", fill="Data Source") +   scale_fill_brewer(palette = "Dark2")
 
 aves_yeargraph2
 
@@ -651,7 +653,7 @@ ggsave(plot=aves_yeargraph2, filename="aves/AvesGraphs/aves_year2.png", height=5
 
 #collection type
 
-aves_yeargraph3 = ggplot(aves_year, aes(x=year, fill=source)) + 
+aves_yeargraph3 = ggplot(aves_year, aes(x=year, fill=source2)) + 
   geom_bar() + 
   theme_bw() +   facet_wrap(vars(type), nrow=1, scales="free") +
   scale_y_continuous(expand=c(0,0)) + 
