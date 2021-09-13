@@ -7,7 +7,7 @@ editor_options:
 
 This is an R Markdown for the Gap Analysis Invertebrate Graph and Table Making. This is the cleaned up code from my first run with Hymenoptera, this code should be able to be used with all the datasets for each Order with little adjustment. 
 
-Includes: Diptera, Mollusks, Chilopoda, Diplopoda, Blattodea, Odonata
+Includes: Diptera, Mollusks, Chilopoda, Diplopoda, Blattodea, Odonata, Phasmida, Coleoptera, Lepidoptera, Arachnida, and Hemiptera
 
 #Packages to Download 
 ```{r Download Packages}
@@ -1553,4 +1553,238 @@ master_master = rbind(master_m, arac)
 write.csv(master_master, "arachnida/master_master.csv", na="")
 
 
+```
+#
+#Hemiptera
+#### Hem Step1. Download Packages *above* and Import Data
+```{r setup}
+hem_inat <- read_csv("hemiptera/hem_inat2.csv")
+hem_lacm <- read_csv("hemiptera/hem_lacm2.csv")
+hem_chis <- read_csv("hemiptera/hem_chis2.csv")
+hem_bold <- read_csv("hemiptera/hem_bold2.csv")
+```
+
+
+### Arac Step 2. Combine datasets BY CLASS not ORDER (Note for total combine data for KHL)
+```{r Selecting columns and combining}
+hem_inat_combine <- hem_inat %>%
+  rename(class="iconic_taxon_name", island="ArcMap_Name") %>%
+  select(source, month, year, island, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude)
+
+hem_chis_combine <- hem_chis %>%
+  rename(latitude = "decimalLat", longitude="decimalLon") %>%
+  select(source, month, year, island, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude) %>% filter_all(any_vars(!is.na(.)))
+
+hem_lacm_combine <- hem_lacm %>%
+  select(source, month, year, island, acceptedFamily, acceptedGenus, acceptedName) %>%
+  add_column(latitude = NA, longitude = NA)
+
+hem_bold_combine <- hem_bold %>%
+  rename(latitude = "lat", longitude = "lon") %>%
+  select(source, island, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude) %>%
+  add_column(month = NA, year= NA)
+
+hem_master = rbind(hem_inat_combine, hem_chis_combine, hem_bold_combine, hem_lacm_combine) %>%
+  # reorder the island names to show up N -> S on list
+  mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente")) %>%
+  filter_all(any_vars(!is.na(.)))
+
+#some base R script to get rid of the silly 0 months, years and lat/long (done above to coord data)
+hem_master[hem_master == 0] <- NA
+
+
+```
+
+###Hem Step. 3 Make Graphs! 
+
+#### Island Graph 
+```{r Graphing by island}
+
+hem_islandsum <- na.omit(subset(hem_master, select = c(island, source))) %>%
+  mutate(no_sample = 1) %>%
+  group_by(island, source) %>%
+  summarise(samples = sum(no_sample)) 
+
+
+hem_island <- ggplot(data = hem_islandsum, aes(x = samples, y = fct_rev(island), fill = source)) + 
+  geom_bar(stat = "identity") +
+  labs(y ="Island", 
+       x = "Number of Hemiptera Data Points",
+       fill = "Data Source") +
+  theme_bw() + 
+  scale_x_continuous(limits =c(0,850), expand = c(0,0)) +
+  scale_fill_brewer(palette = "Dark2")
+
+hem_island 
+
+ggsave(plot=hem_island, filename="hemiptera/HemipteraGraphs/hem_island.png", height=5, width=8, units="in", dpi=300)
+
+```
+
+```{r Graphing by island proportional}
+island_size = read_csv("island_size.csv")
+hem_islandsum2 = merge(hem_islandsum, island_size, by="island", all.y=TRUE)
+hem_islandprop = hem_islandsum2 %>% group_by(island) %>% mutate(by_area = samples/island_size_85)
+
+hem_island_propgraph <- ggplot(data = hem_islandprop, aes(x = by_area, y = fct_rev(island), fill = source)) + 
+  geom_bar(stat = "identity") +
+  labs(y ="Island", 
+       x = "Hemiptera Data Poitns/Island Area (km^2)",
+       fill = "Data Source") +
+  theme_bw() + 
+  scale_x_continuous(limits =c(0,12), expand = c(0,0)) +
+  scale_fill_brewer(palette = "Dark2")
+
+hem_island_propgraph 
+
+ggsave(plot=hem_island_propgraph, filename="hemiptera/HemipteraGraphs/hem_island_prop.png", height=5, width=8, units="in", dpi=300)
+```
+
+#### Temporal Graph
+```{r Graphing by year}
+
+hem_year <- na.omit(subset(hem_master, select = c(island, year, month, source)))
+hem_yeargraph = ggplot(hem_year, aes(x=year, fill=source)) + 
+  geom_bar() + 
+  theme_bw() + 
+  scale_y_continuous(expand=c(0,0), limits=c(0, 300)) + 
+  scale_x_continuous(expand=c(0,0), limits=c(1908, 2022), breaks=c(1910,  1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020)) + 
+  labs(x="Year", y ="Number of Hemiptera Data Points") +   scale_fill_brewer(palette = "Dark2")
+
+hem_yeargraph
+
+ggsave(plot=hem_yeargraph, filename="hemiptera/HemipteraGraphs/hem_year.png", height=5, width=9, units="in", dpi=300)
+```
+
+####Seasonal Graph 
+```{r Graphing by month}
+# by month and island 
+hem_year$month2 <- as.factor(hem_year$month)
+
+hem_ismonth <- ggplot(hem_year, aes(x=month2, fill=month2)) + 
+  geom_bar() + 
+  theme_bw() + 
+  scale_y_continuous(expand=expansion(mult=c(0,0.05))) + 
+  labs(x="Hemiptera Data Points per Island by Month", y ="Number of Hemiptera Data Points", fill="month") +  facet_wrap(vars(island), nrow=2, scales="free_y")
+
+hem_ismonth 
+
+ggsave(plot=hem_ismonth, filename="hemiptera/HemipteraGraphs/hem_seasonal.png", height=5, width=9, units="in", dpi=300)
+```
+
+```{r Family table}
+hemtab= table(hem_master$acceptedFamily)
+hemtab = as.data.frame.table(hemtab)  %>%
+  rename(acceptedFamily = "Var1", total = "Freq")
+
+hemtab_inat = table(hem_inat$acceptedFamily)
+hemtab_inat = as.data.frame.table(hemtab_inat) %>%
+  rename(iNaturalist = "Freq", acceptedFamily = "Var1")
+
+hemtab_chis = table(hem_chis$acceptedFamily)
+hemtab_chis = as.data.frame.table(hemtab_chis) %>%
+  rename(CalIBIS = "Freq", acceptedFamily = "Var1") 
+
+hemtab_lacm = table(hem_lacm$acceptedFamily)
+hemtab_lacm = as.data.frame.table(hemtab_lacm) %>%
+  rename(LACM = "Freq", acceptedFamily = "Var1")
+
+hemtab_bold = table(hem_bold$acceptedFamily)
+hemtab_bold = as.data.frame.table(hemtab_bold) %>%
+  rename(BOLD = "Freq", acceptedFamily = "Var1") 
+
+hem_table <- left_join(hemtab, hemtab_inat)
+hem_table2 <- left_join(hem_table, hemtab_chis)
+hem_table3 <- left_join(hem_table2, hemtab_lacm)
+hem_table4 <- left_join(hem_table3, hemtab_bold)
+
+hem_table_complete <-hem_table4 %>%
+  rename(Family = "acceptedFamily") %>%
+  relocate("Family", "CalIBIS", "LACM", "iNaturalist", "BOLD","total") %>%
+  mutate(Percentage = (total/1387))
+  
+write.csv(hem_table_complete, "hemiptera/HemipteraGraphs/hem_table_complete.csv", na="0")
+
+hemtab2= table(hem_master$acceptedName)
+hemtab2 = as.data.frame.table(hemtab2)  %>%
+  rename(acceptedName = "Var1", total = "Freq")
+
+hem_master2 = hem_master %>%
+  select(acceptedFamily, acceptedGenus, acceptedName)
+
+hem_species = left_join(hemtab2, hem_master2 )
+hem_species = distinct(hem_species)
+
+write.csv(hem_species, "hemiptera/HemipteraGraphs/hem_specieslist.csv", na="")
+```
+
+```{r Hemipt Literature comparison}
+hem_lit_miller = read_csv("hemiptera/hem_miller.csv") %>%
+  rename(family="FAMILY", genus="GENUS") %>%
+  select(source, family, genus, scientificName, acceptedFamily, acceptedGenus, acceptedName)
+lit_new = read_csv("island_invert_lit_new.csv") %>%
+  select(source, order, family, genus, scientificName)
+hem_lit_new = filter(lit_new, order=="Hemiptera") %>%
+  select(source, family, genus, scientificName)
+
+hem_syn = read_csv("hemiptera/hem_syn.csv")
+hem_syn_round2 = read_csv("hemiptera/hym_syn_round2.csv") 
+hem_synonymy = rbind(hem_syn, hem_syn_round2)
+hem_lit_new_syn = left_join(hem_lit_new, hem_synonymy)
+
+hem_lit_fam = rbind(hem_lit_miller, hem_lit_new_syn)
+
+hem_occ_fam = unique(c(as.character(hem_master$acceptedFamily)))
+hem_lit_fam = unique(c(as.character(hem_lit_miller$acceptedFamily)))
+hemfam = setdiff(hem_lit_fam, hem_occ_fam)
+hemfam #8 in miller
+
+#against new lit
+hem_lit_fam_new = unique(c(as.character(hem_lit_new_syn$family)))
+hemfam_new = setdiff(hem_lit_fam_new, hem_occ_fam)
+hemfam_new
+
+#9 familys, 8 from Miller and 1 new "Naucoridae?"
+
+hem_lit1 = as.data.frame(hemfam)
+hem_lit2 = as.data.frame(hemfam_new) %>%
+  rename(hemfam = "hemfam_new")
+hem_lit_families = rbind(hem_lit1, hem_lit2)
+
+
+#GENUS
+hem_occ_gen = unique(c(as.character(hem_master$acceptedGenus)))
+hem_lit_gen = unique(c(as.character(hem_lit_miller$acceptedGenus)))
+hemgen = setdiff(hem_lit_gen, hem_occ_gen)
+hemgen #list of 59 miller
+
+#against new lit
+hem_lit_gen_new = unique(c(as.character(hem_lit_new$genus)))
+hemgen_new = setdiff(hem_lit_gen_new, hem_occ_gen)
+hemgen_new
+
+hem_lit1gen = as.data.frame(hemgen)
+hem_lit2gen = as.data.frame(hemgen_new) %>%
+  rename(hemgen = "hemgen_new")
+hem_lit_genera = rbind(hem_lit1gen, hem_lit2gen)
+
+#SPECIES
+hem_occ_sp = unique(c(as.character(hem_master$acceptedName)))
+hem_lit_sp = unique(c(as.character(hem_lit_miller$acceptedName)))
+hemsp = setdiff(hem_lit_sp, hem_occ_sp)
+hemsp #list of 124 miller
+
+#against new lit
+hem_lit_sp_new = unique(c(as.character(hem_lit_new$scientificName)))
+hemsp_new = setdiff(hem_lit_sp_new, hem_occ_sp)
+hemsp_new
+
+hem_lit1sp = as.data.frame(hemsp)
+hem_lit2sp = as.data.frame(hemsp_new) %>%
+  rename(hemsp = "hemsp_new")
+hem_lit_species = rbind(hem_lit1sp, hem_lit2sp)
+
+write.csv(hem_lit_families, "hemiptera/hem_lit_fam.csv", na="")
+write.csv(hem_lit_genera, "hemiptera/hem_lit_gen.csv", na="")
+write.csv(hem_lit_species, "hemiptera/hem_lit_sp.csv", na="")
 ```
