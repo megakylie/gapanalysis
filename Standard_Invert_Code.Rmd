@@ -1813,6 +1813,13 @@ hym_master = read_csv("hymenoptera/hym_master_syn.csv") %>% select(source, month
 #combined all the master lists
 master_inverts = rbind(mol_master, chilo_master, diplo_master, bla_master, odo_master, phas_master, col_master, lep_master, arac_master, dip_master,hym_master) 
 
+master_invert_syn =master_inverts %>%
+  rename(scientificName_accepted="scientificName") %>%
+  select(phylum, class, order, acceptedFamily,  acceptedGenus, acceptedName, scientificName_accepted) %>%
+  distinct(across(contains("accepted")), .keep_all=TRUE) %>%
+  rename(scientificName ="scientificName_accepted")
+
+
 #Master synonymy list of distinct scientificName values
 master_invert_syn = master_inverts %>% distinct(scientificName, .keep_all=TRUE) %>% select(phylum, class, order, scientificName, acceptedFamily, acceptedGenus, acceptedName)
 write_csv(master_invert_syn, "Kylie/master/master_invert_syn.csv")
@@ -1827,14 +1834,44 @@ new_invert_lit = read_csv("Island_invert_lit_new-2.csv")
 
 master_invert_syn2 = master_invert_syn %>%
   select(scientificName, acceptedGenus, acceptedName)
-col_miller = read_csv("coleoptera/col_lit.csv")
-lep_miller = read_csv("lepidoptera/")
-hem_miller = read_csv("hemiptera/hem_miller.csv")
+
 
 #ONLY COMPARED TO OCCURENCE SYNONYMY, not Miller 
 new_invert_lit_synonymy = left_join(new_invert_lit, master_invert_syn2)
 write_csv(new_invert_lit_synonymy, "Kylie/new_invert_lit_synR1.csv", na="")
 
+# did spiders, hymenoptera and small orders by hand, reuploading dataset and then will compare to miller lit synonymy for hemiptera, coleoptera and lepidoptera
+new_invert_lit_synR1 = read_csv("Kylie/new_invert_lit_synR1edited.csv")
+col_miller = read_csv("coleoptera/col_lit.csv")
+lep_miller = read_csv("lepidoptera/lep_miller.csv")
+hem_miller = read_csv("hemiptera/hem_miller.csv")
 
+col_millersyn = col_miller %>%
+  select(family, acceptedFamily,  acceptedGenus, acceptedName, genus, species) %>%
+  unite("scientificName_accepted", genus:species, na.rm=TRUE, sep=" ") %>%
+  distinct(across(contains("accepted"))) %>%
+  rename(scientificName ="scientificName_accepted")
 
+hem_millersyn = hem_miller %>%
+  rename(family="FAMILY", genus="GENUS", scientificName_accepted="scientificName") %>%
+  select(family, acceptedFamily,  acceptedGenus, acceptedName, scientificName_accepted) %>%
+  distinct(across(contains("accepted"))) %>%
+  rename(scientificName ="scientificName_accepted")
+
+lep_millersyn = lep_miller %>%
+  select(family, acceptedFamily,  acceptedGenus, acceptedName, genus, species) %>%
+  unite("scientificName_accepted", genus:species, na.rm=TRUE, sep=" ") %>%
+  distinct(across(contains("accepted"))) %>%
+  rename(scientificName ="scientificName_accepted")
+
+millersyn_col_hem_lep = rbind(col_millersyn, hem_millersyn, lep_millersyn)
+
+newinvert_lit_syn2 = left_join(new_invert_lit_synR1, millersyn_col_hem_lep, by="scientificName")
+new_invert_lit_syn3 = left_join(newinvert_lit_syn2, master_invert_syn, by="scientificName")
+write_csv(newinvert_lit_syn2, "Kylie/new_invert_lit_synR2.csv", na="")
+write_csv(new_invert_lit_syn3, "Kylie/new_invert_lit_synR3.csv", na="")
+
+leptab= table(lep_master$acceptedGenus)
+leptab = as.data.frame.table(leptab)  %>%
+  rename(acceptedGenus = "Var1", total = "Freq")
 ```
