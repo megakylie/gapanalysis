@@ -28,6 +28,8 @@ mam_inat <- read_csv("mammal/mam_inat.csv")
 
 mam_chis <- read_csv("mammal/mam_chis.csv")
 
+mam_polecat <- read_csv("mammal/mam_polecat.csv")
+
 ```
 
 
@@ -35,14 +37,19 @@ mam_chis <- read_csv("mammal/mam_chis.csv")
 ```{r selecting and combining}
 #inat doesn't have order listed..would need to add 
 mam_inat_combine <- mam_inat %>%
-  rename(class="iconic_tax") %>%
-  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName)
-
+  rename(class="iconic_tax", scientificName = "scientific") %>%
+  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude)
+  
 mam_chis_combine <- mam_chis %>%
-  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName)
+  rename(latitude = "decimalLatitude", longitude = "decimalLongitude") %>%
+  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude)
+
+mam_polecat_combine <- mam_polecat %>%
+  rename(latitude = "decimalLatitude", longitude = "decimalLongitude") %>%
+  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude)
 
 
-mam_master = rbind(mam_inat_combine, mam_chis_combine) %>%
+mam_master = rbind(mam_inat_combine, mam_chis_combine, mam_polecat_combine) %>%
   # reorder the island names to show up N -> S on list
   mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente"))
 
@@ -64,7 +71,6 @@ mam_map = rbind(mam_inat_map, mam_chis_map)
 
 ### Island Graph 
 ```{r Graphing by island}
-
 mam_islandsum <- mam_master %>%
   mutate(no_sample = 1) %>%
   group_by(island, source) %>%
@@ -169,9 +175,37 @@ table(mam_chis_combine$order)
 table(mam_inat_combine$acceptedName)
 
 
+mamtab= table(mam_master$acceptedName)
+mamtab = as.data.frame.table(mamtab) 
+mamtab2 = mamtab %>%
+  rename(acceptedName = "Var1", total = "Freq")
+
+mam_master2 = mam_master %>%
+  select(acceptedFamily, acceptedGenus, acceptedName)
+
+mamtable = left_join(mamtab2, mam_master2 )
+mamtable = distinct(mamtable)
+
+mamtab_inat = table(mam_inat$acceptedName)
+mamtab_inat = as.data.frame.table(mamtab_inat) %>%
+  rename(iNaturalist = "Freq", acceptedName = "Var1")
+
+mamtab_chis = table(mam_chis$acceptedName)
+mamtab_chis = as.data.frame.table(mamtab_chis) %>%
+  rename(CalIBIS = "Freq", acceptedName = "Var1") 
+
+mam_table <- left_join(mamtable, mamtab_chis)
+mam_table2 <- left_join(mam_table, mamtab_inat)
+
+mam_table_complete <-mam_table2 %>%
+  rename(Species = "acceptedName", Family = "acceptedFamily", Genus = "acceptedGenus") %>%
+  relocate("Family", "Genus", "Species", "CalIBIS", "iNaturalist", "total")
+
+write.csv(mam_table_complete, "mammal/MammalGraphs/mam_table_complete.csv", na="0")
+
+
 
 ```
-
 
 #
 #Reptiles 
