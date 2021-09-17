@@ -20,20 +20,16 @@ library(RColorBrewer)
 ```
 
 
-
 # Diptera 
-
 ### Dip Step 1. Download Packages *above* and Import Data
 ```{r setup}
-
 dip_inat <- read_csv("diptera/dip_inat.csv")
 dip_lacm <- read_csv("diptera/dip_lacm.csv")
 dip_chis <- read_csv("diptera/dip_chis.csv")
 dip_bold <- read_csv("diptera/dip_bold.csv")
-
+dip_lit <- read_csv("diptera/dip_literature.csv")
 # extra for flies
 dip_nic <- read_csv("diptera/dip_nic.csv")
-
 ```
 
 
@@ -188,9 +184,38 @@ table(dip_inat_combine$acceptedFamily)
 table(dip_nic_combine$acceptedFamily)
 
 write.csv(dip_master, "diptera/DipteraGraphs/dip_master.csv", na="")
-
-
 ```
+
+
+
+```{r}
+dip_master2 = dip_master %>%
+  select(acceptedFamily, acceptedGenus, acceptedName) 
+
+dip_lit2 = dip_lit %>% 
+  select(acceptedFamily, acceptedGenus, acceptedName) 
+
+dip_all2 = rbind(dip_master2, dip_lit2) %>%
+  distinct(across(contains("accepted")), .keep_all=TRUE)
+
+diptab_occ = table(dip_master$acceptedName)
+diptab_occ = as.data.frame.table(diptab_occ) %>%
+  rename(Occurence= "Freq",  acceptedName = "Var1") 
+
+diptab_lit = table(dip_lit$acceptedName)
+diptab_lit = as.data.frame.table(diptab_lit) %>%
+  rename(Literature= "Freq",  acceptedName = "Var1") 
+
+#species list table from occurence and literature, with numbers just to show what is added by lit
+dip_table <- left_join(dip_all2, diptab_occ)
+dip_table2 <- left_join(dip_table, diptab_lit)
+
+dip_table_complete <-dip_table2 %>%
+  rename(Species = "acceptedName", Family = "acceptedFamily", Genus = "acceptedGenus")
+
+write.csv(dip_table_complete, "diptera/DipteraGraphs/dip_table_complete.csv", na="0")
+```
+
 
 ```{r Source Resolution}
 ddply(dip_master_bold, "source", summarise, n = length(unique(acceptedFamily)))
@@ -1486,9 +1511,12 @@ write.csv(arac_table_worder, "arachnida/ArachnidaGraphs/arac_table_complete.csv"
 ```{r Arac Literature comparison}
  arac_lit_miller = read_csv("arachnida/arac_lit_miller.csv")
 lit_new = read_csv("island_invert_lit_new.csv")
-arac_lit_new = filter(lit_new, class=="Arachnida") 
+arac_lit_new = filter(lit_new, class=="Arachnida")  %>% 
+  select(acceptedFamily, acceptedGenus, acceptedName) 
+arac_lit_miller2 = arac_lit_miller %>%
+    select(acceptedFamily, acceptedGenus, acceptedName) 
 
-arac_lit_fam = rbind(arac_lit_miller, arac_lit_new)
+arac_lit_fam = rbind(arac_lit_miller2, arac_lit_new)
 
 arac_occ_fam = unique(c(as.character(arac_master$acceptedFamily)))
 arac_lit_fam = unique(c(as.character(arac_lit_miller$acceptedFamily)))
@@ -1541,6 +1569,25 @@ arac_lit_species = rbind(arac_lit1sp, arac_lit2sp)
 write.csv(arac_lit_families, "arachnida/arac_lit_fam.csv", na="")
 write.csv(arac_lit_genera, "arachnida/arac_lit_gen.csv", na="")
 write.csv(arac_lit_species, "arachnida/arac_lit_sp.csv", na="")
+
+
+#species list table 
+arac_master2 = arac_master %>%
+  select(acceptedFamily, acceptedGenus, acceptedName, island) %>% 
+  distinct(across(contains("accepted")), .keep_all=TRUE)
+
+arac_lit2 = arac_lit_family %>% 
+  select(acceptedFamily, acceptedGenus, acceptedName) 
+
+arac_master3 = arac_master2 %>%
+  select(acceptedFamily, acceptedGenus, acceptedName) 
+
+arac_all2 = rbind(arac_master3, arac_lit_fam) %>%
+  distinct(across(contains("accepted")), .keep_all=TRUE)
+
+write.csv(arac_master2, "arachnida/arac_occurence_SCL.csv", na="")
+write.csv(arac_all2, "arachnida/arac_allisland.csv", na="")
+
 ```
 
 
