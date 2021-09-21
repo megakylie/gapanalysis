@@ -86,7 +86,7 @@ dip_islandsum <- dip_master %>%
 dip_island <- ggplot(data = dip_islandsum, aes(x = samples, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
   labs(y ="Island", 
-       x = "Number of Diptera Specimens Sampled",
+       x = "Number of Diptera Data Points",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,1200), expand = c(0,0)) +
@@ -106,7 +106,7 @@ dip_islandprop = dip_islandsum2 %>% group_by(island) %>% mutate(by_area = sample
 dip_island_prop <- ggplot(data = dip_islandprop, aes(x = by_area, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
   labs(y ="Island", 
-       x = "Diptera Specimens Sampled/Island Area (km^2)",
+       x = "Number of Diptera Data Points/Island Area (km^2)",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,70), expand = c(0,0)) +
@@ -120,14 +120,12 @@ ggsave(plot=dip_island_prop, filename="diptera/DipteraGraphs/dip_island_prop.png
 
 #### Temporal Graph
 ```{r Graphing by year}
-
-
 dip_year = ggplot(dip_master, aes(x=year, fill=source)) + 
   geom_bar() + 
   theme_bw() + 
   scale_y_continuous(expand=c(0,0), limits = c(0, 1000)) + 
   scale_x_continuous(limits=c(1910, 2025)) + 
-  labs(x="Year", y ="Number of Diptera Specimens Sampled") +   scale_fill_brewer(palette = "Dark2")
+  labs(x="Year", y ="Number of Diptera Data Points") +   scale_fill_brewer(palette = "Dark2")
 
 dip_year
 
@@ -157,7 +155,7 @@ dip_ismonth <- ggplot(dip_month, aes(x=month, fill=month)) +
   geom_bar() + 
   theme_bw() + 
   scale_y_continuous(expand=c(0,0.5)) + 
-  labs(x="Diptera Sampling per Island by Month", y ="Number of Specimens Sampled") +  
+  labs(x="Diptera Data Points per Island by Month", y ="Number of Diptera Data Points") +  
   facet_wrap(vars(island), nrow=2, scales="free_y")
 
 dip_ismonth 
@@ -186,9 +184,44 @@ table(dip_nic_combine$acceptedFamily)
 write.csv(dip_master, "diptera/DipteraGraphs/dip_master.csv", na="")
 ```
 
+```{r Family by Source Table}
+#not using LACM single Scorpion to order in this table so using arac_combo instead of arac_master
+diptab= table(dip_master$acceptedFamily)
+diptab = as.data.frame.table(diptab)
+
+diptab_inat = table(dip_inat$acceptedFamily)
+diptab_inat = as.data.frame.table(diptab_inat)
+diptab_inat <- diptab_inat %>%
+  rename(iNaturalist = "Freq") 
+
+diptab_chis = table(dip_chis$acceptedFamily)
+diptab_chis = as.data.frame.table(diptab_chis)
+diptab_chis <- diptab_chis %>%
+  rename(CalIBIS = "Freq") 
 
 
-```{r}
+
+dip_lacms = rbind(dip_lacm_combine, dip_nic_combine)
+diptab_lacm = table(dip_lacm$acceptedFamily)
+diptab_lacm = as.data.frame.table(diptab_lacm)
+diptab_lacm <- diptab_lacm %>%
+  rename(LACM = "Freq") 
+
+dip_tab <- left_join(diptab, diptab_inat)
+dip_tab2 <- left_join(dip_tab, diptab_chis)
+dip_tab3 <- left_join(dip_tab2, diptab_lacm)
+
+dip_tab_complete <-dip_tab3 %>%
+  rename(Sum = "Freq", Family = "Var1")
+
+dip_tab_complete <- dip_tab_complete %>%
+  mutate(Percentage = (Sum/4284)) %>% 
+  relocate("Family","CalIBIS","LACM", "iNaturalist", "Sum", "Percentage")
+
+write.csv(dip_tab_complete, "diptera/DipteraGraphs/dip_table_complete.csv", na="0")
+```
+
+```{r Diptera Literature Comparison}
 dip_master2 = dip_master %>%
   select(acceptedFamily, acceptedGenus, acceptedName) 
 
@@ -206,14 +239,42 @@ diptab_lit = table(dip_lit$acceptedName)
 diptab_lit = as.data.frame.table(diptab_lit) %>%
   rename(Literature= "Freq",  acceptedName = "Var1") 
 
+diptab_occ_gen = table(dip_master$acceptedGenus)
+diptab_occ_gen = as.data.frame.table(diptab_occ_gen) %>%
+  rename(OccurenceGen= "Freq",  acceptedGenus = "Var1") 
+
+diptab_lit_gen = table(dip_lit$acceptedGenus)
+diptab_lit_gen = as.data.frame.table(diptab_lit_gen) %>%
+  rename(LiteratureGen= "Freq",  acceptedGenus = "Var1") 
+
+diptab_occ_fam = table(dip_master$acceptedFamily)
+diptab_occ_fam = as.data.frame.table(diptab_occ_fam) %>%
+  rename(OccurenceFam= "Freq",  acceptedFamily = "Var1") 
+
+diptab_lit_fam = table(dip_lit$acceptedFamily)
+diptab_lit_fam = as.data.frame.table(diptab_lit_fam) %>%
+  rename(LiteratureFam= "Freq",  acceptedFamily = "Var1") 
+
 #species list table from occurence and literature, with numbers just to show what is added by lit
 dip_table <- left_join(dip_all2, diptab_occ)
 dip_table2 <- left_join(dip_table, diptab_lit)
+dip_table3 <- left_join(dip_table2, diptab_occ_gen, by="acceptedGenus")
+dip_table4 <- left_join(dip_table3, diptab_lit_gen, by="acceptedGenus")
+dip_table5 <- left_join(dip_table4, diptab_occ_fam, by="acceptedFamily")
+dip_table6 <- left_join(dip_table5, diptab_lit_fam, by="acceptedFamily")
 
-dip_table_complete <-dip_table2 %>%
+dip_table_complete <-dip_table6 %>%
   rename(Species = "acceptedName", Family = "acceptedFamily", Genus = "acceptedGenus")
 
-write.csv(dip_table_complete, "diptera/DipteraGraphs/dip_table_complete.csv", na="0")
+write.csv(dip_table_complete, "diptera/DipteraGraphs/dip_lit_complete.csv", na="0")
+
+dip_complete_family = dip_table_complete %>%
+  distinct(Family, .keep_all=TRUE) %>% 
+  select(Family, OccurenceFam, LiteratureFam) %>%
+  rename(Occurence="OccurenceFam", Literature="LiteratureFam") 
+
+write.csv(dip_complete_family, "diptera/DipteraGraphs/dip_table_family.csv", na="")
+
 ```
 
 
