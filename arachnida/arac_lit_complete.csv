@@ -1,0 +1,435 @@
+"","Family","Genus","Species","Occurence","Literature","OccurenceGen","LiteratureGen","OccurenceFam","LiteratureFam"
+"1","Agelenidae",0,0,0,0,0,0,26,24
+"2","Agelenidae","Agelenopsis",0,0,0,6,0,26,24
+"3","Agelenidae","Agelenopsis","Agelenopsis aperta",2,0,6,0,26,24
+"4","Anyphaenidae","Anyphaena",0,0,0,1,2,4,3
+"5","Anyphaenidae",0,0,0,0,0,0,4,3
+"6","Anystidae",0,0,0,0,0,0,6,1
+"7","Anystidae","Anystis",0,0,0,1,0,6,1
+"8","Araneidae","Aculepeira","Aculepeira packardi",5,1,5,1,248,30
+"9","Araneidae",0,0,0,0,0,0,248,30
+"10","Araneidae","Araneus",0,0,0,30,7,248,30
+"11","Araneidae","Araneus","Araneus andrewsi",7,1,30,7,248,30
+"12","Araneidae","Araneus","Araneus detrimentosus",1,0,30,7,248,30
+"13","Araneidae","Araneus","Araneus gemma",1,2,30,7,248,30
+"14","Araneidae","Argiope",0,0,0,140,5,248,30
+"15","Araneidae","Argiope","Argiope argentata",124,5,140,5,248,30
+"16","Araneidae","Argiope","Argiope aurantia",2,0,140,5,248,30
+"17","Araneidae","Argiope","Argiope trifasciata",13,0,140,5,248,30
+"18","Araneidae","Cyclosa",0,0,0,5,1,248,30
+"19","Araneidae","Cyclosa","Cyclosa turbinata",3,1,5,1,248,30
+"20","Araneidae","Eustala",0,0,0,5,2,248,30
+"21","Araneidae","Mastophora","Mastophora cornigera",1,0,1,0,248,30
+"22","Araneidae","Metepeira",0,0,0,34,10,248,30
+"23","Araneidae","Metepeira","Metepeira spinipes",1,1,34,10,248,30
+"24","Araneidae","Neoscona",0,0,0,5,1,248,30
+"25","Araneidae","Neoscona","Neoscona crucifera",4,0,5,1,248,30
+"26","Araneidae","Zygiella",0,0,0,4,0,248,30
+"27","Araneidae","Zygiella","Zygiella x-notata",3,0,4,0,248,30
+"28","Bdellidae",0,0,0,0,0,0,14,1
+"29","Bdellidae","Neomolgus",0,0,0,2,0,14,1
+"30","Bdellidae","Neomolgus","Neomolgus littoralis",1,0,2,0,14,1
+"31","Caeculidae",0,0,0,0,0,0,1,1
+"32","Camisiidae",0,0,0,0,0,0,1,1
+"33","Hadruridae","Hadrurus",0,0,0,5,0,5,0
+"34","Hadruridae","Hadrurus","Hadrurus arizonensis",1,0,5,0,5,0
+"35","Cheiracanthiidae","Cheiracanthium",0,0,0,2,3,2,2
+"36","Cheiracanthiidae","Cheiracanthium","Cheiracanthium mildei",1,0,2,3,2,2
+"37","Cheliferidae",0,0,0,0,0,0,2,1
+"38","Chernetidae",0,0,0,0,0,0,1,0
+"39","Chthoniidae",0,0,0,0,0,0,2,1
+"40","Clubionidae","Clubiona",0,0,0,2,1,2,2
+"41","Eupodidae","Linopodes",0,0,0,4,0,4,1
+"42","Corinnidae","Castianeira",0,0,0,3,1,3,1
+"43","Corinnidae","Castianeira","Castianeira occidens",1,1,3,1,3,1
+"44","Cybaeidae",0,0,0,0,0,0,1,2
+"45","Cymbaeremaeidae","Scapheremaeus",0,0,0,2,0,2,0
+"46","Desidae","Badumna","Badumna longinqua",1,0,1,0,1,0
+"47","Dictynidae","Nigma","Nigma linsdalei",3,0,3,0,3,6
+"48","Dysderidae","Dysdera","Dysdera crocata",12,0,12,0,12,0
+"49","Eremobatidae","Eremobates",0,0,0,1,3,2,3
+"50","Eremobatidae",0,0,0,0,0,0,2,3
+"51","Eriophyidae","Aceria","Aceria baccharices",1,0,2,1,3,1
+"52","Eriophyidae","Aceria","Aceria boycei",1,0,2,1,3,1
+"53","Eriophyidae","Eriophyes","Eriophyes paracalifornicus",1,0,1,0,3,1
+"54","Erythracaridae",0,0,0,0,0,0,1,0
+"55","Erythraeidae","Abrolophus",0,0,0,2,0,13,2
+"56","Erythraeidae","Balaustium",0,0,0,6,0,13,2
+"57","Erythraeidae",0,0,0,0,0,0,13,2
+"58","Garypidae","Garypus",0,0,0,4,5,4,5
+"59","Garypidae","Garypus","Garypus californicus",3,5,4,5,4,5
+"60","Gnaphosidae","Drassodes",0,0,0,1,3,30,47
+"61","Gnaphosidae",0,0,0,0,0,0,30,47
+"62","Gnaphosidae","Herpyllus","Herpyllus propinquus",4,1,4,3,30,47
+"63","Halonoproctidae","Bothriocyrtum","Bothriocyrtum californicum",6,2,6,2,7,1
+"64","Halonoproctidae",0,0,0,0,0,0,7,1
+"65","Ixodidae","Ixodes","Ixodes pacificus",8,15,8,43,8,49
+"66","Linyphiidae","Erigone",0,0,0,1,7,4,17
+"67","Linyphiidae",0,0,0,0,0,0,4,17
+"68","Lycosidae","Alopecosa",0,0,0,5,4,51,22
+"69","Lycosidae","Alopecosa","Alopecosa kochi",4,3,5,4,51,22
+"70","Lycosidae",0,0,0,0,0,0,51,22
+"71","Lycosidae","Pardosa",0,0,0,1,5,51,22
+"72","Lycosidae","Schizocosa",0,0,0,11,6,51,22
+"73","Lycosidae","Schizocosa","Schizocosa mccooki",6,6,11,6,51,22
+"74","Eutrombidiidae","Eutrombidium",0,0,0,1,0,1,0
+"75","Mimetidae","Mimetus",0,0,0,1,0,1,0
+"76","Oecobiidae","Oecobius",0,0,0,3,3,3,3
+"77","Oecobiidae","Oecobius","Oecobius navus",1,1,3,3,3,3
+"78","Oonopidae","Escaphiella",0,0,0,1,1,1,1
+"79","Oxyopidae","Oxyopes","Oxyopes scalaris",1,0,1,3,8,4
+"80","Oxyopidae",0,0,0,0,0,0,8,4
+"81","Oxyopidae","Peucetia",0,0,0,6,1,8,4
+"82","Oxyopidae","Peucetia","Peucetia viridans",5,1,6,1,8,4
+"83","Parasitidae",0,0,0,0,0,0,1,3
+"84","Penthaleidae",0,0,0,0,0,0,2,0
+"85","Phalangodidae","Sitalcina",0,0,0,2,0,4,1
+"86","Philodromidae",0,0,0,0,0,0,12,12
+"87","Philodromidae","Tibellus",0,0,0,9,3,12,12
+"88","Philodromidae","Tibellus","Tibellus oblongus",1,0,9,3,12,12
+"89","Pholcidae","Holocnemus","Holocnemus pluchei",1,0,1,0,13,1
+"90","Pholcidae",0,0,0,0,0,0,13,1
+"91","Pholcidae","Pholcus",0,0,0,9,0,13,1
+"92","Pholcidae","Pholcus","Pholcus phalangioides",6,0,9,0,13,1
+"93","Pholcidae","Psilochorus",0,0,0,2,1,13,1
+"94","Plectreuridae","Plectreurys",0,0,0,1,2,1,3
+"95","Protolophidae","Protolophus",0,0,0,35,9,35,9
+"96","Protolophidae","Protolophus","Protolophus cockerelli",13,2,35,9,35,9
+"97","Protolophidae","Protolophus","Protolophus singularis",1,0,35,9,35,9
+"98","Rhagidiidae",0,0,0,0,0,0,1,1
+"99","Salticidae",0,0,0,0,0,0,253,31
+"100","Salticidae","Habronattus",0,0,0,57,6,253,31
+"101","Salticidae","Habronattus","Habronattus californicus",3,2,57,6,253,31
+"102","Salticidae","Habronattus","Habronattus oregonensis",1,2,57,6,253,31
+"103","Salticidae","Habronattus","Habronattus tarsalis",36,1,57,6,253,31
+"104","Salticidae","Metacyrba",0,0,0,15,3,253,31
+"105","Salticidae","Metacyrba","Metacyrba taeniola",14,3,15,3,253,31
+"106","Salticidae","Metaphidippus",0,0,0,3,1,253,31
+"107","Salticidae","Mexigonus","Mexigonus minutus",2,0,3,0,253,31
+"108","Salticidae","Mexigonus","Mexigonus morosus",1,0,3,0,253,31
+"109","Salticidae","Pelegrina","Pelegrina aeneola",3,1,3,2,253,31
+"110","Salticidae","Phanias",0,0,0,9,1,253,31
+"111","Salticidae","Phidippus",0,0,0,106,6,253,31
+"112","Salticidae","Phidippus","Phidippus adumbratus",3,0,106,6,253,31
+"113","Salticidae","Phidippus","Phidippus johnsoni",29,4,106,6,253,31
+"114","Salticidae","Salticus","Salticus palpalis",2,0,2,2,253,31
+"115","Salticidae","Sassacus","Sassacus vitis",2,2,2,2,253,31
+"116","Salticidae","Synageles",0,0,0,9,0,253,31
+"117","Salticidae","Terralonus","Terralonus californicus",4,2,4,2,253,31
+"118","Sclerosomatidae","Leuronychus","Leuronychus pacificus",1,0,1,0,1,0
+"119","Scytodidae","Scytodes","Scytodes lugubris",1,0,1,0,1,0
+"120","Segestriidae","Segestria",0,0,0,3,2,4,8
+"121","Segestriidae","Segestria","Segestria pacifica",1,1,3,2,4,8
+"122","Smarididae",0,0,0,0,0,0,2,1
+"123","Sparassidae","Curicaberis",0,0,0,2,1,2,1
+"124","Sparassidae","Curicaberis","Curicaberis peninsulanus",1,1,2,1,2,1
+"125","Tetragnathidae",0,0,0,0,0,0,2,3
+"126","Theridiidae","Argyrodes",0,0,0,5,0,72,20
+"127","Theridiidae","Asagena",0,0,0,1,1,72,20
+"128","Theridiidae","Latrodectus",0,0,0,27,5,72,20
+"129","Theridiidae","Latrodectus","Latrodectus geometricus",5,0,27,5,72,20
+"130","Theridiidae","Latrodectus","Latrodectus hesperus",20,5,27,5,72,20
+"131","Theridiidae","Parasteatoda",0,0,0,3,0,72,20
+"132","Theridiidae","Parasteatoda","Parasteatoda tepidariorum",2,0,3,0,72,20
+"133","Theridiidae","Steatoda",0,0,0,22,8,72,20
+"134","Theridiidae","Steatoda","Steatoda grossa",1,3,22,8,72,20
+"135","Theridiidae","Steatoda","Steatoda nobilis",16,0,22,8,72,20
+"136","Theridiidae",0,0,0,0,0,0,72,20
+"137","Theridiidae","Theridion",0,0,0,5,4,72,20
+"138","Thomisidae","Diaea","Diaea livens",3,0,3,0,93,16
+"139","Thomisidae","Mecaphesa",0,0,0,10,4,93,16
+"140","Thomisidae","Misumena",0,0,0,11,0,93,16
+"141","Thomisidae","Misumena","Misumena vatia",9,0,11,0,93,16
+"142","Thomisidae",0,0,0,0,0,0,93,16
+"143","Thomisidae","Thomisus",0,0,0,1,0,93,16
+"144","Thomisidae","Tmarus",0,0,0,3,1,93,16
+"145","Thomisidae","Xysticus",0,0,0,23,14,93,16
+"146","Trachelidae","Trachelas",0,0,0,2,3,2,3
+"147","Trachelidae","Trachelas","Trachelas pacificus",1,3,2,3,2,3
+"148","Microtrombidiidae","Trombidium",0,0,0,1,0,1,0
+"149","Vaejovidae","Catalinia","Catalinia minima",57,0,103,0,103,10
+"150","Vaejovidae","Catalinia","Catalinia thompsoni",46,0,103,0,103,10
+"151","Zodariidae","Lutica",0,0,0,6,13,6,12
+"152","Zodariidae","Lutica","Lutica nicolasia",5,4,6,13,6,12
+"153","Zoropsidae",0,0,0,0,0,0,2,0
+"154",0,0,0,0,0,0,0,0,0
+"155","Amaurobiidae","Callobius",0,0,0,1,0,1,1
+"156","Araneidae","Metepeira","Metepeira ventura",5,1,34,10,248,30
+"157","Garypinidae",0,0,0,0,0,0,1,0
+"158","Gnaphosidae","Gnaphosa","Gnaphosa californica",1,3,3,9,30,47
+"159","Gnaphosidae","Gnaphosa","Gnaphosa maritima",1,5,3,9,30,47
+"160","Gnaphosidae","Gnaphosa","Gnaphosa salsa",1,0,3,9,30,47
+"161","Gnaphosidae","Marinarozelotes","Marinarozelotes jaxartensis",1,2,1,3,30,47
+"162","Phalangodidae","Calicina","Calicina topanga",2,1,2,1,4,1
+"163","Salticidae","Habronattus","Habronattus ophrys",7,0,57,6,253,31
+"164","Segestriidae","Ariadna","Ariadna bicolor",1,0,1,1,4,8
+"165","Thomisidae","Mecaphesa","Mecaphesa lepida",1,0,10,4,93,16
+"166","Thomisidae","Tmarus","Tmarus angulatus",1,1,3,1,93,16
+"167","Acaridae","Tyrophagus",0,0,0,0,1,0,1
+"168","Adamystidae",0,0,0,0,0,0,0,1
+"169","Ameroseiidae","Epicriopsis","Epicriopsis nr. palustris",0,1,0,1,0,1
+"170","Anystidae","nr. Bechsteinia",0,0,0,0,1,6,1
+"171","Aphelacaridae","Aphelacarus",0,0,0,0,1,0,1
+"172","Argasidae","Ornithodoros","Ornithodoros megnini",0,2,0,2,0,7
+"173","Argasidae","Argas","Argas talaje",0,5,0,5,0,7
+"174","Antennoseiidae","Antennoseius",0,0,0,0,1,0,1
+"175","Ascidae","Gamasellodes",0,0,0,0,1,0,3
+"176","Ascidae","Iphidozercon",0,0,0,0,1,0,3
+"177","Ascidae","Zerconopsis",0,0,0,0,1,0,3
+"178","Bdellidae","Bdella",0,0,0,0,1,14,1
+"179","Bimichaeliidae",0,0,0,0,0,0,0,1
+"180","Brachychthoniidae","Eobrachychtonius",0,0,0,0,1,0,3
+"181","Brachychthoniidae","Poecilochthonius",0,0,0,0,1,0,3
+"182","Brachychthoniidae","Sellnickochthonius","Sellnickochthonius sp. (zelawaiensis grp.)",0,1,0,1,0,3
+"183","Caeculidae","Caeculus",0,0,0,0,1,1,1
+"184","Caligonellidae","Caligonella",0,0,0,0,1,0,1
+"185","Camerobiidae","Neophyllobius",0,0,0,0,1,0,1
+"186","Camisiidae","Camisia","Camisia sp. (segnis grp.)",0,1,0,1,1,1
+"187","Ceratozetidae","Ceratozetes",0,0,0,0,2,0,3
+"188","Camobatidae","Chamobates",0,0,0,0,1,0,1
+"189","Ceratozetidae",0,0,0,0,0,0,0,3
+"190","Cheyletidae","Cheyletomorpha",0,0,0,0,1,0,3
+"191","Cheyletidae","Eucheyletia",0,0,0,0,1,0,3
+"192","Cheyletidae","Neoeucheyla",0,0,0,0,1,0,3
+"193","Cosmochthoniidae","Cosmochthonius",0,0,0,0,1,0,1
+"194","Cryptognathidae","Cryptognathus",0,0,0,0,1,0,1
+"195","Ctenacaridae","Beklemishevia",0,0,0,0,1,0,1
+"196","Cunaxidae","Cunaxa",0,0,0,0,1,0,3
+"197","Cunaxidae","Cunaxoides",0,0,0,0,1,0,3
+"198","Cunaxidae","Neocunaxoides",0,0,0,0,1,0,3
+"199","Damaeidae","Epidamaeus","Epidamaeus nr. longispinosus",0,1,0,1,0,1
+"200","Dermanyssidae","Dermanyssus","Dermanyssus gallinae",0,1,0,1,0,1
+"201","Raillietiidae","Raillietia","Raillietia caprae",0,1,0,1,0,1
+"202","Eremaeidae","Eremaeus","Eremaeus stiktos",0,1,0,1,0,2
+"203","Eremaeidae","Kartoeremaeus",0,0,0,0,1,0,2
+"204","Eriophyidae","Aceria","Aceria catalinae",0,1,2,1,3,1
+"205","Erythraeidae","Leptus",0,0,0,0,2,13,2
+"206","Trombidiidae","Microtrombidium","Microtrombidium augustipes",0,3,0,3,0,3
+"207","Eupodidae","Eupodes",0,0,0,0,1,4,1
+"208","Galumnidae","Galumna",0,0,0,0,1,0,1
+"209","Glycyphagidae",0,0,0,0,0,0,0,1
+"210","Gymnodamaeidae","Gymnodamaeus",0,0,0,0,1,0,2
+"211","Gymnodamaeidae","Joshuella","Joshuella sp. (nr. striata)",0,1,0,1,0,2
+"212","Halacaridae","Agaue","Agaue variabilis",0,1,0,1,0,7
+"213","Halacaridae","Agauopsis","Agauopsis curvata",0,1,0,3,0,7
+"214","Halacaridae","Agauopsis","Agauopsis filirostris",0,2,0,3,0,7
+"215","Halacaridae","Copidognathus","Copidognathus ilsebartschi",0,1,0,2,0,7
+"216","Halacaridae","Copidognathus","Copidognathus spinifer",0,1,0,2,0,7
+"217","Halacaridae","Halacarus","Halacarus newelli",0,1,0,1,0,7
+"218","Haplochthoniidae","Haplochthonius","Haplochthonius variabilis",0,1,0,1,0,1
+"219","Haplozetidae","Peloribates",0,0,0,0,1,0,1
+"220","Hermaniellidae","Hermaniella",0,0,0,0,1,0,1
+"221","Ichthyostomatogasteridae","Asternolaelaps",0,0,0,0,1,0,1
+"222","Ixodidae","Dermacentor","Dermacentor albipictus",0,3,0,3,8,49
+"223","Ixodidae","Haemaphysalis","Haemaphysalis leporispalustris",0,3,0,3,8,49
+"224","Ixodidae","Ixodes","Ixodes brunneus",0,3,8,43,8,49
+"225","Ixodidae","Ixodes","Ixodes murreleti",0,1,8,43,8,49
+"226","Ixodidae","Ixodes","Ixodes peromysci",0,12,8,43,8,49
+"227","Ixodidae","Ixodes","Ixodes rugosus",0,7,8,43,8,49
+"228","Ixodidae","Ixodes","Ixodes sculptus",0,1,8,43,8,49
+"229","Ixodidae","Ixodes","Ixodes signatus",0,4,8,43,8,49
+"230","Labidostommatidae","Labidostomma","Labidostommatidae (nr. plumosum)",0,1,0,1,0,1
+"231","Laelapidae","Gymnolaelaps",0,0,0,0,1,0,2
+"232","Laelapidae",0,0,0,0,0,0,0,2
+"233","Liacaridae","Liacarus","Liacarus nr. bidentatus",0,1,0,1,0,1
+"234","Licnodamaeidae","Licnodamaeus",0,0,0,0,1,0,1
+"235","Macronyssidae","Ophionyssus","Ophionyssus natricis",0,1,0,1,0,4
+"236","Macronyssidae","Ornithonyssus","Ornithonyssus bacoti",0,1,0,2,0,4
+"237","Macronyssidae","Ornithonyssus","Ornithonyssus sylviarum",0,1,0,2,0,4
+"238","Macronyssidae","Pellonyssus","Pellonyssus passeri",0,1,0,1,0,4
+"239","Peloppiidae",0,0,0,0,0,0,0,1
+"240","Punctoribatidae","Zachvatkinbates",0,0,0,0,1,0,1
+"241","Myobiidae","Pteracarus","Pteracarus (nr.) chalinolobus",0,1,0,1,0,1
+"242","Nanorchestidae","Nanorchestes",0,0,0,0,1,0,1
+"243","Ologamasidae","Acugamasus",0,0,0,0,1,0,2
+"244","Ologamasidae","Gamasellus",0,0,0,0,1,0,2
+"245","Oppiidae","Oppiella",0,0,0,0,1,0,1
+"246","Oribatulidae","Phauloppia",0,0,0,0,1,0,1
+"247","Parasitidae","Laelaps","Laelaps pilosula",0,3,0,3,1,3
+"248","Paratydeidae",0,0,0,0,0,0,0,1
+"249","Parholaspididae",0,0,0,0,0,0,0,1
+"250","Phenopelopidae","Propelops","Propelops canadensis/rossica grp.",0,1,0,2,0,2
+"251","Phenopelopidae","Propelops",0,0,0,0,2,0,2
+"252","Phthiracaridae","Phthiracarus",0,0,0,0,1,0,1
+"253","Phytoseiidae","Chelaseius","Chelaseius floridanus",0,1,0,2,0,2
+"254","Phytoseiidae","Chelaseius",0,0,0,0,2,0,2
+"255","Protoplophoridae",0,0,0,0,0,0,0,1
+"256","Psoroptidae",0,0,0,0,0,0,0,2
+"257","Rhagidiidae","Coccorhagidia",0,0,0,0,1,1,1
+"258","Scheloribatidae","Scheloribates",0,0,0,0,1,0,1
+"259","Scutacaridae",0,0,0,0,0,0,0,1
+"260","Smarididae","Fessonia",0,0,0,0,1,2,1
+"261","Sphaerochthonidae","Sphaerochthonius",0,0,0,0,1,0,1
+"262","Stigmaeidae","Ledermuelleria","Ledermuelleria modiola",0,1,0,3,0,5
+"263","Stigmaeidae","Ledermuelleria","Ledermuelleria nr. pectinata",0,1,0,3,0,5
+"264","Stigmaeidae","Eustigmaeus","Eustigmaeus plumifer",0,1,0,1,0,5
+"265","Stigmaeidae","Ledermuelleria","Ledermuelleria segnis",0,1,0,3,0,5
+"266","Stigmaeidae","Stigmaeus","Stigmaeus nr. mimus",0,1,0,1,0,5
+"267","Tarsonemidae",0,0,0,0,0,0,0,1
+"268","Tectocepheidae","Tectocepheus",0,0,0,0,1,0,1
+"269","Tegoribatidae","Lepidozetes",0,0,0,0,1,0,1
+"270","Tenuipalpidae",0,0,0,0,0,0,0,1
+"271","Tetranychidae","Bryobia",0,0,0,0,1,0,1
+"272","Trombiculidae","Acomatacarus","Acomatacarus arizonensis",0,1,0,1,0,12
+"273","Trombiculidae","Euschoengastia","Euschoengastia ambocalis",0,2,0,6,0,12
+"274","Trombiculidae","Euschoengastia","Euschoengastia numerosa",0,2,0,6,0,12
+"275","Trombiculidae","Euschoengastoides","Euschoengastoides nr. neotomae",0,1,0,1,0,12
+"276","Trombiculidae","Eutrombicula","Eutrombicula belkini",0,3,0,4,0,12
+"277","Trombiculidae","Eutrombicula",0,0,0,0,4,0,12
+"278","Trombiculidae","Euschoengastia","Euschoengastia lacerta",0,2,0,6,0,12
+"279","Neothrombiidae","nr. Parathrombium",0,0,0,0,1,0,1
+"280","Uropodidae",0,0,0,0,0,0,0,1
+"281","Xenillidae","Xenillus",0,0,0,0,1,0,1
+"282","Zerconidae","Amerozercon",0,0,0,0,1,0,2
+"283","Zerconidae","Microzercon",0,0,0,0,1,0,2
+"284","Agelenidae","Calilena","Calilena californica",0,2,0,4,26,24
+"285","Agelenidae","Rualena","Rualena rua",0,3,0,9,26,24
+"286","Agelenidae","Agelena",0,0,0,0,4,26,24
+"287","Agelenidae","Calilena","Calilena angelena",0,1,0,4,26,24
+"288","Agelenidae","Calilena","Calilena saylori",0,1,0,4,26,24
+"289","Agelenidae","Hololena","Hololena barbarana",0,1,0,6,26,24
+"290","Agelenidae","Hololena","Hololena pacifica",0,4,0,6,26,24
+"291","Agelenidae","Rualena","Rualena alleni",0,2,0,9,26,24
+"292","Agelenidae","Rualena","Rualena cockerelli",0,1,0,9,26,24
+"293","Agelenidae","Rualena","Rualena cruzana",0,2,0,9,26,24
+"294","Agelenidae","Tegenaria","Tegenaria domestica",0,1,0,1,26,24
+"295","Amaurobiidae","Amaurobius","Amaurobius latescens",0,1,0,1,1,1
+"296","Araneidae","Araneus","Araneus montereyensis",0,2,30,7,248,30
+"297","Araneidae","Eustala","Eustala conchlea",0,1,5,2,248,30
+"298","Araneidae","Hypsosinga","Hypsosinga funebris",0,1,0,1,248,30
+"299","Araneidae","Metepeira","Metepeira crassipes",0,1,34,10,248,30
+"300","Araneidae","Metepeira","Metepeira foxi",0,1,34,10,248,30
+"301","Araneidae","Metepeira","Metepeira gosoga",0,3,34,10,248,30
+"302","Araneidae","Neoscona","Neoscona oaxacensis",0,1,5,1,248,30
+"303","Tetragnathidae","Tetragnatha","Tetragnatha versicolor",0,2,0,3,2,3
+"304","Cheiracanthiidae","Cheiracanthium","Cheiracanthium inclusum",0,2,2,3,2,2
+"305","Euctenizidae","Aptostichus","Aptostichus atomarius",0,1,0,2,0,4
+"306","Euctenizidae","Promyrmekiaphila","Promyrmekiaphila clathrata",0,2,0,2,0,4
+"307","Dictynidae","Dictyna","Dictyna calcarata",0,1,0,1,3,6
+"308","Dictynidae","Emblyna","Emblyna olympiana",0,2,0,3,3,6
+"309","Dictynidae","Emblyna","Emblyna serena",0,1,0,3,3,6
+"310","Filistatidae","Kukulcania","Kukulcania geophila",0,2,0,3,0,4
+"311","Filistatidae","Kukulcania","Kukulcania hibernalis",0,1,0,3,0,4
+"312","Gnaphosidae","Drassodes","Drassodes angulus",0,3,1,3,30,47
+"313","Gnaphosidae","Drassyllus","Drassyllus barbus",0,1,0,10,30,47
+"314","Gnaphosidae","Drassyllus","Drassyllus insularis",0,8,0,10,30,47
+"315","Gnaphosidae","Drassyllus",0,0,0,0,10,30,47
+"316","Gnaphosidae","Drassylus","Drassylus barbus",0,1,0,1,30,47
+"317","Gnaphosidae","Gnaphosa",0,0,0,3,9,30,47
+"318","Gnaphosidae","Haplodrassus","Haplodrassus signifer",0,5,0,5,30,47
+"319","Gnaphosidae","Herpyllus","Herpyllus hesperolus",0,1,4,3,30,47
+"320","Gnaphosidae","Herpyllus",0,0,0,4,3,30,47
+"321","Gnaphosidae","Micaria","Micaria utahna",0,2,0,2,30,47
+"322","Gnaphosidae","Nodocion","Nodocion voluntarius",0,2,0,2,30,47
+"323","Gnaphosidae","Sergiolus","Sergiolus montanus",0,3,0,4,30,47
+"324","Gnaphosidae","Sergiolus",0,0,0,0,4,30,47
+"325","Gnaphosidae","Marinarozelotes","Marinarozelotes lyonneti",0,1,1,3,30,47
+"326","Gnaphosidae","Zelotes","Zelotes cruz",0,2,0,4,30,47
+"327","Linyphiidae","Mermessus",0,0,0,0,1,4,17
+"328","Linyphiidae","Erigone","Erigone dentosa",0,5,1,7,4,17
+"329","Linyphiidae","Frontinella","Frontinella pyramitela",0,3,0,3,4,17
+"330","Linyphiidae","Lepthyphantes",0,0,0,0,1,4,17
+"331","Linyphiidae","Spirembolus","Spirembolus redondo",0,1,0,1,4,17
+"332","Phrurolithidae","Drassinella","Drassinella modesta",0,4,0,4,0,5
+"333","Lycosidae","Allocosa","Allocosa subparva",0,2,0,2,51,22
+"334","Lycosidae","Arctosa","Arctosa littoralis",0,2,0,2,51,22
+"335","Lycosidae","Lycosa",0,0,0,0,2,51,22
+"336","Lycosidae","Pardosa","Pardosa californica",0,1,1,5,51,22
+"337","Lycosidae","Pardosa","Pardosa ramulosa",0,1,1,5,51,22
+"338","Lycosidae","Pardosa","Pardosa sternalis",0,2,1,5,51,22
+"339","Oecobiidae","Oecobius","Oecobius annulipes",0,2,3,3,3,3
+"340","Oonopidae","Escaphiella","Escaphiella hespera",0,1,1,1,1,1
+"341","Oxyopidae","Oxyopes","Oxyopes salticus",0,2,1,3,8,4
+"342","Philodromidae","Ebo","Ebo pepinensis",0,4,0,5,12,12
+"343","Philodromidae","Philodromus","Philodromus chamisis",0,2,0,5,12,12
+"344","Philodromidae","Philodromus",0,0,0,0,5,12,12
+"345","Philodromidae","Tibellus","Tibellus chamberlini",0,3,9,3,12,12
+"346","Pholcidae","Psilochorus","Psilochorus bantus",0,1,2,1,13,1
+"347","Plectreuridae","Kibramoa","Kibramoa isolata",0,1,0,1,1,3
+"348","Plectreuridae","Plectreurys","Plectreurys castanea",0,2,1,2,1,3
+"349","Salticidae","Dendryphantes",0,0,0,0,3,253,31
+"350","Salticidae","Habronattus","Habronattus hirsutus",0,1,57,6,253,31
+"351","Salticidae","Metaphidippus","Metaphidippus utanus",0,1,3,1,253,31
+"352","Salticidae","Neon","Neon avalonus",0,1,0,1,253,31
+"353","Salticidae","Salticus","Salticus scenicus",0,2,2,2,253,31
+"354","Segestriidae","Citharoceps","Citharoceps fidicina",0,2,0,5,4,8
+"355","Segestriidae","Citharoceps","Citharoceps cruzana",0,3,0,5,4,8
+"356","Theridiidae","Crustulina","Crustulina sticta",0,2,0,2,72,20
+"357","Theridiidae","Steatoda","Steatoda albomaculata",0,1,22,8,72,20
+"358","Theridiidae","Steatoda","Steatoda washona",0,4,22,8,72,20
+"359","Theridiidae","Tidarren","Tidarren haemorrhoidale",0,1,0,1,72,20
+"360","Thomisidae","Mecaphesa","Mecaphesa importunus belkini",0,2,10,4,93,16
+"361","Thomisidae","Xysticus","Xysticus californicus",0,3,23,14,93,16
+"362","Thomisidae","Xysticus","Xysticus montanensis",0,8,23,14,93,16
+"363","Zodariidae","Lutica","Lutica clementea",0,3,6,13,6,12
+"364","Zodariidae","Lutica","Lutica maculata",0,3,6,13,6,12
+"365","Leiobuninae","Leiobunum","Leiobunum exilipes",0,2,0,2,0,2
+"366","Protolophidae","Protolophus","Protolophus tuberculatus",0,6,35,9,35,9
+"367","Nemastomatidae","Ortholasma","Ortholasma coronadense",0,4,0,4,0,4
+"368","Hubbardiidae","Schizomus","Schizomus belkini",0,1,0,1,0,8
+"369","Hubbardiidae","Hubbardia","Hubbardia belkini",0,5,0,7,0,8
+"370","Hubbardiidae","Hubbardia","Hubbardia pentapeltis",0,2,0,7,0,8
+"371","Buthidae","Isometrus","Isometrus maculatus",0,2,0,2,0,2
+"372","Vaejovidae","Pseudouroctonus","Pseudouroctonus minimus minimus",0,2,0,5,103,10
+"373","Vaejovidae","Pseudouroctonus","Pseudouroctonus minimus thompsoni",0,3,0,5,103,10
+"374","Vaejovidae","Uroctonus","Uroctonus mordax",0,4,0,4,103,10
+"375","Eremobatidae","Eremobates","Eremobates scopulatus",0,2,1,3,2,3
+"376","Agelenidae","Hololena",0,0,0,0,6,26,24
+"377","Agelenidae","Rualena",0,0,0,0,9,26,24
+"378","Anyphaenidae","Lupettiana","Lupettiana mordax",0,1,0,1,4,3
+"379","Araneidae","Araniella","Araniella displicata",0,1,0,1,248,30
+"380","Araneidae","Metepeira","Metepeira grinnelli",0,1,34,10,248,30
+"381","Araneidae","Metepeira","Meteperia gosoga",0,1,34,10,248,30
+"382","Clubionidae",0,0,0,0,0,0,2,2
+"383","Corrinidae","Castianeira","Castianeira occidens",1,1,3,1,0,1
+"384","Tracelidae","Meriola","Meriola arcifera",0,1,0,2,0,2
+"385","Tracelidae","Meriola","Meriola californica",0,1,0,2,0,2
+"386","Phrurolithidae","Scotinella",0,0,0,0,1,0,5
+"387","Corinnidae",0,0,0,0,0,0,3,1
+"388","Ctenizidae","Bothriocyrtum","Bothriocyrtum californicum",6,2,6,2,0,1
+"389","Euctenizidae","Aptostichus",0,0,0,0,2,0,4
+"390","Cybaeidae","Yorima","Yorima angelica",0,1,0,1,1,2
+"391","Cybaeidae","Blabomma",0,0,0,0,1,1,2
+"392","Dictynidae","Mallos",0,0,0,0,1,3,6
+"393","Dictynidae",0,0,0,0,0,0,3,6
+"394","Filistatidae","Filistatinella",0,0,0,0,1,0,4
+"395","Gnaphosidae","Zelotes","Zelotes cruzana",0,1,0,4,30,47
+"396","Gnaphosidae","Zelotes",0,0,0,0,4,30,47
+"397","Leptonetidae","Archoleptoneta","Archoleptoneta schusteri",0,1,0,1,0,1
+"398","Linyphiidae","Wubana","Wubana drassoides",0,1,0,1,4,17
+"399","Linyphiidae","Linyphantes",0,0,0,0,1,4,17
+"400","Linyphiidae","Neriene",0,0,0,0,1,4,17
+"401","Miturgidae","Cheiracanthium","Cheiracanthium inclusum",0,2,2,3,0,2
+"402","Miturgidae",0,0,0,0,0,0,0,2
+"403","Oxyopidae","Oxyopes",0,0,0,1,3,8,4
+"404","Philodromidae","Philodromus","Philodromus spectabilis",0,1,0,5,12,12
+"405","Philodromidae","Ebo",0,0,0,0,5,12,12
+"406","Salticidae","Peckhamia","Peckhamia scorpionia",0,1,0,1,253,31
+"407","Salticidae","Phanias","Phanias harfordi",0,1,9,1,253,31
+"408","Salticidae","Pelegrina",0,0,0,3,2,253,31
+"409","Segestriidae","Ariadna","Ariadna fidicina",0,1,1,1,4,8
+"410","Segestriidae","Segestria","Segestria cruzana",0,1,3,2,4,8
+"411","Tetragnathidae","Tetragnatha",0,0,0,0,3,2,3
+"412","Theridiidae","Euryopis","Euryopis spinigera",0,1,0,1,72,20
+"413","Theridiidae","Theridion","Theridion murarium",0,1,5,4,72,20
+"414","Theridiidae","Theridion","Theridion punctipes",0,1,5,4,72,20
+"415","Theridiidae","Wamba","Wamba crispulus",0,1,0,1,72,20
+"416","Theriidae","Latrodectus","Latrodectus hesperus",20,5,27,5,0,4
+"417","Theriidae","Steatoda","Steatoda grossa",1,3,22,8,0,4
+"418","Theriidae","Asagena","Asagena medialis",0,1,1,1,0,4
+"419","Theriidae","Steatoda","Steatoda washona",0,4,22,8,0,4
+"420","Thomisidae","Ebo","Ebo pepinensis",0,4,0,5,93,16
+"421","Thomsidae","Coriarachne","Coriarachne utahensis",0,1,0,1,0,6
+"422","Thomsidae","Mecaphesa","Mecaphesa importuna",0,1,10,4,0,6
+"423","Thomsidae","Tmarus","Tmarus angulatus",1,1,3,1,0,6
+"424","Thomsidae","Mecaphesa",0,0,0,10,4,0,6
+"425","Thomsidae","Xysticus",0,0,0,23,14,0,6
+"426","Thomsidae",0,0,0,0,0,0,0,6
+"427","Uloboridae","Hyptiotes","Hyptiotes gertschi",0,1,0,1,0,2
+"428","Uloboridae",0,0,0,0,0,0,0,2
+"429","Zodaraiidae","Lutica","Lutica clementea",0,3,6,13,0,1
+"430","Chemitidae",0,0,0,0,0,0,0,1
+"431","Olpiidae","Oreolpium",0,0,0,0,1,0,2
+"432","Olpiidae",0,0,0,0,0,0,0,2
+"433","Psoroptidae","Otodectes","Otodectes cynotis",0,1,0,1,0,2
+"434","Vaejovidae","Vaejovis",0,0,0,0,1,103,10
