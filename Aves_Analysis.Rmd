@@ -19,12 +19,12 @@ library(RColorBrewer)
 ```
 
 ```{r download datasets}
-#using inat3, ebird2, chis_onlyegg, sbmnh_obs3, and sbmnh_col3.
+#using inat3, ebird2, chis_onlyegg, sbmnh_obs3, and sbmnh_col4.
 aves_inat <- read_csv("aves/aves_inat3.csv")
 aves_ebird <- read_csv("aves/aves_ebird2.csv")
 aves_chis <- read_csv("aves/aves_chis_onlyeggs.csv")
 aves_sbmnh_obs <- read_csv("aves/aves_sbmnh_obs3.csv")
-aves_sbmnh_col <- read_csv("aves/aves_sbmnh_col3.csv")
+aves_sbmnh_col <- read_csv("aves/aves_sbmnh_col4.csv")
 ```
 
 #Aves Step 2. Combine datasets. Lat and Long included. 
@@ -32,7 +32,7 @@ aves_sbmnh_col <- read_csv("aves/aves_sbmnh_col3.csv")
 #inat doesn't have order listed..would need to add 
 aves_inat_combine <- aves_inat %>%
   rename(class="iconic_tax", type="collectionType") %>%
-  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, scientificName) %>%
+  select(source, month, year, island, class,  acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, scientificName) %>%
   add_column(family= NA, genus =NA)
 
 aves_chis_combine <- aves_chis %>%
@@ -59,7 +59,31 @@ aves_master_na = rbind(aves_inat_combine, aves_chis_combine, aves_sbmnh_obs_comb
 #filter out all NA rows 
 aves_master <- filter(aves_master_na, rowSums(is.na(aves_master_na)) != ncol(aves_master_na)) # Apply 
 ```
+```{r}
+aves_chis_combine_ord <- aves_chis %>%
+  rename(latitude = "decimalLatitude", longitude="decimalLongitude", year="year_", month="month_", type="collectionType") %>%
+  select(source, month, year, island, class, order, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, family, genus, scientificName)
 
+aves_sbmnh_obs_combine_ord <- aves_sbmnh_obs %>%
+  rename(latitude = "decimalLatitude", longitude="decimalLongitude", type="collectionType") %>%
+  select(source, month, year, island, class, order, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, family, genus, scientificName)
+
+aves_sbmnh_col_combine_ord <- aves_sbmnh_col %>%
+  rename(latitude = "decimalLatitude", longitude="decimalLongitude", type="collectionType2") %>%
+  select(source, month, year, island, class, order, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, family, genus, scientificName)
+
+aves_ebird_combine_ord <- aves_ebird %>%
+  rename(latitude = "decimalLatitude", longitude="decimalLongitude", year="year_", month="month_", type = "collection Type") %>%
+  select(month, year, island, class, order, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, family, genus, scientificName) %>%
+  add_column(source="EBIRD")
+  
+aves_master_na_ord = rbind( aves_chis_combine_ord, aves_sbmnh_obs_combine_ord, aves_sbmnh_col_combine_ord, aves_ebird_combine_ord) %>%
+  # reorder the island names to show up N -> S on list
+  mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente")) %>%
+ mutate(source2 = fct_relevel(source, "Cal-IBIS", "EBIRD", "SBMNH Collections", "SBMNH Observations"))
+#filter out all NA rows 
+aves_master <- filter(aves_master_na, rowSums(is.na(aves_master_na)) != ncol(aves_master_na)) # Apply 
+```
 
 #Aves Step. 3 Make Graphs! 
 ### Island Graph 
@@ -227,6 +251,8 @@ ggsave(plot=aves_collgraph, filename="aves/AvesGraphs/aves_type2.png", height=5,
 
 ```
 
+
+#
 #Aves Step 4. Make Tables 
 ```{r Family by Source & Collection Type Tables}
 avestab= table(aves_master$acceptedName)
@@ -234,8 +260,8 @@ avestab = as.data.frame.table(avestab)
 avestab2 = avestab %>%
   rename(acceptedName = "Var1", total = "Freq")
 
-aves_master2 = aves_master %>%
-  select(acceptedFamily, acceptedGenus, acceptedName)
+aves_master2 = aves_master_na_ord %>%
+  select(order, acceptedFamily, acceptedGenus, acceptedName)
 
 avestable = left_join(avestab2, aves_master2 )
 avestable = distinct(avestable)
@@ -267,11 +293,11 @@ aves_table4 <- left_join(aves_table3, avestab_sbmnh_col)
 aves_table5 <- left_join(aves_table4, avestab_sbmnh_obs)
 
 aves_table_complete <-aves_table5 %>%
-  rename(Species = "acceptedName", Family = "acceptedFamily", Genus = "acceptedGenus") %>%
-  relocate("Family", "Genus", "Species", "CalIBIS", "SBMNHcol", "SBMNHobs", "EBIRD", "iNaturalist","total") 
+  rename(Order = "order", Species = "acceptedName", Family = "acceptedFamily", Genus = "acceptedGenus") %>%
+  relocate("Order", "Family", "Genus", "Species", "CalIBIS", "SBMNHcol", "SBMNHobs", "EBIRD", "iNaturalist","total") 
 
 
-write.csv(aves_table_complete, "aves/ave_table_complete.csv", na="0")
+write.csv(aves_table_complete, "aves/ave_table_complete2.csv", na="0")
 
 # NOW DOING A TABLE BY Collections v Observations
 aves_obs = rbind(aves_inat_combine, aves_ebird_combine, aves_sbmnh_obs_combine)
@@ -289,12 +315,14 @@ avestable_combo = left_join(avestable, avestab_obs)
 avestable_combo2 = left_join(avestable_combo, avestab_col)
 
 aves_table_combo_complete <- avestable_combo2 %>%
-   rename(Species = "acceptedName", Family = "acceptedFamily", Genus = "acceptedGenus") %>%
-  relocate("Family", "Genus", "Species", "Collections", "Observations","total") 
+   rename(Order= "order", Species = "acceptedName", Family = "acceptedFamily", Genus = "acceptedGenus") %>%
+  relocate("Order", "Family", "Genus", "Species", "Collections", "Observations","total") 
 
-write.csv(aves_table_combo_complete, "aves/ave_table_combo_complete.csv", na="0")
+write.csv(aves_table_combo_complete, "aves/ave_table_combo_complete2.csv", na="0")
 ```
 
+
+#
 #Endemic and Rare Aves 
 
 ##Create and Endemic and Rare only dataset 
@@ -326,7 +354,7 @@ aves_end_a = filter(aves_end_join, group=="a")
 aves_a_year = ggplot(aves_end_a, aes(x=year, fill=source2)) + 
   geom_bar(width=0.5) + 
   theme_bw() + 
-  labs(x="Year", y ="Number of Data Points", fill="Data Source") + scale_fill_manual(values=aPalette) + facet_wrap(vars(acceptedName), nrow=2, scales="free_y")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+  labs(x="Year", y ="Number of Data Points", fill="Data Source") + scale_fill_manual(values=aPalette) + facet_wrap(vars(acceptedName), nrow=2, scales="free_y")  + scale_y_continuous(expand=expansion(mult=c(0,0.05)), breaks=function(x) unique(floor(pretty(seq(0, (max(x)+1 *1.1)))))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
 aves_a_year
 
 ggsave(plot=aves_a_year, filename="aves/AvesGraphs/aves_a_year.png", height=20, width=35, units="cm", dpi=300)
@@ -386,17 +414,17 @@ ggsave(plot=aves_b_island, filename="aves/AvesGraphs/aves_B_island.png", height=
 ```{r bird group C Hummingbird }
 #brewer.pal(5, name="Dark2") Color codes for the brewer colors, need 1, 2 and 4 for this one
 #[1] Cal-IBIS "#1B9E77" iNaturalist "#D95F02" "EBIRD #7570B3" SBMNH Col "#E7298A" SBMNH Obs "#7FBC41"
-cPalette <- c("#1B9E77", "#D95F02", "#7570b3", "#E7298A", "#7FBC41")
+cPalette <- c( "#D95F02", "#7570b3", "#E7298A", "#7FBC41")
 
 aves_end_c1 = filter(aves_master, acceptedName=="Selasphorus sasin")
 aves_end_c2 = filter(aves_master, acceptedName=="Selasphorus sasin sedentarius")
 aves_end_c = rbind(aves_end_c1, aves_end_c2)
 
 #temporal
-aves_c_year = ggplot(aves_end_c, aes(x=year, fill=source2)) + 
-  geom_bar(width=0.5) + 
+aves_c_year = ggplot(aves_end_c2, aes(x=year, fill=source2)) + 
+  geom_bar(width=0.5, ) + 
   theme_bw() + 
-  labs(x="Year", y ="Number of Data Points", fill="Data Source") +  scale_fill_manual(values=cPalette) + facet_wrap(vars(acceptedName), nrow=1, scales="free_y")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+  labs(x="Year", y ="Log Transformed Data Points", fill="Data Source") +  scale_fill_manual(values=cPalette) + facet_wrap(vars(acceptedName), nrow=1, scales="free_y")  + scale_y_continuous(trans='log10', expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
 aves_c_year
 
 ggsave(plot=aves_c_year, filename="aves/AvesGraphs/aves_C_year.png", height=10, width=20, units="cm", dpi=300)
@@ -438,7 +466,7 @@ aves_end_d = filter(aves_end_join, group=="d")
 aves_d_year = ggplot(aves_end_d, aes(x=year, fill=source2)) + 
   geom_bar(width=0.5) + 
   theme_bw() + 
-  labs(x="Year", y ="Number of Data Points", fill="Data Source") +  scale_fill_manual(values=dPalette) + facet_wrap(vars(acceptedName), ncol=2, scales="free_y")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+  labs(x="Year", y ="Number of Data Points", fill="Data Source") +  scale_fill_manual(values=dPalette) + facet_wrap(vars(acceptedName), ncol=2, scales="free_y")  + scale_y_continuous(expand=expansion(mult=c(0,0.05)), breaks=function(x) unique(floor(pretty(seq(0, (max(x)+1 *1.1)))))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
 aves_d_year
 
 ggsave(plot=aves_d_year, filename="aves/AvesGraphs/aves_D_year.png", height=40, width=35, units="cm", dpi=300)
@@ -464,15 +492,25 @@ ggsave(plot=aves_d_island, filename="aves/AvesGraphs/aves_D_island.png", height=
 #brewer.pal(5, name="Dark2") Color codes for the brewer colors, need 1, 2 and 4 for this one
 #Cal-IBIS "#1B9E77"            iNaturalist "#D95F02"            EBIRD #7570B3"
 #SBMNH Col "#E7298A"            SBMNH Obs "#7FBC41"
+ePalette <- c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#7FBC41")
 
 aves_end_e = filter(aves_end_join, group=="e")
-
+aves_end_e_falcon = filter(aves_end_join, acceptedGenus=="Falco")
+aves_end_e_cuckoo =filter(aves_end_join, acceptedGenus=="Coccyzus")
 #temporal
-aves_e_year = ggplot(aves_end_e, aes(x=year, fill=source2)) + 
+aves_e_year_falcon = ggplot(aves_end_e_falcon, aes(x=year, fill=source2)) + 
   geom_bar(width=0.5) + 
   theme_bw() + 
-  labs(x="Year", y ="Log transformed Number of Data Points", fill="Data Source") +  scale_fill_manual(values=dPalette) + facet_wrap(vars(acceptedName), nrow=1, scales="free_y")  + scale_y_continuous(trans='log10', expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
-aves_e_year
+  labs(x="Year", y ="Log transformed Data Points", fill="Data Source") +  scale_fill_manual(values=dPalette) + facet_wrap(vars(acceptedName), nrow=1, scales="free_y")  + scale_y_continuous(trans='log10', expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+aves_e_year_falcon
+
+aves_e_year_cuckoo = ggplot(aves_end_e_cuckoo, aes(x=year, fill=source2)) + 
+  geom_bar(width=0.5) + 
+  theme_bw() + 
+  labs(x="Year", y ="Number of Data Points", fill="Data Source") +  scale_fill_manual(values=dPalette) + facet_wrap(vars(acceptedName), nrow=1, scales="free_y")  + scale_y_continuous(expand=expansion(mult=c(0,0.05)), breaks=function(x) unique(floor(pretty(seq(0, (max(x)+1 *1.1)))))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+aves_e_year_cuckoo
+
+aves_e_year = ggarrange(aves_e_year_cuckoo, aves_e_year_falcon, legend.grob=(get_legend(aves_e_year_falcon)), legend="right")
 
 ggsave(plot=aves_e_year, filename="aves/AvesGraphs/aves_E_year.png", height=10, width=35, units="cm", dpi=300)
 ```
@@ -482,7 +520,7 @@ aves_e_islandsum <- aves_end_e %>%
   group_by(island, acceptedName, source2) %>%
   summarise(samples = sum(no_sample))
 
-aves_e_islandsum2 <- na.omit(subset(aves_e_islandsum, select = c(island, samples, source2, acceptedName)))
+aves_e_islandsum2 <- na.omit(subset(aves_e_islandsum2, select = c(island, samples, source2, acceptedName)))
 
 aves_e_island <- ggplot(data = aves_e_islandsum2, aes(x = samples, y = fct_rev(island), fill=source2)) + geom_bar(stat = "identity") + facet_wrap(vars(acceptedName), nrow=1, scales="free_x") +
   labs(y ="Island",  x = "Number of Data Points", fill = "Data Source") + theme_bw() + scale_fill_manual(values=dPalette) + scale_x_continuous(expand=expansion(mult=c(0,0.05))) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
@@ -673,7 +711,7 @@ ggsave(plot=aves_j_island, filename="aves/AvesGraphs/aves_J_island.png", height=
 #brewer.pal(5, name="Dark2") Color codes for the brewer colors, need 1, 2 and 4 for this one
 #Cal-IBIS "#1B9E77"            iNaturalist "#D95F02"            EBIRD #7570B3"
 #SBMNH Col "#E7298A"            SBMNH Obs "#7FBC41"
-kPalette <- c("#D95F02", "#E7298A", "#7FBC41")
+kPalette <- c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#7FBC41")
 
 aves_end_k = filter(aves_end_join, group=="k")
 
@@ -684,7 +722,7 @@ aves_k_year = ggplot(aves_end_k, aes(x=year, fill=source2)) +
   labs(x="Year", y ="Number of Data Points", fill="Data Source") +  scale_fill_manual(values=kPalette) + facet_wrap(vars(acceptedName), nrow=1, scales="free_y")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
 aves_k_year
 
-ggsave(plot=aves_k_year, filename="aves/AvesGraphs/aves_K_year.png", height=10, width=20, units="cm", dpi=300)
+ggsave(plot=aves_k_year, filename="aves/AvesGraphs/aves_K_year.png", height=10, width=35, units="cm", dpi=300)
 ```
 ```{r bird K island}
 aves_k_islandsum <- aves_end_k %>%
@@ -701,11 +739,11 @@ aves_k_islandsum2 = merge(aves_k_islandsum, island_size, by="island", all.y=TRUE
 aves_k_islandsum2$acceptedName[is.na(aves_k_islandsum2$acceptedName)] <- "Lanius ludovicianus anthonyi"
 
 aves_k_island <- ggplot(data = aves_k_islandsum2, aes(x = samples, y = fct_rev(island), fill=source2)) + geom_bar(stat = "identity") + facet_wrap(vars(acceptedName), nrow=1, scales="free_x") +
-  labs(y ="Island",  x = "Number of Data Points", fill = "Data Source") + theme_bw() + scale_fill_manual(values=iPalette) + scale_x_continuous(expand=expansion(mult=c(0,0.05))) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+  labs(y ="Island",  x = "Number of Data Points", fill = "Data Source") + theme_bw() + scale_fill_manual(values=kPalette) + scale_x_continuous(expand=expansion(mult=c(0,0.05))) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
 
 aves_k_island
 
-ggsave(plot=aves_k_island, filename="aves/AvesGraphs/aves_K_island.png", height=10, width=20, units="cm", dpi=300)
+ggsave(plot=aves_k_island, filename="aves/AvesGraphs/aves_K_island.png", height=10, width=35, units="cm", dpi=300)
 ```
 
 ###Group L
@@ -721,7 +759,7 @@ aves_end_l = filter(aves_end_join, group=="l")
 aves_l_year = ggplot(aves_end_l, aes(x=year, fill=source2)) + 
   geom_bar(width=0.5) + 
   theme_bw() + 
-  labs(x="Year", y ="Number of Data Points", fill="Data Source") +  scale_fill_manual(values=lPalette) + facet_wrap(vars(acceptedName), nrow=2, scales="free_y")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+  labs(x="Year", y ="Number of Data Points", fill="Data Source") +  scale_fill_manual(values=lPalette) + facet_wrap(vars(acceptedName), nrow=2, scales="free_y")  + scale_y_continuous(expand=expansion(mult=c(0,0.05)), breaks=function(x) unique(floor(pretty(seq(0, (max(x)+1 *1.1)))))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
 aves_l_year
 
 ggsave(plot=aves_l_year, filename="aves/AvesGraphs/aves_L_year.png", height=20, width=35, units="cm", dpi=300)
@@ -867,7 +905,7 @@ aves_end_p = filter(aves_end_join, group=="p")
 aves_p_year = ggplot(aves_end_p, aes(x=year, fill=source2)) + 
   geom_bar(width=0.5) + 
   theme_bw() + 
-  labs(x="Year", y ="Number of Data Points", fill="Data Source") +  scale_fill_manual(values=dPalette) + facet_wrap(vars(acceptedName), nrow=1, scales="free_y")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+  labs(x="Year", y ="Number of Data Points", fill="Data Source") +  scale_fill_manual(values=dPalette) + facet_wrap(vars(acceptedName), nrow=1, scales="free_y")  + scale_y_continuous(expand=expansion(mult=c(0,0.05)), breaks=function(x) unique(floor(pretty(seq(0, (max(x)+1 *1.1)))))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
 aves_p_year
 
 ggsave(plot=aves_p_year, filename="aves/AvesGraphs/aves_P_year.png", height=10, width=35, units="cm", dpi=300)
