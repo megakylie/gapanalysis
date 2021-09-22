@@ -351,7 +351,7 @@ mol_islandsum <- na.omit(subset(mol_islandsum, select = c(island, samples, sourc
 mol_island <- ggplot(data = mol_islandsum, aes(x = samples, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
   labs(y ="Island", 
-       x = "Number of Mollusk Specimens Sampled",
+       x = "Number of Mollusk Data Points",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,900), expand = c(0,0)) +
@@ -371,7 +371,7 @@ mol_islandprop = mol_islandsum2 %>% group_by(island) %>% mutate(by_area = sample
 mol_island_prop <- ggplot(data = mol_islandprop, aes(x = by_area, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
   labs(y ="Island", 
-       x = "Mollusk Specimens Sampled/Island Area (km^2)",
+       x = "Mollusk Data Points/Island Area (km^2)",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,65), expand = c(0,0)) +
@@ -392,7 +392,7 @@ mol_year = ggplot(mol_master, aes(x=year, fill=source)) +
   theme_bw() + 
   scale_y_continuous(expand=c(0,0), limits = c(0, 400)) + 
   scale_x_continuous(expand=c(0,0), limits=c(1790, 2025), breaks=c(1800, 1863, 1875, 1885, 1900, 1915, 1930, 1945, 1960, 1975, 1990, 2005, 2020)) + 
-  labs(x="Year", y ="Number of Mollusk Specimens Sampled") +   scale_fill_brewer(palette = "Dark2")
+  labs(x="Year", y ="Number of Mollusk Data Points") +   scale_fill_brewer(palette = "Dark2")
 
 mol_year
 
@@ -412,7 +412,7 @@ mol_ismonth <- ggplot(mol_month, aes(x=month, fill=month)) +
   geom_bar() + 
   theme_bw() + 
   scale_y_continuous(expand=c(0,0)) + 
-  labs(x="Mollusk Sampling per Island by Month", y ="Number of Specimens Sampled") +  
+  labs(x="Mollusk Data Points per Island by Month", y ="Number of Mollusk Data Points") +  
   facet_wrap(vars(island), nrow=2, scales="free_y")
 
 mol_ismonth 
@@ -439,8 +439,6 @@ ddply(mol_master, "source", summarise, n = length(unique(acceptedFamily)))
 
 write.csv(mol_master, "mollusks/mol_master.csv")
 ```
-
-
 
 
 #
@@ -1360,14 +1358,13 @@ lep_lacm_combine <- lep_lacm %>%
 lep_master = rbind(lep_inat_combine, lep_chis_combine, lep_lacm_combine) %>%
   # reorder the island names to show up N -> S on list
   mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente")) %>% add_column(phylum="Arthropoda", class="Insecta")
-write.csv(lep_master, "Kylie/master/lep_master.csv")
+write.csv(lep_master, "master/lep_master.csv")
 ```
 
 ###Lep Step. 3 Make Graphs! 
 
 #### Island Graph 
 ```{r Graphing by island}
-
 lep_islandsum <- na.omit(subset(lep_master, select = c(island, source))) %>%
   mutate(no_sample = 1) %>%
   group_by(island, source) %>%
@@ -1377,7 +1374,7 @@ lep_islandsum <- na.omit(subset(lep_master, select = c(island, source))) %>%
 lep_island <- ggplot(data = lep_islandsum, aes(x = samples, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
   labs(y ="Island", 
-       x = "Number of Lepidoptera Specimens Sampled",
+       x = "Number of Lepidoptera Data Points",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,4000), expand = c(0,0)) +
@@ -1397,7 +1394,7 @@ lep_islandprop = lep_islandsum2 %>% group_by(island) %>% mutate(by_area = sample
 lep_island_propgraph <- ggplot(data = lep_islandprop, aes(x = by_area, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
   labs(y ="Island", 
-       x = "Lepidoptera Specimens Sampled/Island Area (km^2)",
+       x = "Lepidoptera Data Points/Island Area (km^2)",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,150), expand = c(0,0)) +
@@ -1417,7 +1414,7 @@ lep_yeargraph = ggplot(lep_year, aes(x=year, fill=source)) +
   theme_bw() + 
   scale_y_continuous(expand=c(0,0), limits = c(0, 1750)) + 
   scale_x_continuous(expand=c(0,0), limits=c(1905, 2022), breaks=c(1910,  1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020)) + 
-  labs(x="Year", y ="Number of Lepidoptera Specimens Sampled") +   scale_fill_brewer(palette = "Dark2")
+  labs(x="Year", y ="Number of Lepidoptera Data Points") +   scale_fill_brewer(palette = "Dark2")
 
 lep_yeargraph
 
@@ -1435,7 +1432,7 @@ lep_ismonth <- ggplot(lep_year, aes(x=month, fill=month)) +
   geom_bar() + 
   theme_bw() + 
   scale_y_continuous(expand=c(0,0.5)) + 
-  labs(x="Lepidoptera Sampling per Island by Month", y ="Number of Specimens Sampled") +  
+  labs(x="Lepidoptera Data Points per Island by Month", y ="Number of Lepidoptera Data Points") +  
   facet_wrap(vars(island), nrow=2, scales="free_y")
 
 lep_ismonth 
@@ -1790,7 +1787,7 @@ diffdip
 
 ```
 
-```{r Combine all masters to check against lit list}
+```{r OLD Combine all masters to check against lit list}
 
 master_m = rbind(col_master, lep_master) %>%
   select(source, year, month, island, order, acceptedFamily, acceptedGenus, acceptedName) 
@@ -1813,7 +1810,7 @@ hem_bold <- read_csv("hemiptera/hem_bold2.csv")
 ```
 
 
-### Arac Step 2. Combine datasets BY CLASS not ORDER (Note for total combine data for KHL)
+### Hem Step 2. Combine datasets 
 ```{r Selecting columns and combining}
 hem_inat_combine <- hem_inat %>%
   rename(class="iconic_taxon_name", island="ArcMap_Name") %>%
@@ -1999,7 +1996,6 @@ hem_lit2 = as.data.frame(hemfam_new) %>%
   rename(hemfam = "hemfam_new")
 hem_lit_families = rbind(hem_lit1, hem_lit2)
 
-
 #GENUS
 hem_occ_gen = unique(c(as.character(hem_master$acceptedGenus)))
 hem_lit_gen = unique(c(as.character(hem_lit_miller$acceptedGenus)))
@@ -2039,6 +2035,7 @@ write.csv(hem_lit_species, "hemiptera/hem_lit_sp.csv", na="")
 
 
 
+#
 #Fixing up Literature species synonymy
 This code is messy and not the most straight forward way to do this, but it shouldn't be run against accepted for making a master list. After this is done and synonymy is finished for the new literature records I can make a really nice synonymy .csv for all invertebrate that can be used for future work. 
 ```{r}

@@ -1,0 +1,147 @@
+---
+title: "Hemiptera Synonymy and Orthoptera Synonymy"
+output: html_notebook
+editor_options: 
+  chunk_output_type: console
+---
+
+This is an R Markdown for the TNC Gap Analysis to complete the synonymy for Aves and Hemiptera. Aves: DAK has done the Cal-IBIS and SBMNH synonymy. Using lists created from her completed synonymy this code will complete the synonymy for the iNaturalist and eBird datasets. Then a second round was done with the synonymy list she provided. 
+
+9/3/21 Another round of synonymy updates for the SBMNH datasets which are new (not all the SBMNH was previously included)
+
+9/7/21 Added Hemiptera Synonymy based on Miller syn done by Helen
+
+#AVES SYN ON MAC markdown, need to replace into project
+
+#Download Packages & Data
+```{r Packages!}
+library(tidyverse)
+library(lubridate)
+library(stringr)
+```
+
+#Orthoptera
+```{r Data}
+orth_chis_messy = read_csv("orthoptera/orth_chis.csv") %>%
+  rename(scientificName = "scientific")
+orth_lacm_messy = read_csv("orthoptera/orth_lamc.csv") 
+  
+orth_inat_messy = read_csv("orthoptera/orth_inat.csv") %>%
+  rename(scientificName = "scientific_name")
+
+new_invert_syn = read_csv("new_invert_literature_R3_syninprog_Final.csv")
+orth_syn = new_invert_syn %>%
+  filter(order=="Orthoptera") %>% 
+  select(scientificName, acceptedFamily, acceptedGenus, acceptedName)
+```
+
+## Orthoptera R1 Synonymy
+```{r}
+#create a list to synonymize 
+orth_inat1 <- left_join(orth_inat_messy, orth_syn, by="scientificName")
+write.csv(orth_inat1, "Orthoptera/orth_inat1.csv")
+
+orth_lacm1 <- left_join(orth_lacm_messy, orth_syn, by="scientificName")
+write.csv(orth_lacm1, "Orthoptera/orth_lacm1.csv")
+
+orth_chis1 <- left_join(orth_chis_messy, orth_syn, by="scientificName")
+write.csv(orth_chis1, "Orthoptera/orth_inat1.csv")
+
+orth_inat_list = orth_inat1 %>% 
+  select(scientificName, acceptedFamily, acceptedGenus, acceptedName)
+orth_lacm_list = orth_lacm1 %>% 
+  select(scientificName, acceptedFamily, acceptedGenus, acceptedName)
+orth_chis_list = orth_chis1 %>% 
+  select(scientificName, acceptedFamily, acceptedGenus, acceptedName)
+
+orth_syn_list =rbind(orth_inat_list, orth_lacm_list, orth_chis_list) %>%
+    distinct(scientificName, .keep_all=TRUE)
+write.csv(orth_syn_list, "Orthoptera/orth_syn_list_incomp.csv", na="")
+```
+
+## Orthoptera R2 Synonymy, DAK did synonymy that was needed from list printed above
+```{r}
+orth_syn_list_complete = read_csv("Orthoptera/orth_syn_list_comp.csv")
+
+#go through original zero synonymy ones
+orth_chis_messy = read_csv("orthoptera/orth_chis.csv") %>%
+  rename(scientificName = "scientific")
+
+orth_lacm_messy = read_csv("orthoptera/orth_lamc.csv") 
+
+orth_inat_messy = read_csv("orthoptera/orth_inat.csv") %>%
+  rename(scientificName = "scientific_name")
+write.csv(aves_syn_complete, "Aves/aves_syn_complete.csv", na="")
+
+
+orth_inat2 <- left_join(orth_inat_messy, orth_syn_list_complete)
+orth_chis2 <- left_join(orth_chis_messy, orth_syn_list_complete)
+orth_lacm2 <- left_join(orth_lacm_messy, orth_syn_list_complete)
+
+write.csv(orth_inat2, "Orthoptera/orth_inat2.csv", na="")
+write.csv(orth_chis2, "Orthoptera/orth_chis2.csv", na="")
+write.csv(orth_lacm2, "Orthoptera/orth_lacm2.csv", na="")
+
+```
+
+
+#Hemiptera R1 
+```{r Add Data}
+hem_syn = read_csv("hemiptera/hem_syn.csv")
+hem_inat_incomp = read_csv("hemiptera/hem_inat.csv") %>%
+  rename(scientificName ="scientific_name")
+hem_chis_incomp = read_csv("hemiptera/hem_chis.csv")
+hem_bold_incomp = read_csv("hemiptera/hem_bold.csv")
+hem_lacm_incomp = read_csv("hemiptera/hem_lacm.csv") 
+```
+
+## Hemiptera R1 Synonymy
+```{r}
+hem_inat1 <- left_join(hem_inat_incomp, hem_syn)
+write.csv(hem_inat1, "hemiptera/hem_inat1.csv", na="")
+
+hem_chis1 <- left_join(hem_chis_incomp, hem_syn)
+write.csv(hem_chis1, "hemiptera/hem_chis1.csv", na="")
+
+hem_bold1 <- left_join(hem_bold_incomp, hem_syn)
+write.csv(hem_bold1, "hemiptera/hem_bold1.csv", na="")
+
+hem_lacm1 <- left_join(hem_lacm_incomp, hem_syn)
+write.csv(hem_lacm1, "hemiptera/hem_lacm1.csv", na="")
+
+hem_inat_syn <- hem_inat1 %>%
+  select(scientificName, acceptedName, acceptedFamily, acceptedGenus)
+hem_chis_syn <- hem_chis1 %>%
+  select(scientificName, acceptedName, acceptedFamily, acceptedGenus)
+hem_bold_syn <- hem_bold1 %>%
+  select(scientificName, acceptedName, acceptedFamily, acceptedGenus)
+hem_lacm_syn <- hem_lacm1 %>%
+  select(scientificName, acceptedName, acceptedFamily, acceptedGenus)
+
+hem_syn_tocheck = rbind(hem_inat_syn, hem_chis_syn, hem_bold_syn, hem_lacm_syn)
+write.csv(hem_syn_tocheck, "hemiptera/hem_syn_tocheck.csv", na="")
+```
+
+#Hemiptera R2 Synonymy
+```{r Add Data}
+hem_syn_round2 = read_csv("hemiptera/hym_syn_round2.csv") %>%
+  select(acceptedFamily, acceptedGenus, acceptedName, scientificName)
+hem_inat1 = read_csv("hemiptera/hem_inat.csv") %>%
+  rename(scientificName ="scientific_name")
+hem_chis1 = read_csv("hemiptera/hem_chis.csv")
+hem_bold1 = read_csv("hemiptera/hem_bold.csv")
+hem_lacm1 = read_csv("hemiptera/hem_lacm.csv") 
+
+hem_inat2 <- left_join(hem_inat1, hem_syn_round2)
+write.csv(hem_inat2, "hemiptera/hem_inat2.csv", na="")
+
+hem_chis2 <- left_join(hem_chis1, hem_syn_round2)
+write.csv(hem_chis2, "hemiptera/hem_chis2.csv", na="")
+
+hem_bold2 <- left_join(hem_bold1, hem_syn_round2)
+write.csv(hem_bold2, "hemiptera/hem_bold2.csv", na="")
+
+hem_lacm2 <- left_join(hem_lacm1, hem_syn_round2)
+write.csv(hem_lacm2, "hemiptera/hem_lacm2.csv", na="")
+
+```
