@@ -298,7 +298,7 @@ rep_master = rbind(rep_inat_combine, rep_chis_combine) %>%
 ```
 
 ```{r Creating a new datasheet with just endemics}
-rep_end <- read_csv("endemic/rept_end.csv")
+rep_end <- read_csv("reptile/rept_end.csv")
 
 rep_end_join = inner_join(rep_master, rep_end)
 
@@ -407,7 +407,7 @@ amph_master = rbind(amph_inat_combine, amph_chis_combine) %>%
 ```
 
 ```{r Creating a new datasheet with just endemics}
-amph_end <- read_csv("endemic/amphib_end.csv")
+amph_end <- read_csv("amphibian/amphib_end.csv")
 
 amph_end_join = inner_join(amph_master, amph_end)
 
@@ -418,9 +418,7 @@ amph_end_join = inner_join(amph_master, amph_end)
 ```{r salamander}
 
 salamander_yearrare = ggplot(amph_end_join, aes(x=year, fill=source)) + 
-  geom_bar() + 
-  theme_bw() + 
-  labs(x="Year", y ="Number of Data Points") +   scale_fill_brewer(palette = "Dark2") + facet_wrap(vars(acceptedName), nrow=1, scales="free")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1800, 1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=10), strip.text = element_text(size=11)) 
+  geom_bar() + theme_bw() + labs(x="Year", y ="Number of Data Points") +   scale_fill_brewer(palette = "Dark2") + facet_wrap(vars(acceptedName), nrow=1, scales="free") + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=10), strip.text = element_text(size=11)) 
 
 salamander_yearrare
 

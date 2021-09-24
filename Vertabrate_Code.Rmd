@@ -239,8 +239,8 @@ rep_inat_combine <- rep_inat %>%
 
 rep_chis_combine <- rep_chis %>%
   rename(latitude = "decimalLatitude", longitude="decimalLongitude") %>%
-  select(source_1, month, year, island_1, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude) %>%
-  rename(island = "island_1", source = "source_1")
+  select(source_1, month, year, island_2, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude) %>%
+  rename(island="island_2", source = "source_1")
 
 
 rep_master = rbind(rep_inat_combine, rep_chis_combine) %>%
@@ -254,7 +254,6 @@ rep_master = rbind(rep_inat_combine, rep_chis_combine) %>%
 
 ### Island Graph 
 ```{r Graphing by island}
-
 rep_islandsum <- rep_master %>%
   mutate(no_sample = 1) %>%
   group_by(island, source) %>%
@@ -300,10 +299,10 @@ ggsave(plot=rep_island_prop, filename="reptile/ReptileGraphs/rep_island_prop.png
 ```{r Graphing by year}
 rep_year <- na.omit(subset(rep_master, select = c(island, year, source)))
 rep_year = ggplot(rep_year, aes(x=year, fill=source)) + 
-  geom_bar() + 
+  geom_bar(width=0.75) + 
   theme_bw() + 
   scale_y_continuous(expand=c(0,0), limits = c(0, 500)) + 
-  scale_x_continuous(expand=c(0,0), limits=c(1810, 2020), breaks=c(1818, 1840, 1855, 1870, 1885, 1900, 1915, 1930, 1945, 1960, 1975, 1990, 2005, 2020)) + 
+  scale_x_continuous(expand=c(0,0), limits=c(1852, 2022), breaks=c(1855, 1870, 1885, 1900, 1915, 1930, 1945, 1960, 1975, 1990, 2005, 2020)) + 
   labs(x="Year", y ="Number of Reptile Data Points") +   scale_fill_brewer(palette = "Dark2")
 
 rep_year
@@ -323,7 +322,7 @@ rep_month <- na.omit(subset(rep_master, select = c(island, month)))
 rep_ismonth <- ggplot(rep_month, aes(x=month, fill=month)) + 
   geom_bar() + 
   theme_bw() + 
-  scale_y_continuous(expand=c(0,0.5)) + 
+  scale_y_continuous(expand=expansion(mult=c(0,0.05))) + 
   labs(x="Reptile Data Points per Island by Month", y ="Number of Reptile Data Points") +  
   facet_wrap(vars(island), nrow=2, scales="free_y")
 
@@ -334,8 +333,8 @@ ggsave(plot=rep_ismonth, filename="reptile/ReptileGraphs/rep_seasonal.png", heig
 ```
 
 ```{r Reptile Collection Type}
-rep_coll <-na.omit(subset(rep_chis, select=c(island_1, year, collectionType, order_, acceptedFamily, acceptedGenus, acceptedName)))
-rep_collgraph <- ggplot(rep_coll, aes(x=collectionType, fill=collectionType)) + geom_bar() + theme_bw() + theme(legend.position = "none") + labs(x="Collection Type", y="Number of Reptile Specimens")
+rep_coll <-na.omit(subset(rep_chis, select=c(island_2, year, collectionType, order_, acceptedFamily, acceptedGenus, acceptedName)))
+rep_collgraph <- ggplot(rep_coll, aes(x=collectionType, fill=collectionType)) + geom_bar() + theme_bw() + theme(legend.position = "none") + labs(x="Collection Type", y="Number of Reptile Specimens") + scale_y_continuous(expand=expansion(mult=c(0,0.05)))
 
 rep_collgraph
 ggsave(plot=rep_collgraph, filename="reptile/ReptileGraphs/rep_type.png", height=5, width=8, units="in", dpi=300)
@@ -392,8 +391,9 @@ amph_inat_combine <- amph_inat %>%
 
 amph_chis_combine <- amph_chis %>%
   rename(latitude = "decimalLatitude", longitude="decimalLongitude", month="month_", year="year_") %>%
-  select(source_1, month, year, island_1, class, acceptedGenus, acceptedName, latitude, longitude) %>%
-  rename(island = "island_1", source = "source_1")
+  select( month, year, island...128, class, acceptedGenus, acceptedName, latitude, longitude) %>%
+  rename(island = "island...128") %>%
+  add_column(source="Cal-IBIS")
 
 
 amph_master = rbind(amph_inat_combine, amph_chis_combine) %>%
@@ -412,9 +412,11 @@ amph_islandsum <- amph_master %>%
   mutate(no_sample = 1) %>%
   group_by(island, source) %>%
   summarise(samples = sum(no_sample))
-amph_islandsum <- na.omit(subset(amph_islandsum, select = c(island, samples, source)))
+
 island_size = read_csv("island_size.csv")
 amph_islandsum2 = merge(amph_islandsum, island_size, by="island", all.y=TRUE)
+
+amph_islandsum2$source[is.na(amph_islandsum2$source)] <- "Cal-IBIS"
 
 amph_island <- ggplot(data = amph_islandsum2, aes(x = samples, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
@@ -434,9 +436,10 @@ ggsave(plot=amph_island, filename="amphibian/AmphibianGraphs/amph_island.png", h
 ```{r Graphing by island proportional}
 island_size = read_csv("island_size.csv")
 amph_islandsum2 = merge(amph_islandsum, island_size, by="island", all.y=TRUE)
-amph_islandprop = amph_islandsum2 %>% group_by(island) %>% mutate(by_area = samples/island_size_85)
+amph_islandprop2 = amph_islandsum2 %>% group_by(island) %>% mutate(by_area = samples/island_size_85)
+amph_islandprop2$source[is.na(amph_islandprop2$source)] <- "Cal-IBIS"
 
-amph_island_prop <- ggplot(data = amph_islandprop, aes(x = by_area, y = fct_rev(island), fill = source)) + 
+amph_island_prop <- ggplot(data = amph_islandprop2, aes(x = by_area, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
   labs(y ="Island", 
        x = "Amphibian Data Points/Island Area (km^2)",
@@ -453,12 +456,14 @@ ggsave(plot=amph_island_prop, filename="amphibian/AmphibianGraphs/amph_island_pr
 
 ### Temporal Graph
 ```{r Graphing by year}
-amph_year <- na.omit(subset(amph_master, select = c(island, year, source)))
+amph_year = amph_master %>%
+  select(year, source, acceptedName)
+amph_year$source[is.na(amph_year$source)] <- "Cal-IBIS"
 amph_yearplot = ggplot(amph_year, aes(x=year, fill=source)) + 
   geom_bar() + 
   theme_bw() + 
-  scale_y_continuous(expand=c(0,0), limits = c(0, 1200)) + 
-  scale_x_continuous(expand=c(0,0), limits=c(1795, 2021), breaks=c(1800, 1818, 1875, 1900, 1915, 1930, 1945, 1960, 1975, 1990, 2005, 2020)) + 
+  scale_y_continuous(expand=c(0,0), limits = c(0, 1100)) + 
+  scale_x_continuous(expand=c(0,0), limits=c(1870, 2022), breaks=c(1875, 1900, 1915, 1930, 1945, 1960, 1975, 1990, 2005, 2020)) + 
   labs(x="Year", y ="Number of Amphibian Data Points") +   scale_fill_brewer(palette = "Dark2")
 
 amph_yearplot
@@ -475,10 +480,10 @@ amph_master$month <- as.factor(amph_master$month)
 amph_month <- na.omit(subset(amph_master, select = c(island, month)))
 
 
-amph_ismonth <- ggplot(amph_month, aes(x=month, fill=month)) + 
+amph_ismonth = ggplot(amph_month, aes(x=month, fill=month)) + 
   geom_bar() + 
   theme_bw() + 
-  scale_y_continuous(expand=c(0,0.5)) + 
+  scale_y_continuous(expand=expansion(mult=c(0,0.05))) + 
   labs(x="Amphibian Data Points per Island by Month", y ="Number of Amphibian Data Points") +  
   facet_wrap(vars(island), nrow=2, scales="free_y")
 
@@ -490,7 +495,7 @@ ggsave(plot=amph_ismonth, filename="amphibian/AmphibianGraphs/amph_seasonal.png"
 
 ```{r Reptile Collection Type}
 amph_coll <-na.omit(subset(amph_chis, select=c(collectionType, order_, acceptedGenus, acceptedName)))
-amph_collgraph <- ggplot(amph_coll, aes(x=collectionType, fill=collectionType)) + geom_bar() + theme_bw() + theme(legend.position = "none") + labs(x="Collection Type", y="Number of Amphibian Specimens")
+amph_collgraph <- ggplot(amph_coll, aes(x=collectionType, fill=collectionType)) + geom_bar() + theme_bw() + theme(legend.position = "none") + labs(x="Collection Type", y="Number of Amphibian Specimens") + scale_y_continuous(expand=expansion(mult=c(0,0.05)))
 
 amph_collgraph
 ggsave(plot=amph_collgraph, filename="amphibian/AmphibianGraphs/amph_type.png", height=5, width=8, units="in", dpi=300)

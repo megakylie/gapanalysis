@@ -16,6 +16,7 @@ library(lubridate)
 library(ggplot2)
 library(dplyr)
 library(RColorBrewer)
+library(readxl)
 ```
 
 ```{r download datasets}
@@ -24,7 +25,7 @@ aves_inat <- read_csv("aves/aves_inat4.csv")
 aves_ebird <- read_csv("aves/aves_ebird2.csv")
 aves_chis <- read_csv("aves/aves_chis_onlyeggs2.csv")
 aves_sbmnh_obs <- read_csv("aves/aves_sbmnh_obs4.csv")
-aves_sbmnh_col <- read_csv("aves/aves_sbmnh_col5.csv")
+aves_sbmnh_col <- read_excel("aves/aves_sbmnh_col.xlsx")
 aves_ebird_erem <- read_csv("aves/aves_ebird_empid2.csv")
 ```
 
@@ -456,7 +457,7 @@ aves_end_c = rbind(aves_end_c1, aves_end_c2)
 aves_c_year = ggplot(aves_end_c2, aes(x=year, fill=source2)) + 
   geom_bar(width=0.5, ) + 
   theme_bw() + 
-  labs(x="Year", y ="Log Transformed Data Points", fill="Data Source") +  scale_fill_manual(values=cPalette) + facet_wrap(vars(acceptedName), nrow=1, scales="free_y")  + scale_y_continuous(trans='log10', expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+  labs(x="Year", y ="Log Transformed Data Points", fill="Data Source") +  scale_fill_manual(values=cPalette) + facet_wrap(vars(acceptedName), nrow=1, scales="free_y")  + scale_y_continuous(trans='log10', expand=expansion(mult=c(0,0.05))) + scale_x_continuous(limits=c(1890, 2021), breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020), expand=expansion(mult=c(0.05, 0.01))) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
 aves_c_year
 
 ggsave(plot=aves_c_year, filename="aves/AvesGraphs/aves_C_year.png", height=10, width=20, units="cm", dpi=300)
@@ -710,12 +711,12 @@ aves_i_island
 ggsave(plot=aves_i_island, filename="aves/AvesGraphs/aves_I_island.png", height=10, width=35, units="cm", dpi=300)
 ```
 
-###Group J
+###Group J Ictertidae 
 ```{r bird group J Blackbird}
 #brewer.pal(5, name="Dark2") Color codes for the brewer colors, need 1, 2 and 4 for this one
 #Cal-IBIS "#1B9E77"            iNaturalist "#D95F02"            EBIRD #7570B3"
 #SBMNH Col "#E7298A"            SBMNH Obs "#7FBC41"
-dPalette <- c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#7FBC41")
+jPalette <- c("#1B9E77", "#D95F02", "#E7298A", "#7FBC41")
 
 aves_end_j = filter(aves_end_join, group=="j")
 
@@ -723,7 +724,7 @@ aves_end_j = filter(aves_end_join, group=="j")
 aves_j_year = ggplot(aves_end_j, aes(x=year, fill=source2)) + 
   geom_bar(width=0.5) + 
   theme_bw() + 
-  labs(x="Year", y ="Number of Data Points", fill="Data Source") +  scale_fill_manual(values=dPalette) + facet_wrap(vars(acceptedName), nrow=1, scales="free_y")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+  labs(x="Year", y ="Number of Data Points", fill="Data Source") +  scale_fill_manual(values=jPalette) + facet_wrap(vars(acceptedName), nrow=1, scales="free_y")  + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(breaks=c(1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980, 2000, 2020)) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
 aves_j_year
 
 ggsave(plot=aves_j_year, filename="aves/AvesGraphs/aves_J_year.png", height=10, width=35, units="cm", dpi=300)
@@ -737,7 +738,7 @@ aves_j_islandsum <- aves_end_j %>%
 aves_j_islandsum2 <- na.omit(subset(aves_j_islandsum, select = c(island, samples, source2, acceptedName)))
 
 aves_j_island <- ggplot(data = aves_j_islandsum2, aes(x = samples, y = fct_rev(island), fill=source2)) + geom_bar(stat = "identity") + facet_wrap(vars(acceptedName), nrow=1, scales="free_x") +
-  labs(y ="Island",  x = "Number of Data Points", fill = "Data Source") + theme_bw() + scale_fill_manual(values=dPalette) + scale_x_continuous(expand=expansion(mult=c(0,0.05))) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
+  labs(y ="Island",  x = "Number of Data Points", fill = "Data Source") + theme_bw() + scale_fill_manual(values=jPalette) + scale_x_continuous(expand=expansion(mult=c(0,0.05))) + theme(axis.text = element_text(size = 8), axis.title = element_text(size=15), strip.text = element_text(size=14), legend.text = element_text(size=12)) 
 
 aves_j_island
 
