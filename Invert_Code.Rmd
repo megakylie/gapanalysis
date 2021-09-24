@@ -334,7 +334,7 @@ mol_master = rbind(mol_inat_combine, mol_chis_combine) %>%
   mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente")) %>%
   rename(order= "acceptedOrder") %>% add_column(phylum = "Mollusca", class=NA)
 
-write.csv(mol_master, "Kylie/master/mollusk_master.csv")
+write.csv(mol_master, "master/mollusk_master.csv")
 ```
 
 ###Mol Step. 3 Make Graphs! 
@@ -411,7 +411,7 @@ mol_month <- na.omit(subset(mol_master, select = c(island, month)))
 mol_ismonth <- ggplot(mol_month, aes(x=month, fill=month)) + 
   geom_bar() + 
   theme_bw() + 
-  scale_y_continuous(expand=c(0,0)) + 
+  scale_y_continuous(expand=expansion(mult=c(0,0.05))) + 
   labs(x="Mollusk Data Points per Island by Month", y ="Number of Mollusk Data Points") +  
   facet_wrap(vars(island), nrow=2, scales="free_y")
 
@@ -440,6 +440,81 @@ ddply(mol_master, "source", summarise, n = length(unique(acceptedFamily)))
 write.csv(mol_master, "mollusks/mol_master.csv")
 ```
 
+```{r Mollusk Literature Comparison}
+lit_new = read_csv("new_invert_literature_R3_syninprog_Final.csv")
+mol_lit_new = filter(lit_new, order=="Mollusks")  %>% 
+  select(acceptedFamily, acceptedGenus, acceptedName) 
+
+col_lit2 = rbind(col_lit_miller2, col_lit_new)
+
+mol_master2 = mol_master %>%
+  select(acceptedFamily, acceptedGenus, acceptedName) 
+
+
+mol_all2 = rbind(mol_master2, mol_lit_new) %>%
+  distinct(across(contains("accepted")), .keep_all=TRUE)
+
+moltab_occ = table(mol_master$acceptedName)
+moltab_occ = as.data.frame.table(moltab_occ) %>%
+  rename(Occurence= "Freq",  acceptedName = "Var1") 
+
+moltab_lit = table(mol_lit_new$acceptedName)
+moltab_lit = as.data.frame.table(moltab_lit) %>%
+  rename(Literature= "Freq",  acceptedName = "Var1") 
+
+
+moltab_occ_gen = table(mol_master$acceptedGenus)
+moltab_occ_gen = as.data.frame.table(moltab_occ_gen) %>%
+  rename(OccurenceGen= "Freq",  acceptedGenus = "Var1") 
+
+moltab_lit_gen = table(mol_lit_new$acceptedGenus)
+moltab_lit_gen = as.data.frame.table(moltab_lit_gen) %>%
+  rename(LiteratureGen= "Freq",  acceptedGenus = "Var1") 
+
+moltab_occ_fam = table(mol_master$acceptedFamily)
+moltab_occ_fam = as.data.frame.table(moltab_occ_fam) %>%
+  rename(OccurenceFam= "Freq",  acceptedFamily = "Var1") 
+
+moltab_lit_fam = table(mol_lit_new$acceptedFamily)
+moltab_lit_fam = as.data.frame.table(moltab_lit_fam) %>%
+  rename(LiteratureFam= "Freq",  acceptedFamily = "Var1") 
+
+#species list table from occurence and literature, with numbers just to show what is added by lit
+mol_table <- left_join(mol_all2, moltab_occ)
+mol_table2 <- left_join(mol_table, moltab_lit)
+mol_table3 <- left_join(mol_table2, moltab_occ_gen, by="acceptedGenus")
+mol_table4 <- left_join(mol_table3, moltab_lit_gen, by="acceptedGenus")
+mol_table5 <- left_join(mol_table4, moltab_occ_fam, by="acceptedFamily")
+mol_table6 <- left_join(mol_table5, moltab_lit_fam, by="acceptedFamily")
+
+mol_lit_complete <-mol_table6 %>%
+  rename(Species = "acceptedName", Family = "acceptedFamily", Genus = "acceptedGenus")
+
+write.csv(mol_lit_complete, "mollusks/mol_lit_complete.csv", na="0")
+
+
+#DIDNT DO
+col_complete_family = col_lit_complete %>%
+  distinct(Family, .keep_all=TRUE) %>% 
+  select(Family, OccurenceFam, LiteratureFam) %>%
+  rename(Occurence="OccurenceFam", Literature="LiteratureFam") 
+
+col_complete_gen = col_lit_complete %>%
+  distinct(Genus, .keep_all=TRUE) %>% 
+  select(Genus, OccurenceGen, LiteratureGen) %>%
+  rename(Occurence="OccurenceGen", Literature="LiteratureGen")
+
+col_complete_sp = col_lit_complete %>%
+  distinct(Species, .keep_all=TRUE) %>% 
+  select(Species, Occurence, Literature) 
+
+write.csv(col_complete_sp, "coleoptera/ColeopteraGraphs/col_table_sp.csv", na="")
+
+dipocc = unique(c(as.character(dip_master$acceptedGenus)))
+diplit = unique(c(as.character(dip_lit$acceptedGenus)))
+diffdip = setdiff(diplit, dipocc)
+diffdip
+```
 
 #
 # Chilopoda 
@@ -488,11 +563,11 @@ chilo_islandsum2 = merge(chilo_islandsum, island_size, by="island", all.y=TRUE)
 chilo_island <- ggplot(data = chilo_islandsum2, aes(x = samples, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
   labs(y ="Island", 
-       x = "Number of Chilopoda Specimens Sampled",
+       x = "Number of Chilopoda Data Points",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,45), expand = c(0,0)) +
-   scale_fill_manual(values=c("#FF5500"))
+   scale_fill_manual(values=c("#D95F02"))
 
 chilo_island 
 
@@ -508,11 +583,11 @@ chilo_islandprop = chilo_islandsum2 %>% group_by(island) %>% mutate(by_area = sa
 chilo_island_prop <- ggplot(data = chilo_islandprop, aes(x = by_area, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
   labs(y ="Island", 
-       x = "Chilopoda Specimens Sampled/Island Area (km^2)",
+       x = "Chilopoda Data Points/Island Area (km^2)",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,0.5), expand = c(0,0)) +
-  scale_fill_manual(values=c("#FF5500"))
+  scale_fill_manual(values=c("#D95F02"))
 
 chilo_island_prop 
 
@@ -527,7 +602,7 @@ chilo_year = ggplot(chilo_master, aes(x=year, fill=source)) +
   theme_bw() + 
   scale_y_continuous(expand=c(0,0), limits = c(0, 30)) + 
   scale_x_continuous(limits=c(2000, 2022),   breaks=c(2000, 2005, 2010, 2015, 2020)) + 
-  labs(x="Year", y ="Number of Chilopoda Specimens Sampled") +  scale_fill_manual(values=c("#FF5500"))
+  labs(x="Year", y ="Number of Chilopoda Data Points") +  scale_fill_manual(values=c("#D95F02"))
 
 chilo_year
 
@@ -547,11 +622,11 @@ chilo_month <- na.omit(subset(chilo_master, select = c(island, month)))
 chilo_ismonth <- ggplot(chilo_month, aes(x=month, fill=month)) + 
   geom_bar() + 
   theme_bw() + 
-  scale_y_continuous(expand=c(0,0)) + 
-  labs(x="Chilopoda Sampling per Island by Month", y ="Number of Specimens Sampled") +  
+  scale_y_continuous(expand=expansion(mult=c(0,0.05))) + 
+  labs(x="Chilopoda Data Points per Island by Month", y ="Number of Chilopoda Data Points") +  
   facet_wrap(vars(island), nrow=2, scales="free_y")
 
-chilo_ismonth 
+chilo_ismonth
 
 ggsave(plot=chilo_ismonth, filename="chilopoda/chilopodaGraphs/chilo_seasonal.png", height=5, width=9, units="in", dpi=300)
 
@@ -569,9 +644,59 @@ chilotab2
 
 ```
 
+```{r Mollusk Literature Comparison}
+lit_new = read_csv("new_invert_literature_R3_syninprog_Final.csv")
+chilo_miller = read_excel("chilopoda/chilo_miller.xlsx") %>%
+  select(acceptedFamily, acceptedGenus, acceptedName)
+chilo_lit_new = filter(lit_new, order=="Chilopoda")  %>% 
+  select(acceptedFamily, acceptedGenus, acceptedName) 
+
+chilo_lit2 = rbind(chilo_miller, chilo_lit_new)
+
+chilo_master2 = chilo_master %>%
+  select(acceptedFamily, acceptedGenus, acceptedName) 
 
 
+chilo_all2 = rbind(chilo_master2, chilo_lit2) %>%
+  distinct(across(contains("accepted")), .keep_all=TRUE)
 
+chilotab_occ = table(chilo_master$acceptedName)
+chilotab_occ = as.data.frame.table(chilotab_occ) %>%
+  rename(Occurence= "Freq",  acceptedName = "Var1") 
+
+chilotab_lit = table(chilo_lit2$acceptedName)
+chilotab_lit = as.data.frame.table(chilotab_lit) %>%
+  rename(Literature= "Freq",  acceptedName = "Var1") 
+
+chilotab_occ_gen = table(chilo_master$acceptedGenus)
+chilotab_occ_gen = as.data.frame.table(chilotab_occ_gen) %>%
+  rename(OccurenceGen= "Freq",  acceptedGenus = "Var1") 
+
+chilotab_lit_gen = table(chilo_lit2$acceptedGenus)
+chilotab_lit_gen = as.data.frame.table(chilotab_lit_gen) %>%
+  rename(LiteratureGen= "Freq",  acceptedGenus = "Var1") 
+
+chilotab_occ_fam = table(chilo_master$acceptedFamily)
+chilotab_occ_fam = as.data.frame.table(chilotab_occ_fam) %>%
+  rename(OccurenceFam= "Freq",  acceptedFamily = "Var1") 
+
+chilotab_lit_fam = table(chilo_lit2$acceptedFamily)
+chilotab_lit_fam = as.data.frame.table(chilotab_lit_fam) %>%
+  rename(LiteratureFam= "Freq",  acceptedFamily = "Var1") 
+
+#species list table from occurence and literature, with numbers just to show what is added by lit
+chilo_table <- left_join(chilo_all2, chilotab_occ)
+chilo_table2 <- left_join(chilo_table, chilotab_lit)
+chilo_table3 <- left_join(chilo_table2, chilotab_occ_gen, by="acceptedGenus")
+chilo_table4 <- left_join(chilo_table3, chilotab_lit_gen, by="acceptedGenus")
+chilo_table5 <- left_join(chilo_table4, chilotab_occ_fam, by="acceptedFamily")
+chilo_table6 <- left_join(chilo_table5, chilotab_lit_fam, by="acceptedFamily")
+
+chilo_lit_complete <-chilo_table6 %>%
+  rename(Species = "acceptedName", Family = "acceptedFamily", Genus = "acceptedGenus")
+
+write.csv(chilo_lit_complete, "chilopoda/ChilopodaGraphs/chilo_lit_complete2.csv", na="0")
+```
 #
 # Diplopoda
 ###Diplo Step 1. Download Packages *above* and Import Data
@@ -604,7 +729,7 @@ diplo_master = rbind(diplo_inat_combine, diplo_chis_combine, diplo_lacm_combine)
   # reorder the island names to show up N -> S on list
   mutate(island = fct_relevel(island, "Santa Cruz", "Anacapa", "Santa Catalina", "San Nicolas", "San Clemente")) %>%
   rename(order = "acceptedOrder") %>% add_column(phylum = "Arthropoda", class = "Diplopoda")
-write.csv(diplo_master, "Kylie/master/diplo_master.csv")
+write.csv(diplo_master, "master/diplo_master.csv")
 ```
 
 ###Diplo Step. 3 Make Graphs! 
@@ -625,7 +750,7 @@ diplo_islandsum2 = merge(diplo_islandsum, island_size, by="island", all.y=TRUE)
 diplo_island <- ggplot(data = diplo_islandsum2, aes(x = samples, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
   labs(y ="Island", 
-       x = "Number of Diplopoda Specimens Sampled",
+       x = "Number of Diplopoda Data Points",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,15), expand = c(0,0)) +
@@ -645,7 +770,7 @@ diplo_islandprop = diplo_islandsum2 %>% group_by(island) %>% mutate(by_area = sa
 diplo_island_prop <- ggplot(data = diplo_islandprop, aes(x = by_area, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
   labs(y ="Island", 
-       x = "Diplopoda Specimens Sampled/Island Area (km^2)",
+       x = "Diplopoda Data Points/Island Area (km^2)",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,4), expand = c(0,0)) +
@@ -660,11 +785,11 @@ ggsave(plot=diplo_island_prop, filename="diplopoda/DiplopodaGraphs/diplo_island_
 #### Temporal Graph
 ```{r Graphing by year}
 diplo_year = ggplot(diplo_master, aes(x=year, fill=source)) + 
-  geom_bar() + 
+  geom_bar(width=0.75) + 
   theme_bw() + 
-  scale_y_continuous(expand=c(0,0), limits = c(0, 30)) + 
+  scale_y_continuous(expand=c(0,0), limits = c(0, 12)) + 
   scale_x_continuous(limits=c(1925, 2025),   breaks=c(1925, 1935, 1945, 1955, 1965, 1975, 1985, 1995, 2005, 2015, 2025)) + 
-  labs(x="Year", y ="Number of Diplopoda Specimens Sampled") +   scale_fill_brewer(palette = "Dark2")
+  labs(x="Year", y ="Number of Diplopoda Data Points") +   scale_fill_brewer(palette = "Dark2")
 
 diplo_year
 
@@ -684,8 +809,8 @@ diplo_month$month2 <-as.factor(diplo_month$month)
 diplo_ismonth <- ggplot(diplo_month, aes(x=month, fill=month2)) + 
   geom_bar() + 
   theme_bw() + 
-  scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(expand=expansion(mult=c(0,0.01)), limits=c(0.5,12), breaks=c(1,2,3,4,5,6,7,8,9,10,11,12)) +
-  labs(x="Diplopoda Sampling per Island by Month", y ="Number of Specimens Sampled", fill="month") +  
+  scale_y_continuous(expand=expansion(mult=c(0,0.05)), breaks=function(x) unique(floor(pretty(seq(0, (max(x)+1 *1.1)))))) + scale_x_continuous(expand=expansion(mult=c(0,0.01)), limits=c(0.5,12), breaks=c(1,2,3,4,5,6,7,8,9,10,11,12)) +
+  labs(x="Diplopoda Data Points per Island by Month", y ="Number of Diplopoda Data Points", fill="month") +  
   facet_wrap(vars(island), nrow=2, scales="free_y")
 
 diplo_ismonth 
@@ -719,6 +844,62 @@ ddply(dip_master_bold, "source", summarise, n = length(acceptedName))
 
 ```
 
+```{r Diplopoda Literature Comparison}
+
+#USING X_" " for easy copy and paste through taxa (MAKE SURE EVERYTHING IS CORRECT)
+
+lit_new = read_csv("new_invert_literature_R3_syninprog_Final.csv")
+x_miller = read_excel("diplopoda/diplo_miller.xlsx") %>%
+  select(acceptedFamily, acceptedGenus, acceptedName)
+x_lit_new = filter(lit_new, order=="Diplopoda")  %>% 
+  select(acceptedFamily, acceptedGenus, acceptedName) 
+
+x_lit2 = rbind(x_miller, x_lit_new)
+
+x_master2 = diplo_master %>%
+  select(acceptedFamily, acceptedGenus, acceptedName) 
+
+x_all2 = rbind(x_master2, x_lit_new) %>%
+  distinct(across(contains("accepted")), .keep_all=TRUE)
+
+
+xtab_occ = table(x_master2$acceptedName)
+xtab_occ = as.data.frame.table(xtab_occ) %>%
+  rename(Occurence= "Freq",  acceptedName = "Var1") 
+
+xtab_lit = table(x_lit2$acceptedName)
+xtab_lit = as.data.frame.table(xtab_lit) %>%
+  rename(Literature= "Freq",  acceptedName = "Var1") 
+
+xtab_occ_gen = table(x_master2$acceptedGenus)
+xtab_occ_gen = as.data.frame.table(xtab_occ_gen) %>%
+  rename(OccurenceGen= "Freq",  acceptedGenus = "Var1") 
+
+xtab_lit_gen = table(x_lit2$acceptedGenus)
+xtab_lit_gen = as.data.frame.table(xtab_lit_gen) %>%
+  rename(LiteratureGen= "Freq",  acceptedGenus = "Var1") 
+
+xtab_occ_fam = table(x_master2$acceptedFamily)
+xtab_occ_fam = as.data.frame.table(xtab_occ_fam) %>%
+  rename(OccurenceFam= "Freq",  acceptedFamily = "Var1") 
+
+xtab_lit_fam = table(x_lit2$acceptedFamily)
+xtab_lit_fam = as.data.frame.table(xtab_lit_fam) %>%
+  rename(LiteratureFam= "Freq",  acceptedFamily = "Var1") 
+
+#species list table from occurence and literature, with numbers just to show what is added by lit
+x_table <- left_join(x_all2, xtab_occ)
+x_table2 <- left_join(x_table, xtab_lit)
+x_table3 <- left_join(x_table2, xtab_occ_gen, by="acceptedGenus")
+x_table4 <- left_join(x_table3, xtab_lit_gen, by="acceptedGenus")
+x_table5 <- left_join(x_table4, xtab_occ_fam, by="acceptedFamily")
+x_table6 <- left_join(x_table5, xtab_lit_fam, by="acceptedFamily")
+
+diplo_lit_complete <-x_table6 %>%
+  rename(Species = "acceptedName", Family = "acceptedFamily", Genus = "acceptedGenus")
+
+write.csv(diplo_lit_complete, "Diplopoda/DiplopodaGraphs/diplo_lit_complete.csv", na="0")
+```
 
 #
 # Blattodea
@@ -762,7 +943,7 @@ bla_islandsum2 = merge(bla_islandsum, island_size, by="island", all.y=TRUE)
 bla_island <- ggplot(data = bla_islandsum2, aes(x = samples, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
   labs(y ="Island", 
-       x = "Number of Blattodea Specimens Sampled",
+       x = "Number of Blattodea Data Points",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,10), expand = c(0,0)) +
@@ -782,7 +963,7 @@ bla_islandprop = bla_islandsum2 %>% group_by(island) %>% mutate(by_area = sample
 bla_island_prop <- ggplot(data = bla_islandprop, aes(x = by_area, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
   labs(y ="Island", 
-       x = "Blattodea Specimens Sampled/Island Area (km^2)",
+       x = "Blattodea Data Points/Island Area (km^2)",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,0.25), expand = c(0,0)) +
@@ -801,7 +982,7 @@ bla_year = ggplot(bla_master, aes(x=year, fill=source)) +
   theme_bw() + 
   scale_y_continuous(expand=c(0,0), limits = c(0, 12)) + 
   scale_x_continuous(limits=c(1928, 2025),   breaks=c(1930, 1977, 2020)) + 
-  labs(x="Year", y ="Number of Blattodea Specimens Sampled") +   scale_fill_brewer(palette = "Dark2")
+  labs(x="Year", y ="Number of Blattodea Data Points") +   scale_fill_brewer(palette = "Dark2")
 
 bla_year
 
@@ -821,8 +1002,8 @@ bla_month$month2 <-as.factor(bla_month$month)
 bla_ismonth <- ggplot(bla_month, aes(x=month, fill=month2)) + 
   geom_bar() + 
   theme_bw() + 
-  scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(expand=expansion(mult=c(0,0.01)), limits=c(0.5,12), breaks=c(1,2,3,4,5,6,7,8,9,10,11,12)) +
-  labs(x="Blattodea Sampling per Island by Month", y ="Number of Specimens Sampled", fill="month") +  
+  scale_y_continuous(expand=expansion(mult=c(0,0.05)), breaks=function(x) unique(floor(pretty(seq(0, (max(x)+1 *1.1)))))) + scale_x_continuous(expand=expansion(mult=c(0,0.01)), limits=c(0.5,12), breaks=c(1,2,3,4,5,6,7,8,9,10,11,12)) +
+  labs(x="Blattodea Data Points per Island by Month", y ="Number of Blattodea Data Points", fill="month") +  
   facet_wrap(vars(island), nrow=1, scales="free_y")
 
 bla_ismonth 
@@ -841,6 +1022,63 @@ write.csv(diplotab, "diplopoda/DiplopodaGraphs/diplo_table.csv")
 
 table(bla_chis_combine$acceptedFamily)
 table(bla_inat_combine$acceptedFamily)
+```
+```{r Blat Literature Comparison}
+
+#USING X_" " for easy copy and paste through taxa (MAKE SURE EVERYTHING IS CORRECT)
+
+lit_new = read_csv("new_invert_literature_R3_syninprog_Final.csv")
+x_miller = read_excel("blattodea/bla_miller.xlsx") %>%
+  select(acceptedFamily, acceptedGenus, acceptedName)
+x_lit_new = filter(lit_new, order=="Blattodea")  %>% 
+  select(acceptedFamily, acceptedGenus, acceptedName) 
+
+x_lit2 = rbind(x_miller, x_lit_new)
+
+#does this next line pull the correct order?
+x_master2 = bla_master %>%
+  select(acceptedFamily, acceptedGenus, acceptedName) 
+
+x_all2 = rbind(x_master2, x_lit_new) %>%
+  distinct(across(contains("accepted")), .keep_all=TRUE)
+
+
+xtab_occ = table(x_master2$acceptedName)
+xtab_occ = as.data.frame.table(xtab_occ) %>%
+  rename(Occurence= "Freq",  acceptedName = "Var1") 
+
+xtab_lit = table(x_lit2$acceptedName)
+xtab_lit = as.data.frame.table(xtab_lit) %>%
+  rename(Literature= "Freq",  acceptedName = "Var1") 
+
+xtab_occ_gen = table(x_master2$acceptedGenus)
+xtab_occ_gen = as.data.frame.table(xtab_occ_gen) %>%
+  rename(OccurenceGen= "Freq",  acceptedGenus = "Var1") 
+
+xtab_lit_gen = table(x_lit2$acceptedGenus)
+xtab_lit_gen = as.data.frame.table(xtab_lit_gen) %>%
+  rename(LiteratureGen= "Freq",  acceptedGenus = "Var1") 
+
+xtab_occ_fam = table(x_master2$acceptedFamily)
+xtab_occ_fam = as.data.frame.table(xtab_occ_fam) %>%
+  rename(OccurenceFam= "Freq",  acceptedFamily = "Var1") 
+
+xtab_lit_fam = table(x_lit2$acceptedFamily)
+xtab_lit_fam = as.data.frame.table(xtab_lit_fam) %>%
+  rename(LiteratureFam= "Freq",  acceptedFamily = "Var1") 
+
+#species list table from occurence and literature, with numbers just to show what is added by lit
+x_table <- left_join(x_all2, xtab_occ)
+x_table2 <- left_join(x_table, xtab_lit)
+x_table3 <- left_join(x_table2, xtab_occ_gen, by="acceptedGenus")
+x_table4 <- left_join(x_table3, xtab_lit_gen, by="acceptedGenus")
+x_table5 <- left_join(x_table4, xtab_occ_fam, by="acceptedFamily")
+x_table6 <- left_join(x_table5, xtab_lit_fam, by="acceptedFamily")
+
+bla_lit_complete <-x_table6 %>%
+  rename(Species = "acceptedName", Family = "acceptedFamily", Genus = "acceptedGenus")
+
+write.csv(bla_lit_complete, "blattodea/BlattodeaGraphs/bla_lit_complete.csv", na="0")
 ```
 
 #
@@ -866,7 +1104,7 @@ odo_chis_combine <- odo_chis %>%
 odo_master = rbind(odo_inat_combine, odo_chis_combine) %>%
   # reorder the island names to show up N -> S on list
   mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente")) %>% add_column(phylum = "Arthropoda", class="Insecta")
-write.csv(odo_master, "Kylie/master/odo_master.csv")
+write.csv(odo_master, "master/odo_master.csv")
 
 ```
 
@@ -883,7 +1121,7 @@ odo_islandsum <- na.omit(subset(odo_islandsum, select = c(island, samples, sourc
 
 odo_island <- ggplot(data = odo_islandsum, aes(x = samples, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
-  labs(x ="Number of Phasmidae Sampled", 
+  labs(x ="Number of Odonata Data Points", 
        y = "Island",
        fill = "Data Source") +
   theme_bw() + 
@@ -904,7 +1142,7 @@ odo_islandprop = odo_islandsum2 %>% group_by(island) %>% mutate(by_area = sample
 odo_island_prop <- ggplot(data = odo_islandprop, aes(x = by_area, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
   labs(y ="Island", 
-       x = "Odonata Specimens Sampled/Island Area (km^2)",
+       x = "Odonata Data Points/Island Area (km^2)",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,1.25), expand = c(0,0)) +
@@ -923,7 +1161,7 @@ odo_year = ggplot(odo_master, aes(x=year, fill=source)) +
   theme_bw() + 
   scale_y_continuous(expand=c(0,0), limits = c(0, 50)) + 
   scale_x_continuous(limits=c(1910, 2025),   breaks=c(1915, 1930, 1945, 1960, 1975, 1990, 2005, 2020)) + 
-  labs(x="Year", y ="Number of Odonata Specimens Sampled") +   scale_fill_brewer(palette = "Dark2")
+  labs(x="Year", y ="Number of Odonata Data Points") +   scale_fill_brewer(palette = "Dark2")
 
 odo_year
 
@@ -944,7 +1182,7 @@ odo_ismonth <- ggplot(odo_month, aes(x=month, fill=month2)) +
   geom_bar() + 
   theme_bw() + 
   scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(expand=expansion(mult=c(0,0.01)), limits=c(0.5,12), breaks=c(1,2,3,4,5,6,7,8,9,10,11,12)) +
-  labs(x="Odonata Sampling per Island by Month", y ="Number of Specimens Sampled", fill="month") +  
+  labs(x="Odonata Data Points per Island by Month", y ="Number of Odonata Data Points", fill="month") +  
   facet_wrap(vars(island), nrow=2, scales="free_y")
 
 
@@ -967,6 +1205,64 @@ table(odo_inat_combine$acceptedFamily)
 odotab2 = table(odo_master$acceptedName)
 odotab2 = as.data.frame.table(odotab2)
 write.csv(odotab2, "odonata/OdonataGraphs/odo_table2.csv")
+```
+
+```{r Odonata Literature Comparison}
+
+#USING X_" " for easy copy and paste through taxa (MAKE SURE EVERYTHING IS CORRECT)
+
+lit_new = read_csv("new_invert_literature_R3_syninprog_Final.csv")
+x_miller = read_excel("odonata/odo_miller.xlsx") %>%
+  select(acceptedFamily, acceptedGenus, acceptedName)
+x_lit_new = filter(lit_new, order=="Odonata")  %>% 
+  select(acceptedFamily, acceptedGenus, acceptedName) 
+
+x_lit2 = rbind(x_miller, x_lit_new)
+
+#does this next line pull the correct order?
+x_master2 = odo_master %>%
+  select(acceptedFamily, acceptedGenus, acceptedName) 
+
+x_all2 = rbind(x_master2, x_lit_new) %>%
+  distinct(across(contains("accepted")), .keep_all=TRUE)
+
+
+xtab_occ = table(x_master2$acceptedName)
+xtab_occ = as.data.frame.table(xtab_occ) %>%
+  rename(Occurence= "Freq",  acceptedName = "Var1") 
+
+xtab_lit = table(x_lit2$acceptedName)
+xtab_lit = as.data.frame.table(xtab_lit) %>%
+  rename(Literature= "Freq",  acceptedName = "Var1") 
+
+xtab_occ_gen = table(x_master2$acceptedGenus)
+xtab_occ_gen = as.data.frame.table(xtab_occ_gen) %>%
+  rename(OccurenceGen= "Freq",  acceptedGenus = "Var1") 
+
+xtab_lit_gen = table(x_lit2$acceptedGenus)
+xtab_lit_gen = as.data.frame.table(xtab_lit_gen) %>%
+  rename(LiteratureGen= "Freq",  acceptedGenus = "Var1") 
+
+xtab_occ_fam = table(x_master2$acceptedFamily)
+xtab_occ_fam = as.data.frame.table(xtab_occ_fam) %>%
+  rename(OccurenceFam= "Freq",  acceptedFamily = "Var1") 
+
+xtab_lit_fam = table(x_lit2$acceptedFamily)
+xtab_lit_fam = as.data.frame.table(xtab_lit_fam) %>%
+  rename(LiteratureFam= "Freq",  acceptedFamily = "Var1") 
+
+#species list table from occurence and literature, with numbers just to show what is added by lit
+x_table <- left_join(x_all2, xtab_occ)
+x_table2 <- left_join(x_table, xtab_lit)
+x_table3 <- left_join(x_table2, xtab_occ_gen, by="acceptedGenus")
+x_table4 <- left_join(x_table3, xtab_lit_gen, by="acceptedGenus")
+x_table5 <- left_join(x_table4, xtab_occ_fam, by="acceptedFamily")
+x_table6 <- left_join(x_table5, xtab_lit_fam, by="acceptedFamily")
+
+odo_lit_complete <-x_table6 %>%
+  rename(Species = "acceptedName", Family = "acceptedFamily", Genus = "acceptedGenus")
+
+write.csv(odo_lit_complete, "odonata/OdonataGraphs/odo_lit_complete.csv", na="0")
 ```
 #
 # Phasmida
@@ -992,7 +1288,7 @@ phas_chis_combine <- phas_chis %>%
 phas_master = rbind(phas_inat_combine, phas_chis_combine) %>%
   # reorder the island names to show up N -> S on list
   mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente")) %>% add_column(phylum="Arthropoda", class="Insecta")
-write.csv(phas_master, "Kylie/master/phas_master.csv")
+write.csv(phas_master, "master/phas_master.csv")
 
 ```
 
@@ -1009,7 +1305,7 @@ phas_islandsum <- na.omit(subset(phas_islandsum, select = c(island, samples, sou
 
 phas_island <- ggplot(data = phas_islandsum2, aes(x = samples, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
-  labs(x ="Number of Phasmida Specimens Sampled", 
+  labs(x ="Number of Phasmida Data Points", 
        y = "Island",
        fill = "Data Source") +
   theme_bw() + 
@@ -1030,7 +1326,7 @@ phas_islandprop = phas_islandsum2 %>% group_by(island) %>% mutate(by_area = samp
 phas_island_prop <- ggplot(data = phas_islandprop, aes(x = by_area, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
   labs(y ="Island", 
-       x = "Phasmida Specimens Sampled/Island Area (km^2)",
+       x = "Phasmida Data Points/Island Area (km^2)",
        fill = "Data Source") +
   theme_bw() + 
   scale_x_continuous(limits =c(0,1), expand = c(0,0)) +
@@ -1049,7 +1345,7 @@ phas_year = ggplot(phas_master, aes(x=year, fill=source)) +
   theme_bw() + 
   scale_y_continuous(expand=c(0,0), limits = c(0, 5)) + 
   scale_x_continuous(limits=c(1930, 2025),   breaks=c(1930, 1945, 1960, 1975, 1990, 2005, 2020)) + 
-  labs(x="Year", y ="Number of Phasmida Specimens Sampled") +   scale_fill_brewer(palette = "Dark2")
+  labs(x="Year", y ="Number of Phasmida Data Points") +   scale_fill_brewer(palette = "Dark2")
 
 phas_year
 
@@ -1069,7 +1365,7 @@ phas_ismonth <- ggplot(phas_month, aes(x=month, fill=month2)) +
   geom_bar() + 
   theme_bw() + 
   scale_y_continuous(expand=expansion(mult=c(0,0.05))) + scale_x_continuous(expand=expansion(mult=c(0,0.01)), limits=c(0.5,12), breaks=c(1,2,3,4,5,6,7,8,9,10,11,12)) +
-  labs(x="Phasmida Sampling per Island by Month", y ="Number of Specimens Sampled", fill="month") +  
+  labs(x="Phasmida Data Points per Island by Month", y ="Number of Phasmida Data Points", fill="month") +  
   facet_wrap(vars(island), nrow=2, scales="free_y")
 
 phas_ismonth 
@@ -1083,6 +1379,63 @@ ggsave(plot=phas_ismonth, filename="phasmida/PhasmidaGraphs/phas_seasonal.png", 
 write.csv(phas_master, "phasmida/PhasmidaGraphs/phas_master.csv")
 
 ```
+```{r Nonexistant Phas Literature Comparison}
+
+#USING X_" " for easy copy and paste through taxa (MAKE SURE EVERYTHING IS CORRECT)
+# NO PHASMIDA IN MILLER OR NEW LIT 
+lit_new = read_csv("new_invert_literature_R3_syninprog_Final.csv")
+##x_miller = read_excel("blattodea/bla_miller.xlsx") %>% select(acceptedFamily, acceptedGenus, acceptedName)
+x_lit_new = filter(lit_new, order=="Phasmida")  %>% 
+  select(acceptedFamily, acceptedGenus, acceptedName) 
+
+x_lit2 = rbind(x_miller, x_lit_new)
+
+#does this next line pull the correct order?
+x_master2 = bla_master %>%
+  select(acceptedFamily, acceptedGenus, acceptedName) 
+
+x_all2 = rbind(x_master2, x_lit_new) %>%
+  distinct(across(contains("accepted")), .keep_all=TRUE)
+
+
+xtab_occ = table(x_master2$acceptedName)
+xtab_occ = as.data.frame.table(xtab_occ) %>%
+  rename(Occurence= "Freq",  acceptedName = "Var1") 
+
+xtab_lit = table(x_lit2$acceptedName)
+xtab_lit = as.data.frame.table(xtab_lit) %>%
+  rename(Literature= "Freq",  acceptedName = "Var1") 
+
+xtab_occ_gen = table(x_master2$acceptedGenus)
+xtab_occ_gen = as.data.frame.table(xtab_occ_gen) %>%
+  rename(OccurenceGen= "Freq",  acceptedGenus = "Var1") 
+
+xtab_lit_gen = table(x_lit2$acceptedGenus)
+xtab_lit_gen = as.data.frame.table(xtab_lit_gen) %>%
+  rename(LiteratureGen= "Freq",  acceptedGenus = "Var1") 
+
+xtab_occ_fam = table(x_master2$acceptedFamily)
+xtab_occ_fam = as.data.frame.table(xtab_occ_fam) %>%
+  rename(OccurenceFam= "Freq",  acceptedFamily = "Var1") 
+
+xtab_lit_fam = table(x_lit2$acceptedFamily)
+xtab_lit_fam = as.data.frame.table(xtab_lit_fam) %>%
+  rename(LiteratureFam= "Freq",  acceptedFamily = "Var1") 
+
+#species list table from occurence and literature, with numbers just to show what is added by lit
+x_table <- left_join(x_all2, xtab_occ)
+x_table2 <- left_join(x_table, xtab_lit)
+x_table3 <- left_join(x_table2, xtab_occ_gen, by="acceptedGenus")
+x_table4 <- left_join(x_table3, xtab_lit_gen, by="acceptedGenus")
+x_table5 <- left_join(x_table4, xtab_occ_fam, by="acceptedFamily")
+x_table6 <- left_join(x_table5, xtab_lit_fam, by="acceptedFamily")
+
+bla_lit_complete <-x_table6 %>%
+  rename(Species = "acceptedName", Family = "acceptedFamily", Genus = "acceptedGenus")
+
+write.csv(bla_lit_complete, "blattodea/BlattodeaGraphs/bla_lit_complete.csv", na="0")
+```
+
 #
 #Coleoptera
 ### Col Step 1. Download Packages *above* and Import Data
@@ -1480,6 +1833,63 @@ lep_table_complete2 <- lep_table_complete2 %>%
 write.csv(lep_table_complete2, "lepidoptera/LepidopteraGraphs/lep_table_complete.csv", na="0")
 write.csv(lep_master, "lepidoptera/lep_master.csv", na="")
 ```
+```{r Lep Literature Comparison}
+
+#USING X_" " for easy copy and paste through taxa (MAKE SURE EVERYTHING IS CORRECT)
+
+lit_new = read_csv("new_invert_literature_R3_syninprog_Final.csv")
+x_miller = read_csv("lepidoptera/lep_miller.csv") %>%
+  select(acceptedFamily, acceptedGenus, acceptedName)
+x_lit_new = filter(lit_new, acceptedOrder=="Lepidoptera")  %>% 
+  select(acceptedFamily, acceptedGenus, acceptedName) 
+
+x_lit2 = rbind(x_miller, x_lit_new)
+
+#does this next line pull the correct order?
+x_master2 = lep_master %>%
+  select(acceptedFamily, acceptedGenus, acceptedName) 
+
+x_all2 = rbind(x_master2, x_lit_new) %>%
+  distinct(across(contains("accepted")), .keep_all=TRUE)
+
+
+xtab_occ = table(x_master2$acceptedName)
+xtab_occ = as.data.frame.table(xtab_occ) %>%
+  rename(Occurence= "Freq",  acceptedName = "Var1") 
+
+xtab_lit = table(x_lit2$acceptedName)
+xtab_lit = as.data.frame.table(xtab_lit) %>%
+  rename(Literature= "Freq",  acceptedName = "Var1") 
+
+xtab_occ_gen = table(x_master2$acceptedGenus)
+xtab_occ_gen = as.data.frame.table(xtab_occ_gen) %>%
+  rename(OccurenceGen= "Freq",  acceptedGenus = "Var1") 
+
+xtab_lit_gen = table(x_lit2$acceptedGenus)
+xtab_lit_gen = as.data.frame.table(xtab_lit_gen) %>%
+  rename(LiteratureGen= "Freq",  acceptedGenus = "Var1") 
+
+xtab_occ_fam = table(x_master2$acceptedFamily)
+xtab_occ_fam = as.data.frame.table(xtab_occ_fam) %>%
+  rename(OccurenceFam= "Freq",  acceptedFamily = "Var1") 
+
+xtab_lit_fam = table(x_lit2$acceptedFamily)
+xtab_lit_fam = as.data.frame.table(xtab_lit_fam) %>%
+  rename(LiteratureFam= "Freq",  acceptedFamily = "Var1") 
+
+#species list table from occurence and literature, with numbers just to show what is added by lit
+x_table <- left_join(x_all2, xtab_occ)
+x_table2 <- left_join(x_table, xtab_lit)
+x_table3 <- left_join(x_table2, xtab_occ_gen, by="acceptedGenus")
+x_table4 <- left_join(x_table3, xtab_lit_gen, by="acceptedGenus")
+x_table5 <- left_join(x_table4, xtab_occ_fam, by="acceptedFamily")
+x_table6 <- left_join(x_table5, xtab_lit_fam, by="acceptedFamily")
+
+lep_lit_complete <-x_table6 %>%
+  rename(Species = "acceptedName", Family = "acceptedFamily", Genus = "acceptedGenus")
+
+write.csv(lep_lit_complete, "lepidoptera/LepidopteraGraphs/lep_lit_complete.csv", na="0")
+```
 #
 #Arachnida 
 #### Arac Step1. Download Packages *above* and Import Data
@@ -1726,11 +2136,20 @@ write.csv(arac_all2, "arachnida/arac_allisland.csv", na="")
 ```
 
 ```{r Arachnida Literature Comparison}
+arac_lit_miller = read_csv("arachnida/arac_lit_miller.csv")
+lit_new = read_csv("new_invert_literature_R3_syninprog2.csv")
+arac_lit_new = filter(lit_new, class=="Arachnida")  %>% 
+  select(order, acceptedFamily, acceptedGenus, acceptedName) 
+arac_lit_miller2 = arac_lit_miller %>%
+    select(order, acceptedFamily, acceptedGenus, acceptedName) 
+
+arac_lit = rbind(arac_lit_miller2, arac_lit_new)
+
 arac_master2 = arac_master %>%
-  select(acceptedFamily, acceptedGenus, acceptedName) 
+  select(order, acceptedFamily, acceptedGenus, acceptedName) 
 
 arac_lit2 = arac_lit %>% 
-  select(acceptedFamily, acceptedGenus, acceptedName) 
+  select(order, acceptedFamily, acceptedGenus, acceptedName) 
 
 arac_all2 = rbind(arac_master2, arac_lit2) %>%
   distinct(across(contains("accepted")), .keep_all=TRUE)
@@ -1770,20 +2189,7 @@ arac_table6 <- left_join(arac_table5, aractab_lit_fam, by="acceptedFamily")
 arac_lit_complete <-arac_table6 %>%
   rename(Species = "acceptedName", Family = "acceptedFamily", Genus = "acceptedGenus")
 
-write.csv(arac_lit_complete, "arachnida/arac_lit_complete.csv", na="0")
-
-###didn';t change yet
-dip_complete_family = dip_table_complete %>%
-  distinct(Family, .keep_all=TRUE) %>% 
-  select(Family, OccurenceFam, LiteratureFam) %>%
-  rename(Occurence="OccurenceFam", Literature="LiteratureFam") 
-
-write.csv(dip_complete_family, "diptera/DipteraGraphs/dip_table_family.csv", na="")
-
-dipocc = unique(c(as.character(dip_master$acceptedGenus)))
-diplit = unique(c(as.character(dip_lit$acceptedGenus)))
-diffdip = setdiff(diplit, dipocc)
-diffdip
+write.csv(arac_lit_complete, "arachnida/ArachnidaGraphs/arac_lit_complete2.csv", na="0")
 
 ```
 
@@ -1837,7 +2243,7 @@ hem_master = rbind(hem_inat_combine, hem_chis_combine, hem_bold_combine, hem_lac
 #some base R script to get rid of the silly 0 months, years and lat/long (done above to coord data)
 hem_master[hem_master == 0] <- NA
 
-write.csv(hem_master, "Kylie/master/hem_master.csv")
+write.csv(hem_master, "master/hem_master.csv")
 ```
 
 ###Hem Step. 3 Make Graphs! 
@@ -2033,9 +2439,473 @@ write.csv(hem_lit_genera, "hemiptera/hem_lit_gen.csv", na="")
 write.csv(hem_lit_species, "hemiptera/hem_lit_sp.csv", na="")
 ```
 
+```{r Hemiptera Literature Comparison}
 
+#USING X_" " for easy copy and paste through taxa (MAKE SURE EVERYTHING IS CORRECT)
+
+lit_new = read_csv("new_invert_literature_R3_syninprog_Final.csv")
+x_miller = read_csv("diplopoda/diplo_miller.csv") %>%
+  select(acceptedFamily, acceptedGenus, acceptedName)
+x_lit_new = filter(lit_new, order=="Hemiptera")  %>% 
+  select(acceptedFamily, acceptedGenus, acceptedName) 
+
+x_lit2 = rbind(x_miller, x_lit_new)
+
+x_master2 = hem_master %>%
+  select(acceptedFamily, acceptedGenus, acceptedName) 
+
+x_all2 = rbind(x_master2, x_lit_new) %>%
+  distinct(across(contains("accepted")), .keep_all=TRUE)
+
+
+xtab_occ = table(x_master2$acceptedName)
+xtab_occ = as.data.frame.table(xtab_occ) %>%
+  rename(Occurence= "Freq",  acceptedName = "Var1") 
+
+xtab_lit = table(x_lit2$acceptedName)
+xtab_lit = as.data.frame.table(xtab_lit) %>%
+  rename(Literature= "Freq",  acceptedName = "Var1") 
+
+xtab_occ_gen = table(x_master2$acceptedGenus)
+xtab_occ_gen = as.data.frame.table(xtab_occ_gen) %>%
+  rename(OccurenceGen= "Freq",  acceptedGenus = "Var1") 
+
+xtab_lit_gen = table(x_lit2$acceptedGenus)
+xtab_lit_gen = as.data.frame.table(xtab_lit_gen) %>%
+  rename(LiteratureGen= "Freq",  acceptedGenus = "Var1") 
+
+xtab_occ_fam = table(x_master2$acceptedFamily)
+xtab_occ_fam = as.data.frame.table(xtab_occ_fam) %>%
+  rename(OccurenceFam= "Freq",  acceptedFamily = "Var1") 
+
+xtab_lit_fam = table(x_lit2$acceptedFamily)
+xtab_lit_fam = as.data.frame.table(xtab_lit_fam) %>%
+  rename(LiteratureFam= "Freq",  acceptedFamily = "Var1") 
+
+#species list table from occurence and literature, with numbers just to show what is added by lit
+x_table <- left_join(x_all2, xtab_occ)
+x_table2 <- left_join(x_table, xtab_lit)
+x_table3 <- left_join(x_table2, xtab_occ_gen, by="acceptedGenus")
+x_table4 <- left_join(x_table3, xtab_lit_gen, by="acceptedGenus")
+x_table5 <- left_join(x_table4, xtab_occ_fam, by="acceptedFamily")
+x_table6 <- left_join(x_table5, xtab_lit_fam, by="acceptedFamily")
+
+hem_lit_complete <-x_table6 %>%
+  rename(Species = "acceptedName", Family = "acceptedFamily", Genus = "acceptedGenus")
+
+write.csv(hem_lit_complete, "Hemiptera/HemipteraGraphs/hem_lit_complete.csv", na="0")
+```
 
 #
+#Orthoptera
+### Orth Step 1. Download Packages *above* and Import Data
+```{r setup}
+orth_inat <- read_csv("orthoptera/orth_inat3.csv")
+orth_lacm <- read_csv("orthoptera/orth_lacm2.csv")
+orth_chis <- read_csv("orthoptera/orth_chis2.csv")
+```
+
+
+### Orth Step 2. Combine datasets
+```{r Selecting columns and combining}
+orth_inat_combine <- orth_inat %>%
+  select(month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, scientificName, latitude, longitude) %>%
+    add_column(source="iNaturalist")
+
+orth_chis_combine <- orth_chis %>%
+  rename(order = "order_", latitude = "decimalLat", longitude="decimalLon", scientificName="scientific") %>%
+  select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, scientificName, latitude, longitude)
+
+orth_lacm_combine <- orth_lacm %>%
+  select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName) %>%
+  add_column(latitude=NA, longitude=NA, scientificName=NA)
+
+orth_master = rbind(orth_inat_combine, orth_chis_combine, orth_lacm_combine) %>%
+  # reorder the island names to show up N -> S on list
+  mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente")) %>% add_column(phylum="Arthropoda", class="Insecta")
+write.csv(orth_master, "master/orth_master.csv")
+```
+
+###Lep Step. 3 Make Graphs! 
+
+#### Island Graph 
+```{r Graphing by island}
+lep_islandsum <- na.omit(subset(lep_master, select = c(island, source))) %>%
+  mutate(no_sample = 1) %>%
+  group_by(island, source) %>%
+  summarise(samples = sum(no_sample)) 
+
+
+lep_island <- ggplot(data = lep_islandsum, aes(x = samples, y = fct_rev(island), fill = source)) + 
+  geom_bar(stat = "identity") +
+  labs(y ="Island", 
+       x = "Number of Lepidoptera Data Points",
+       fill = "Data Source") +
+  theme_bw() + 
+  scale_x_continuous(limits =c(0,4000), expand = c(0,0)) +
+  scale_fill_brewer(palette = "Dark2")
+
+lep_island 
+
+ggsave(plot=lep_island, filename="lepidoptera/LepidopteraGraphs/lep_island.png", height=5, width=8, units="in", dpi=300)
+
+```
+
+```{r Graphing by island proportional}
+island_size = read_csv("island_size.csv")
+lep_islandsum2 = merge(lep_islandsum, island_size, by="island", all.y=TRUE)
+lep_islandprop = lep_islandsum2 %>% group_by(island) %>% mutate(by_area = samples/island_size_85)
+
+lep_island_propgraph <- ggplot(data = lep_islandprop, aes(x = by_area, y = fct_rev(island), fill = source)) + 
+  geom_bar(stat = "identity") +
+  labs(y ="Island", 
+       x = "Lepidoptera Data Points/Island Area (km^2)",
+       fill = "Data Source") +
+  theme_bw() + 
+  scale_x_continuous(limits =c(0,150), expand = c(0,0)) +
+  scale_fill_brewer(palette = "Dark2")
+
+lep_island_propgraph 
+
+ggsave(plot=lep_island_propgraph, filename="lepidoptera/LepidopteraGraphs/lep_island_prop.png", height=5, width=8, units="in", dpi=300)
+```
+
+
+#### Temporal Graph
+```{r Graphing by year}
+lep_year <- na.omit(subset(lep_master, select = c(island, year, month, source)))
+lep_yeargraph = ggplot(lep_year, aes(x=year, fill=source)) + 
+  geom_bar() + 
+  theme_bw() + 
+  scale_y_continuous(expand=c(0,0), limits = c(0, 1750)) + 
+  scale_x_continuous(expand=c(0,0), limits=c(1905, 2022), breaks=c(1910,  1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020)) + 
+  labs(x="Year", y ="Number of Lepidoptera Data Points") +   scale_fill_brewer(palette = "Dark2")
+
+lep_yeargraph
+
+ggsave(plot=lep_yeargraph, filename="lepidoptera/LepidopteraGraphs/lep_year.png", height=5, width=9, units="in", dpi=300)
+
+```
+
+####Seasonal Graph 
+
+```{r Graphing by month}
+# by month and island 
+lep_year$month <- as.factor(lep_year$month)
+
+lep_ismonth <- ggplot(lep_year, aes(x=month, fill=month)) + 
+  geom_bar() + 
+  theme_bw() + 
+  scale_y_continuous(expand=c(0,0.5)) + 
+  labs(x="Lepidoptera Data Points per Island by Month", y ="Number of Lepidoptera Data Points") +  
+  facet_wrap(vars(island), nrow=2, scales="free_y")
+
+lep_ismonth 
+
+ggsave(plot=lep_ismonth, filename="lepidoptera/LepidopteraGraphs/lep_seasonal.png", height=4.5, width=9, units="in", dpi=300)
+
+```
+
+###Lep Step 4. Make Tables 
+```{r Family by Source Table}
+leptab= table(lep_master$acceptedFamily)
+leptab = as.data.frame.table(leptab)
+write.csv(leptab, "lepidoptera/LepidopteraGraphs/lep_table.csv")
+
+leptab_inat = table(lep_inat$acceptedFamily)
+leptab_inat = as.data.frame.table(leptab_inat)
+leptab_inat <- leptab_inat %>%
+  rename(iNaturalist = "Freq") 
+
+leptab_chis = table(lep_chis$acceptedFamily)
+leptab_chis = as.data.frame.table(leptab_chis)
+leptab_chis <- leptab_chis %>%
+  rename(CalIBIS = "Freq") 
+
+leptab_lacm = table(lep_lacm$acceptedFamily)
+leptab_lacm = as.data.frame.table(leptab_lacm)
+leptab_lacm <- leptab_lacm %>%
+  rename(LACM = "Freq") 
+
+lep_table <- left_join(leptab, leptab_inat)
+lep_table2 <- left_join(lep_table, leptab_chis)
+lep_table3 <- left_join(lep_table2, leptab_lacm)
+
+lep_table_complete <-lep_table3 %>%
+  rename(Sum = "Freq", Family = "Var1")
+
+lep_fam = read_csv("lepidoptera/lep_families.csv")
+lep_table_complete2 <- left_join(lep_table_complete, lep_fam) 
+
+lep_table_complete2 <- lep_table_complete2 %>%
+  relocate("iconic", "Family", "CalIBIS", "iNaturalist", "LACM", "Sum") %>%
+  mutate(Percentage = (Sum/9392))
+
+
+write.csv(lep_table_complete2, "lepidoptera/LepidopteraGraphs/lep_table_complete.csv", na="0")
+write.csv(lep_master, "lepidoptera/lep_master.csv", na="")
+```
+```{r Lep Literature Comparison}
+
+#USING X_" " for easy copy and paste through taxa (MAKE SURE EVERYTHING IS CORRECT)
+
+lit_new = read_csv("new_invert_literature_R3_syninprog_Final.csv")
+x_miller = read_csv("lepidoptera/lep_miller.csv") %>%
+  select(acceptedFamily, acceptedGenus, acceptedName)
+x_lit_new = filter(lit_new, acceptedOrder=="Lepidoptera")  %>% 
+  select(acceptedFamily, acceptedGenus, acceptedName) 
+
+x_lit2 = rbind(x_miller, x_lit_new)
+
+#does this next line pull the correct order?
+x_master2 = lep_master %>%
+  select(acceptedFamily, acceptedGenus, acceptedName) 
+
+x_all2 = rbind(x_master2, x_lit_new) %>%
+  distinct(across(contains("accepted")), .keep_all=TRUE)
+
+
+xtab_occ = table(x_master2$acceptedName)
+xtab_occ = as.data.frame.table(xtab_occ) %>%
+  rename(Occurence= "Freq",  acceptedName = "Var1") 
+
+xtab_lit = table(x_lit2$acceptedName)
+xtab_lit = as.data.frame.table(xtab_lit) %>%
+  rename(Literature= "Freq",  acceptedName = "Var1") 
+
+xtab_occ_gen = table(x_master2$acceptedGenus)
+xtab_occ_gen = as.data.frame.table(xtab_occ_gen) %>%
+  rename(OccurenceGen= "Freq",  acceptedGenus = "Var1") 
+
+xtab_lit_gen = table(x_lit2$acceptedGenus)
+xtab_lit_gen = as.data.frame.table(xtab_lit_gen) %>%
+  rename(LiteratureGen= "Freq",  acceptedGenus = "Var1") 
+
+xtab_occ_fam = table(x_master2$acceptedFamily)
+xtab_occ_fam = as.data.frame.table(xtab_occ_fam) %>%
+  rename(OccurenceFam= "Freq",  acceptedFamily = "Var1") 
+
+xtab_lit_fam = table(x_lit2$acceptedFamily)
+xtab_lit_fam = as.data.frame.table(xtab_lit_fam) %>%
+  rename(LiteratureFam= "Freq",  acceptedFamily = "Var1") 
+
+#species list table from occurence and literature, with numbers just to show what is added by lit
+x_table <- left_join(x_all2, xtab_occ)
+x_table2 <- left_join(x_table, xtab_lit)
+x_table3 <- left_join(x_table2, xtab_occ_gen, by="acceptedGenus")
+x_table4 <- left_join(x_table3, xtab_lit_gen, by="acceptedGenus")
+x_table5 <- left_join(x_table4, xtab_occ_fam, by="acceptedFamily")
+x_table6 <- left_join(x_table5, xtab_lit_fam, by="acceptedFamily")
+
+lep_lit_complete <-x_table6 %>%
+  rename(Species = "acceptedName", Family = "acceptedFamily", Genus = "acceptedGenus")
+
+write.csv(lep_lit_complete, "lepidoptera/LepidopteraGraphs/lep_lit_complete.csv", na="0")
+```
+#
+
+#Hymenoptera
+# Step 1. Download datasets. 
+(iNaturalist, LACM, Cal-IBIS, Bohart for Hymenoptera)
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# load packages
+library(tidyverse)
+library(lubridate)
+library(ggplot2)
+library(plyr)
+library(dplyr)
+
+inat =read.csv("hymenoptera/hym_inat_clean.csv")
+lacm = read.csv("hymenoptera/hym_lacm_clean.csv")
+chis = read_csv("hymenoptera/hym_chis_clean.csv")
+bohart = read.csv("hymenoptera/hym_bohart_clean.csv")
+bold = read.csv("hymenoptera/BOLD_IslandHymenoptera_Feb2021.csv")
+```
+```{r clean up datasets}
+inat_column <- inat %>%
+  select(source, month, day_arabic, year, island, order, family, genus, specificEp, scientificName)
+lacm_column <- lacm %>%
+  select(source, month_arabic, day_arabic, year, island, order, family, genus, specificEp, scientificName) 
+chis_column <- chis %>%
+  select(source, month_arabic, day_arabic, year, island, order, family, genus, specificEp, scientificName) %>%
+filter(!is.na(source))
+bohart_column <- bohart %>%
+  select(source, month_arabic, day_arabic, year, island, order, family, genus, specificEp, scientificName)
+
+```
+
+# Step 3. Make master dataset.
+Now to combine. iNat = 1372, LACM = 1186, CHIS = 7621, Bohart = 6326 (bohart is all bees). 16505 total. 
+
+```{r create the master }
+masterdata = rbind(inat_column, lacm_column, chis_column, bohart_column)
+write.csv(masterdata, "hym_master.csv")
+```
+**Ignore if you did synonymy before combining
+
+Updated master dataset with the synonymy. 
+```{r synonymy dataset}
+mastersyn = read.csv("hymenoptera/hym_master_syn.csv")
+```
+# Adding the BOLD data to the mastersyn. 
+Mastersyn2 documnet has no temporal information
+```{r}
+bold = read.csv("hymenoptera/BOLD_IslandHymenoptera_Feb2021.csv")
+bold_column <- bold %>%
+  select(record, source, island, acceptedFamily, acceptedGenus, acceptedName) %>% 
+  add_column(year="", month="")
+mastersyn_column <- mastersyn %>%
+  select(record, source, island, acceptedFamily, acceptedGenus, acceptedName)
+mastersyn2 = rbind(mastersyn_column, bold_column)
+```
+##Hym Step. 3 Make Graphs! New Standardized code with edits 
+### Island Graph 
+```{r Graphing by island}
+ hym_islandsum <- mastersyn %>%
+   mutate(no_sample = 1) %>%
+   group_by(island, source) %>%
+   summarise(samples = sum(no_sample)) %>%
+   filter(!is.na(island)) %>%
+   ungroup() %>%
+   mutate(source2 = fct_relevel(source, "Cal-IBIS", "iNaturalist", "LACM", "Bohart"))
+
+hym_islandsum = hym_islandsum[c(2:33),] 
+
+hym_island <- ggplot(data = hym_islandsum, aes(x = samples, y = fct_rev(island), fill = source2)) + 
+  geom_bar(stat = "identity") +
+  labs(y ="Island", 
+       x = "Number of Hymenoptera Data Points",
+       fill = "Data Source") +
+  theme_bw() + 
+  scale_x_continuous(limits =c(0,11000), expand = c(0,0)) +
+  scale_fill_brewer(palette = "Dark2")
+
+hym_island 
+
+ggsave(plot=hym_island, filename="hymenoptera/HymenopteraGraphs/hym_island.png", height=5, width=8, units="in", dpi=300)
+
+```
+
+```{r Graphing by island proportional}
+island_size = read_csv("island_size.csv")
+hym_islandsum2 = merge(hym_islandsum, island_size, by="island", all.y=TRUE)
+hym_islandprop = hym_islandsum2 %>% group_by(island) %>% mutate(by_area = samples/island_size_85)
+
+hym_island_prop <- ggplot(data = hym_islandprop, aes(x = by_area, y = fct_rev(island), fill = source2)) + 
+  geom_bar(stat = "identity") +
+  labs(y ="Island", 
+       x = "Hymenoptera Data Points/Island Area (km^2)",
+       fill = "Data Source") +
+  theme_bw() + 
+  scale_x_continuous(limits =c(0,150), expand = c(0,0)) +
+  scale_fill_brewer(palette = "Dark2")
+
+hym_island_prop 
+
+ggsave(plot=hym_island_prop, filename="hymenoptera/HymenopteraGraphs/hym_island_prop2.png", height=5, width=8, units="in", dpi=300)
+```
+
+
+### Temporal Graph
+```{r Graphing by year}
+
+hymyear =  mastersyn %>% mutate(source2 = fct_relevel(source, "Cal-IBIS", "iNaturalist", "LACM", "Bohart"))
+
+hym_year = ggplot(hymyear, aes(x=year, fill=source2)) + 
+  geom_bar(width=0.75) + 
+  theme_bw() + 
+  scale_y_continuous(expand=c(0,0), limits = c(0, 3500)) + 
+  scale_x_continuous(expand=c(0,0), limits=c(1890, 2025), breaks=c(1900, 1915, 1930, 1945, 1960, 1975, 1990, 2005, 2020)) + 
+  labs(x="Year", y ="Number of Hymenoptera Data Points") +   scale_fill_brewer(palette = "Dark2")
+
+hym_year
+
+ggsave(plot=hym_year, filename="hymenoptera/HymenopteraGraphs/hym_year.png", height=5, width=9, units="in", dpi=300)
+
+```
+
+###Graphing the seasonal gaps in collections. 
+
+```{r Graphing by month}
+# by month and island 
+mastersyn$month <- as.factor(mastersyn$month)
+hym_month <- na.omit(subset(mastersyn, select = c(island, month)))
+hym_month <- hym_month[c(1:1371, 1373:16323),]
+
+hym_ismonth <- ggplot(hym_month, aes(x=month, fill=month)) + 
+  geom_bar() + 
+  theme_bw() + 
+  scale_y_continuous(expand=expansion(mult=c(0,0.05))) + 
+  labs(x="Hymenoptera Data Points per Island by Month", y ="Number of Hymenoptera Data Points") +  
+  facet_wrap(vars(island), nrow=2, scales="free_y")
+
+hym_ismonth 
+
+ggsave(plot=hym_ismonth, filename="hymenoptera/HymenopteraGraphs/hym_seasonal.png", height=5, width=9, units="in", dpi=300)
+```
+
+```{r Lep Literature Comparison}
+
+#USING X_" " for easy copy and paste through taxa (MAKE SURE EVERYTHING IS CORRECT)
+
+lit_new = read_csv("new_invert_literature_R3_syninprog_Final.csv")
+x_miller = read_csv("hymenoptera/lit_miller_hym_nosp.csv") %>%
+  select(acceptedFamily, acceptedGenus, acceptedName)
+x_lit_new = filter(lit_new, acceptedOrder=="Hymenoptera")  %>% 
+  select(acceptedFamily, acceptedGenus, acceptedName) 
+
+x_lit2 = rbind(x_miller, x_lit_new)
+
+#does this next line pull the correct order?
+x_master2 = mastersyn %>%
+  select(acceptedFamily, acceptedGenus, acceptedName) 
+
+x_all2 = rbind(x_master2, x_lit_new) %>%
+  distinct(across(contains("accepted")), .keep_all=TRUE)
+
+
+xtab_occ = table(x_master2$acceptedName)
+xtab_occ = as.data.frame.table(xtab_occ) %>%
+  rename(Occurence= "Freq",  acceptedName = "Var1") 
+
+xtab_lit = table(x_lit2$acceptedName)
+xtab_lit = as.data.frame.table(xtab_lit) %>%
+  rename(Literature= "Freq",  acceptedName = "Var1") 
+
+xtab_occ_gen = table(x_master2$acceptedGenus)
+xtab_occ_gen = as.data.frame.table(xtab_occ_gen) %>%
+  rename(OccurenceGen= "Freq",  acceptedGenus = "Var1") 
+
+xtab_lit_gen = table(x_lit2$acceptedGenus)
+xtab_lit_gen = as.data.frame.table(xtab_lit_gen) %>%
+  rename(LiteratureGen= "Freq",  acceptedGenus = "Var1") 
+
+xtab_occ_fam = table(x_master2$acceptedFamily)
+xtab_occ_fam = as.data.frame.table(xtab_occ_fam) %>%
+  rename(OccurenceFam= "Freq",  acceptedFamily = "Var1") 
+
+xtab_lit_fam = table(x_lit2$acceptedFamily)
+xtab_lit_fam = as.data.frame.table(xtab_lit_fam) %>%
+  rename(LiteratureFam= "Freq",  acceptedFamily = "Var1") 
+
+#species list table from occurence and literature, with numbers just to show what is added by lit
+x_table <- left_join(x_all2, xtab_occ)
+x_table2 <- left_join(x_table, xtab_lit)
+x_table3 <- left_join(x_table2, xtab_occ_gen, by="acceptedGenus")
+x_table4 <- left_join(x_table3, xtab_lit_gen, by="acceptedGenus")
+x_table5 <- left_join(x_table4, xtab_occ_fam, by="acceptedFamily")
+x_table6 <- left_join(x_table5, xtab_lit_fam, by="acceptedFamily")
+
+hym_lit_complete <-x_table6 %>%
+  rename(Species = "acceptedName", Family = "acceptedFamily", Genus = "acceptedGenus")
+
+write.csv(hym_lit_complete, "hymenoptera/HymenopteraGraphs/hym_lit_complete.csv", na="0")
+```
+
+
+
 #Fixing up Literature species synonymy
 This code is messy and not the most straight forward way to do this, but it shouldn't be run against accepted for making a master list. After this is done and synonymy is finished for the new literature records I can make a really nice synonymy .csv for all invertebrate that can be used for future work. 
 ```{r}

@@ -18,6 +18,7 @@ This is an R Markdown for the TNC Gap Analysis to complete the synonymy for Aves
 library(tidyverse)
 library(lubridate)
 library(stringr)
+library(readxl)
 ```
 
 #Orthoptera
@@ -26,7 +27,7 @@ orth_chis_messy = read_csv("orthoptera/orth_chis.csv") %>%
   rename(scientificName = "scientific")
 orth_lacm_messy = read_csv("orthoptera/orth_lamc.csv") 
   
-orth_inat_messy = read_csv("orthoptera/orth_inat.csv") %>%
+orth_inat_messy = read_csv("orthoptera/orth_inat_se[1.csv") %>%
   rename(scientificName = "scientific_name")
 
 new_invert_syn = read_csv("new_invert_literature_R3_syninprog_Final.csv")
@@ -61,7 +62,7 @@ write.csv(orth_syn_list, "Orthoptera/orth_syn_list_incomp.csv", na="")
 
 ## Orthoptera R2 Synonymy, DAK did synonymy that was needed from list printed above
 ```{r}
-orth_syn_list_complete = read_csv("Orthoptera/orth_syn_list_comp.csv")
+orth_syn_list_complete = read_excel("Orthoptera/orth_syn_list_comp.xlsx")
 
 #go through original zero synonymy ones
 orth_chis_messy = read_csv("orthoptera/orth_chis.csv") %>%
@@ -69,16 +70,14 @@ orth_chis_messy = read_csv("orthoptera/orth_chis.csv") %>%
 
 orth_lacm_messy = read_csv("orthoptera/orth_lamc.csv") 
 
-orth_inat_messy = read_csv("orthoptera/orth_inat.csv") %>%
+orth_inat_messy = read_csv("orthoptera/orth_inat_sep1.csv") %>%
   rename(scientificName = "scientific_name")
-write.csv(aves_syn_complete, "Aves/aves_syn_complete.csv", na="")
-
 
 orth_inat2 <- left_join(orth_inat_messy, orth_syn_list_complete)
 orth_chis2 <- left_join(orth_chis_messy, orth_syn_list_complete)
 orth_lacm2 <- left_join(orth_lacm_messy, orth_syn_list_complete)
 
-write.csv(orth_inat2, "Orthoptera/orth_inat2.csv", na="")
+write.csv(orth_inat2, "Orthoptera/orth_inat3.csv", na="")
 write.csv(orth_chis2, "Orthoptera/orth_chis2.csv", na="")
 write.csv(orth_lacm2, "Orthoptera/orth_lacm2.csv", na="")
 
