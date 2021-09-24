@@ -25,10 +25,11 @@ library(readxl)
 ```{r Data}
 orth_chis_messy = read_csv("orthoptera/orth_chis.csv") %>%
   rename(scientificName = "scientific")
+
 orth_lacm_messy = read_csv("orthoptera/orth_lamc.csv") 
   
-orth_inat_messy = read_csv("orthoptera/orth_inat_se[1.csv") %>%
-  rename(scientificName = "scientific_name")
+orth_inat_messy = read_csv("orthoptera/orth_inat_isdate_islandfix.csv") %>% 
+  rename(scientificName="scientific")
 
 new_invert_syn = read_csv("new_invert_literature_R3_syninprog_Final.csv")
 orth_syn = new_invert_syn %>%
@@ -70,8 +71,8 @@ orth_chis_messy = read_csv("orthoptera/orth_chis.csv") %>%
 
 orth_lacm_messy = read_csv("orthoptera/orth_lamc.csv") 
 
-orth_inat_messy = read_csv("orthoptera/orth_inat_sep1.csv") %>%
-  rename(scientificName = "scientific_name")
+orth_inat_messy = read_csv("orthoptera/orth_inat_isdate_islandfix.csv") %>% 
+  rename(scientificName="scientific")
 
 orth_inat2 <- left_join(orth_inat_messy, orth_syn_list_complete)
 orth_chis2 <- left_join(orth_chis_messy, orth_syn_list_complete)
@@ -80,6 +81,12 @@ orth_lacm2 <- left_join(orth_lacm_messy, orth_syn_list_complete)
 write.csv(orth_inat2, "Orthoptera/orth_inat3.csv", na="")
 write.csv(orth_chis2, "Orthoptera/orth_chis2.csv", na="")
 write.csv(orth_lacm2, "Orthoptera/orth_lacm2.csv", na="")
+
+miller_lit = read_csv("miller_lit.csv") 
+orth_lit_mess = filter(miller_lit, order=="Orthoptera")
+orth_lit <-left_join(orth_lit_mess, orth_syn_list_complete, by="scientificName")
+write.csv(orth_lit, "Orthoptera/orth_lit_miller.csv", na="")
+
 
 ```
 
