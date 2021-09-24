@@ -29,6 +29,39 @@ aves_sbmnh_col <- read_excel("aves/aves_sbmnh_col.xlsx")
 aves_ebird_erem <- read_csv("aves/aves_ebird_empid2.csv")
 ```
 
+```{r EBIRD!!!!!! ):<}
+aves_ebird_ana <- read_csv("aves/ebird/EBIRD_Anacapa.csv") %>%
+  select(island...1, gbifID, identifier, occurrenceID, catalogNumber, recordedBy, individualCount, year, month, day, stateProvince, county, locality, decimalLatitude, decimalLongitude, scientificName, kingdom, phylum, class, order, family, genus, specificEpithet, infraspecificEpithet, vernacularName)
+
+aves_ebird_scr <- read_csv("aves/ebird/EBIRD_SantaCruz.csv") %>%
+  select(island...1, gbifID, identifier, occurrenceID, catalogNumber, recordedBy, individualCount, year, month, day, stateProvince, county, locality, decimalLatitude, decimalLongitude, scientificName, kingdom, phylum, class, order, family, genus, specificEpithet, infraspecificEpithet, vernacularName)
+
+aves_ebird_sr <- read_csv("aves/ebird/EBIRD_SantaRosa.csv") %>%
+  select(island...1, gbifID, identifier, occurrenceID, catalogNumber, recordedBy, individualCount, year, month, day, stateProvince, county, locality, decimalLatitude, decimalLongitude, scientificName, kingdom, phylum, class, order, family, genus, specificEpithet, infraspecificEpithet, vernacularName)
+
+aves_ebird_sm <- read_csv("aves/ebird/EBIRD_SanMiguel.csv") %>%
+  select(island...1, gbifID, identifier, occurrenceID, catalogNumber, recordedBy, individualCount, year, month, day, stateProvince, county, locality, decimalLatitude, decimalLongitude, scientificName, kingdom, phylum, class, order, family, genus, specificEpithet, infraspecificEpithet, vernacularName)
+
+aves_ebird_sn <- read_csv("aves/ebird/EBIRD_SanNicolas.csv") %>%
+  select(island...1, gbifID, identifier, occurrenceID, catalogNumber, recordedBy, individualCount, year, month, day, stateProvince, county, locality, decimalLatitude, decimalLongitude, scientificName, kingdom, phylum, class, order, family, genus, specificEpithet, infraspecificEpithet, vernacularName)
+
+aves_ebird_sb <- read_csv("aves/ebird/EBIRD_SantaBarbara.csv") %>%
+  select(island...1, gbifID, identifier, occurrenceID, catalogNumber, recordedBy, individualCount, year, month, day, stateProvince, county, locality, decimalLatitude, decimalLongitude, scientificName, kingdom, phylum, class, order, family, genus, specificEpithet, infraspecificEpithet, vernacularName)
+
+aves_ebird_scl <- read_csv("aves/ebird/EBIRD_SanClemente.csv") %>%
+  select(island...1, gbifID, identifier, occurrenceID, catalogNumber, recordedBy, individualCount, year, month, day, stateProvince, county, locality, decimalLatitude, decimalLongitude, scientificName, kingdom, phylum, class, order, family, genus, specificEpithet, infraspecificEpithet, vernacularName)
+
+aves_ebird_sca <- read_csv("aves/ebird/EBIRD_SantaCatalina.csv") %>%
+  select(island...1, gbifID, identifier, occurrenceID, catalogNumber, recordedBy, individualCount, year, month, day, stateProvince, county, locality, decimalLatitude, decimalLongitude, scientificName, kingdom, phylum, class, order, family, genus, specificEpithet, infraspecificEpithet, vernacularName)
+
+aves_ebird_new = rbind(aves_ebird_ana, aves_ebird_scr, aves_ebird_sr, aves_ebird_sm, aves_ebird_sb, aves_ebird_sn, aves_ebird_sca, aves_ebird_scl) %>% 
+  rename(island="island...1", authorName = "scientificName") %>%
+  unite('scientificName', genus:specificEpithet, remove=FALSE, sep=" ")
+
+write_csv(aves_ebird_new, "aves/ave_ebird.new.csv")
+
+```
+
 #Aves Step 2. Combine datasets. Lat and Long included. 
 ```{r selecting and combining}
 #inat doesn't have order listed..would need to add 
