@@ -1,0 +1,80 @@
+"","Family","Genus","Species","Occurence","Literature","OccurenceGen","LiteratureGen","OccurenceFam","LiteratureFam"
+"1","Acrididae","Schistocerca","Schistocerca nitens",44,0,58,3,343,71
+"2","Acrididae","Melanoplus",0,0,0,57,6,343,71
+"3","Gryllidae",0,0,0,0,0,0,73,28
+"4","Tettigoniidae","Scudderia","Scudderia mexicana",7,3,18,6,35,13
+"5","Acrididae","Trimerotropis","Trimerotropis pseudofasciata",45,13,99,31,343,71
+"6","Tettigoniidae","Aglaothorax","Aglaothorax morsei santacruzae",7,0,9,5,35,13
+"7","Acrididae","Trimerotropis","Trimerotropis pallidipennis",39,5,99,31,343,71
+"8","Gryllidae","Gryllus",0,0,0,58,20,73,28
+"9","Stenopelmatidae","Ammopelmatus",0,0,0,37,0,40,11
+"10","Acrididae","Leprus","Leprus intermedius",22,8,22,8,343,71
+"11","Acrididae","Trimerotropis",0,0,0,99,31,343,71
+"12",0,0,0,0,0,0,0,0,0
+"13","Mogoplistidae","Hoplosphyrum","Hoplosphyrum boreale",4,2,4,2,4,2
+"14","Gryllidae","Gryllus","Gryllus lineaticeps",2,2,58,20,73,28
+"15","Acrididae","Camnula","Camnula pellucida",33,4,33,4,343,71
+"16","Tettigoniidae","Scudderia",0,0,0,18,6,35,13
+"17","Eumastacidae","Morsea","Morsea islandica",1,3,1,4,1,4
+"18","Acrididae","Chloealtis","Chloealtis gracilis",1,1,1,1,343,71
+"19","Acrididae","Schistocerca",0,0,0,58,3,343,71
+"20","Acrididae","Melanoplus","Melanoplus cinereus cyanipes",7,3,57,6,343,71
+"21","Rhaphidophoridae","Ceuthophilus",0,0,0,4,4,17,8
+"22","Acrididae",0,0,0,0,0,0,343,71
+"23","Acrididae","Trimerotropis","Trimerotropis santabarbara",8,4,99,31,343,71
+"24","Anostostomatidae","Cnemotettix","Cnemotettix caudulus",4,3,10,20,10,19
+"25","Rhaphidophoridae","Pristoceuthophilus",0,0,0,11,4,17,8
+"26","Acrididae","Oedaleonotus","Oedaleonotus phryneicus",4,0,4,2,343,71
+"27","Tettigoniidae",0,0,0,0,0,0,35,13
+"28","Rhaphidophoridae","Gammarotettix","Gammarotettix genitalis",2,1,2,1,17,8
+"29","Acrididae","Psoloessa","Psoloessa texana",4,1,4,1,343,71
+"30","Anostostomatidae","Cnemotettix","Cnemotettix pulvillifer",1,8,10,20,10,19
+"31","Tettigoniidae","Neduba","Neduba propsti",2,2,2,2,35,13
+"32","Gryllidae","Oecanthus",0,0,0,8,8,73,28
+"33","Tettigoniidae","Platylyra","Platylyra californica",1,1,1,1,35,13
+"34","Acrididae","Melanoplus","Melanoplus devastator",39,3,57,6,343,71
+"35","Acrididae","Conozoa","Conozoa nicola",7,3,7,8,343,71
+"36","Myrmecophilidae","Myrmecophilus",0,0,0,1,2,1,2
+"37","Acrididae","Trimerotropis","Trimerotropis fontana",2,8,99,31,343,71
+"38","Gryllidae","Oecanthus","Oecanthus argentinus",3,2,8,8,73,28
+"39","Anostostomatidae","Cnemotettix","Cnemotettix miniatus",2,3,10,20,10,19
+"40","Anostostomatidae","Cnemotettix",0,0,0,10,20,10,19
+"41","Tettigoniidae","Capnobotes","Capnobotes fuliginosus",1,0,1,0,35,13
+"42","Acrididae","Paropomala",0,0,0,1,0,343,71
+"43","Stenopelmatidae","Stenopelmatus",0,0,0,3,10,40,11
+"44","Stenopelmatidae","Ammopelmatus","Ammopelmatus longispina",1,0,37,0,40,11
+"45","Tetrigidae","Paratettix",0,0,0,31,4,31,4
+"46","Acrididae","Schistocerca","Schistocerca nitens nitens",9,3,58,3,343,71
+"47","Acrididae","Dissosteira","Dissosteira pictipennis",6,4,6,4,343,71
+"48","Acrididae","Microtes","Microtes occidentalis",13,1,13,1,343,71
+"49","Trigonidiidae","Eunemobius","Eunemobius carolinus",1,0,1,0,1,0
+"50","Gryllidae","Oecanthus","Oecanthus californicus",1,1,8,8,73,28
+"51","Tettigoniidae","Aglaothorax","Aglaothorax propsti",2,0,9,5,35,13
+"52","Tettigoniidae","Idiostatus","Idiostatus aequalis",1,0,1,0,35,13
+"53","Rhaphidophoridae","Ceuthophilus","Ceuthophilus californianus",3,4,4,4,17,8
+"54","Rhaphidophoridae","Pristoceuthophilus","Pristoceuthophilus marmoratus",4,2,11,4,17,8
+"55","Anostostomatidae","Cnemotettix","Cnemotettix spinulus",2,5,10,20,10,19
+"56","Stenopelmatidae","Ammopelmatus","Ammopelmatus fuscus",4,0,37,0,40,11
+"57","Diapheromeridae","Pseudosermyle","Pseudosermyle straminea",1,0,1,0,1,0
+"58","Acrididae","Nebulatettix<U+00A0>","Nebulatettix<U+00A0>robustus",0,1,0,1,343,71
+"59","Acrididae","Oedaleonotus","Oedaleonotus tenuipennis",0,2,4,2,343,71
+"60","Acrididae","Conozoa","Conozoa clementina",0,5,7,8,343,71
+"61","Acrididae","Trimerotropis","Timerotropis lauta",0,1,99,31,343,71
+"62","Eumastacidae","Morsea","Morsea catalinae",0,1,1,4,1,4
+"63","Rhaphidophoridae","Pristoceuthophilus","Pristoceuthophilus pacificus",0,2,11,4,17,8
+"64","Gryllidae","Gryllus","Gryllus assimilis",0,5,58,20,73,28
+"65","Gryllidae","Gryllus","Gryllus insularis",0,1,58,20,73,28
+"66","Gryllidae","Gryllus","Gryllus integer",0,2,58,20,73,28
+"67","Gryllidae","Gryllus","Gryllus pennsylvanicus",0,2,58,20,73,28
+"68","Gryllidae","Gryllus","Gryllus vocalis",0,1,58,20,73,28
+"69","Myrmecophilidae","Myrmecophilus","Myrmecophilus oregonensis",0,2,1,2,1,2
+"70","Gryllidae","Oecanthus","Oecanthus fultoni",0,1,8,8,73,28
+"71","Gryllidae","Oecanthus","Oecanthus rileyi",0,3,8,8,73,28
+"72","Mantidae","Litaneutria","Litaneutria minor",0,1,0,1,0,1
+"73","Tetrigidae","Paratettix","Paratettix aztecus",0,2,31,4,31,4
+"74","Tettigoniidae","Aglaothorax","Aglaothorax morsei islandica",0,2,9,5,35,13
+"75","Tettigoniidae","Aglaothorax","Aglaothorx morsei santacruzae",0,3,9,5,35,13
+"76","Phaneropteridae","Scudderia","Scudderia furcata",0,1,18,6,0,1
+"77","Tridactylidae","Ellipes","Ellipes minuta",0,2,0,2,0,2
+"78","Raphidophoridae","Pristoceuthophilus","Pristoceuthophilus marmoratus",4,2,11,4,0,1
+"79","Stenopelmatidae","Cnemotettix","Cnemotettix pulvillifer",1,8,10,20,40,11
