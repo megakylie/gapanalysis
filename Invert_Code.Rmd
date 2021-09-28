@@ -55,7 +55,7 @@ dip_nic_combine <- dip_nic %>%
 dip_master = rbind(dip_inat_combine, dip_chis_combine, dip_lacm_combine, dip_nic_combine) %>%
   # reorder the island names to show up N -> S on list
   mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente")) %>% add_column(phylum="Arthropoda", class="Insecta")
-write_csv(dip_master, "Kylie/master/dip_master.csv")
+write_csv(dip_master, "master/dip_master.csv")
 
 # bold doesn't have date info
 dip_bold_combine <-dip_bold %>%
@@ -544,7 +544,7 @@ chilo_master = rbind(chilo_inat_combine) %>%
   # reorder the island names to show up N -> S on list
   mutate(island = fct_relevel(island, "Santa Cruz", "Anacapa", "Santa Catalina", "San Nicolas", "San Clemente")) %>%
   rename(order = "acceptedOrder") %>% add_column(phylum= "Arthropoda", class="Chilopoda")
-write.csv(chilo_master, "Kylie/master/chilo_master.csv")
+write.csv(chilo_master, "master/chilo_master.csv")
 ```
 
 ###Chilo Step. 3 Make Graphs! 
@@ -923,7 +923,7 @@ bla_master = rbind(bla_inat_combine, bla_chis_combine) %>%
   # reorder the island names to show up N -> S on list
   mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente")) %>%
   rename(order = "acceptedOrder") %>% add_column(phylum = "Arthropoda", class="Insecta")
-write.csv(bla_master, "Kylie/master/bla_master.csv")
+write.csv(bla_master, "master/bla_master.csv")
 ```
 
 ###Bla Step. 3 Make Graphs! 
@@ -2208,10 +2208,10 @@ write.csv(master_master, "arachnida/master_master.csv", na="")
 #Hemiptera
 #### Hem Step1. Download Packages *above* and Import Data
 ```{r setup}
-hem_inat <- read_csv("hemiptera/hem_inat2.csv")
-hem_lacm <- read_csv("hemiptera/hem_lacm2.csv")
-hem_chis <- read_csv("hemiptera/hem_chis2.csv")
-hem_bold <- read_csv("hemiptera/hem_bold2.csv")
+hem_inat <- read_csv("hemiptera/hem_inat3.csv")
+hem_lacm <- read_csv("hemiptera/hem_lacm3.csv")
+hem_chis <- read_csv("hemiptera/hem_chis3.csv")
+hem_bold <- read_csv("hemiptera/hem_bold3.csv")
 ```
 
 
@@ -2226,8 +2226,8 @@ hem_chis_combine <- hem_chis %>%
   select(source, month, year, island, acceptedFamily, acceptedGenus, acceptedName, scientificName, latitude, longitude) %>% filter_all(any_vars(!is.na(.)))
 
 hem_lacm_combine <- hem_lacm %>%
-  select(source, month, year, island, acceptedFamily, acceptedGenus, acceptedName, scientificName) %>%
-  add_column(latitude = NA, longitude = NA)
+  select(month, year, island, acceptedFamily, acceptedGenus, acceptedName, scientificName) %>%
+  add_column(source="LACM", latitude = NA, longitude = NA)
 
 hem_bold_combine <- hem_bold %>%
   rename(latitude = "lat", longitude = "lon") %>%
@@ -2752,6 +2752,7 @@ write.csv(masterdata, "hym_master.csv")
 Updated master dataset with the synonymy. 
 ```{r synonymy dataset}
 mastersyn = read.csv("hymenoptera/hym_master_syn.csv")
+write_csv(mastersyn, "master/hym_master.csv")
 ```
 ## Adding the BOLD data to the mastersyn. 
 Mastersyn2 documnet has no temporal information
@@ -3112,24 +3113,30 @@ write.csv(orth_lit_complete, "orthoptera/OrthopteraGraphs/orth_lit_complete.csv"
 #
 #Fixing up Literature species synonymy
 This code is messy and not the most straight forward way to do this, but it shouldn't be run against accepted for making a master list. After this is done and synonymy is finished for the new literature records I can make a really nice synonymy .csv for all invertebrate that can be used for future work. 
-```{r}
+```{r MASTER MASTER!}
 
 #masterlists download if don't have already
-mol_master = read_csv("Kylie/master/mollusk_master.csv")
-chilo_master = read_csv("Kylie/master/chilo_master.csv")
-diplo_master = read_csv("Kylie/master/diplo_master.csv")
-bla_master = read_csv("Kylie/master/bla_master.csv")
-odo_master = read_csv("Kylie/master/odo_master.csv")
-phas_master = read_csv("Kylie/master/phas_master.csv")
-col_master = read_csv("Kylie/master/col_master.csv")
-lep_master = read_csv("Kylie/master/lep_master.csv")
-arac_master = read_csv("Kylie/master/arac_master.csv")
-hem_master = read_csv("Kylie/master/hem_master.csv")
-dip_master = read_csv("Kylie/master/dip_master.csv")
+mol_master = read_csv("master/mollusk_master.csv")
+chilo_master = read_csv("master/chilo_master.csv")
+diplo_master = read_csv("master/diplo_master.csv")
+bla_master = read_csv("master/bla_master.csv")
+odo_master = read_csv("master/odo_master.csv")
+phas_master = read_csv("master/phas_master.csv")
+col_master = read_csv("master/col_master.csv")
+lep_master = read_csv("master/lep_master.csv")
+arac_master = read_csv("master/arac_master.csv")
+hem_master = read_csv("master/hem_master.csv")
+dip_master = read_csv("master/dip_master.csv")
+derm_master = read_csv("master/derm_master.csv")
+orth_master = read_csv("master/orth_master.csv")
 hym_master = read_csv("hymenoptera/hym_master_syn.csv") %>% select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, scientificName) %>% add_column(latitude=NA, longitude=NA, phylum="Arthropoda", class="Insecta")
 
 #combined all the master lists
-master_inverts = rbind(mol_master, chilo_master, diplo_master, bla_master, odo_master, phas_master, col_master, lep_master, arac_master, dip_master,hym_master) 
+master_invert_1 = rbind(mol_master, chilo_master, diplo_master, bla_master, odo_master, phas_master, col_master, lep_master, arac_master, orth_master, derm_master, hem_master) %>% 
+   select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, scientificName, latitude, longitude, phylum, class)
+
+master_inverts = rbind(master_invert_1, dip_master, hym_master)
+write_csv(master_inverts, "master/master_inverts2.csv")
 
 master_invert_syn =master_inverts %>%
   rename(scientificName_accepted="scientificName") %>%
@@ -3140,12 +3147,14 @@ master_invert_syn =master_inverts %>%
 
 #Master synonymy list of distinct scientificName values
 master_invert_syn = master_inverts %>% distinct(scientificName, .keep_all=TRUE) %>% select(phylum, class, order, scientificName, acceptedFamily, acceptedGenus, acceptedName)
-write_csv(master_invert_syn, "Kylie/master/master_invert_syn.csv")
+write_csv(master_invert_syn, "master/master_invert_syn.csv")
+#SEEMS TO BE AN ISSUE WITH THE MOLLUSK OCCURENCE DATA NOT BEING SYNONYMIZED !!!
 
 #list of San Clemenete for Kristen
 invert_scl = filter(master_inverts, island=="San Clemente") %>% distinct(scientificName, .keep_all=TRUE) %>% select(island, phylum, class, order, acceptedFamily, acceptedGenus, acceptedName, scientificName)
-write_csv(invert_scl, "Kylie/master/invert_scl.csv")
-
+write_csv(invert_scl, "master/invert_scl.csv")
+```
+``` {r}
 
 #adding new lit list 
 new_invert_lit = read_csv("Island_invert_lit_new-2.csv")

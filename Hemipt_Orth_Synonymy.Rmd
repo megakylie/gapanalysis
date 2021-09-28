@@ -130,7 +130,7 @@ write.csv(hem_syn_tocheck, "hemiptera/hem_syn_tocheck.csv", na="")
 
 #Hemiptera R2 Synonymy
 ```{r Add Data}
-hem_syn_round2 = read_csv("hemiptera/hym_syn_round2.csv") %>%
+hem_syn_round2 = read_csv("hemiptera/hem_syn_round2_2.csv") %>%
   select(acceptedFamily, acceptedGenus, acceptedName, scientificName)
 hem_inat1 = read_csv("hemiptera/hem_inat.csv") %>%
   rename(scientificName ="scientific_name")
@@ -139,15 +139,15 @@ hem_bold1 = read_csv("hemiptera/hem_bold.csv")
 hem_lacm1 = read_csv("hemiptera/hem_lacm.csv") 
 
 hem_inat2 <- left_join(hem_inat1, hem_syn_round2)
-write.csv(hem_inat2, "hemiptera/hem_inat2.csv", na="")
+write.csv(hem_inat2, "hemiptera/hem_inat3.csv", na="")
 
 hem_chis2 <- left_join(hem_chis1, hem_syn_round2)
-write.csv(hem_chis2, "hemiptera/hem_chis2.csv", na="")
+write.csv(hem_chis2, "hemiptera/hem_chis3.csv", na="")
 
 hem_bold2 <- left_join(hem_bold1, hem_syn_round2)
-write.csv(hem_bold2, "hemiptera/hem_bold2.csv", na="")
+write.csv(hem_bold2, "hemiptera/hem_bold3.csv", na="")
 
 hem_lacm2 <- left_join(hem_lacm1, hem_syn_round2)
-write.csv(hem_lacm2, "hemiptera/hem_lacm2.csv", na="")
+write.csv(hem_lacm2, "hemiptera/hem_lacm3.csv", na="")
 
 ```

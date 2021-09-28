@@ -1,0 +1,66 @@
+---
+title: "Invert_Endemics"
+author: "Kylie Etter"
+date: "9/27/2021"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+This is a R Markdown to make graphs for the Channel Islands endemic invertebrates for the TNC Gap Analysis. The master occurence data files were made in "Invert_Code.Rmd" from the various sources per taxa and then saved to the project. I am using the masster master data file created for this code. To do:aran, C3,C4,C8
+C5
+C7
+C9
+dipt
+hemi
+bee
+wasp
+ant
+diplo
+L1
+L4
+butt&skip
+L6
+L7
+opil
+grass
+crick
+phas
+scor
+moll1moll2,moll3,moll4
+
+
+#Download data
+```{r Endemic List}
+invert_end <- read_csv("invert_endemic2.csv") %>% 
+  select(group_forR, source, acceptedClass, acceptedOrder, acceptedName, Endemic, Rare) %>%
+  rename(endemic_source = "source")
+```
+```{r Master Taxa Data}
+master_inverts <-read_csv("master/master_inverts2.csv")
+```
+
+#Join endemic data to master data
+```{r join data}
+invert_end_join = inner_join(master_inverts, invert_end, by="acceptedName")
+
+#Looking at what is on the endemic list but not in our data 
+invertdata = unique(c(as.character(invert_end_join$acceptedName)))
+invertend = unique(c(as.character(invert_end$acceptedName)))
+invertdiff = setdiff(invertend, invertdata)
+invertdiff = as.data.frame(invertdiff) %>% 
+  rename(acceptedName="invertdiff")
+invertdiff2 = left_join(invertdiff, invert_end)
+
+#81 not in our data....
+
+#updating synonymy for invert_end with synonymy list created from masters, and creating csv of result to go through unsyn and eliminate or write in synonymy that I will then use to update the synonymy list / confirm really not in our data
+master_invert_syn = read_Csv("master/master_invert_syn.csv")
+invert_end = invert_end %>% rename(scientificName = "acceptedName")
+invert_end_syn = left_join(invert_end, master_invert_syn)
+write_csv(invert_end_syn, "invert_end_syn.csv", na="")
+```
+
+#Arachnida 
+```{r Acari}
+arac_end_acari = filter(aves_end_join, group=="a")
