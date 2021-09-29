@@ -28,7 +28,7 @@ mam_inat <- read_csv("mammal/mam_inat.csv")
 
 mam_chis <- read_csv("mammal/mam_chis.csv")
 
-mam_polecat <- read_csv("mammal/mam_polecat.csv")
+
 
 ```
 
@@ -44,12 +44,9 @@ mam_chis_combine <- mam_chis %>%
   rename(latitude = "decimalLatitude", longitude = "decimalLongitude") %>%
   select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude)
 
-mam_polecat_combine <- mam_polecat %>%
-  rename(latitude = "decimalLatitude", longitude = "decimalLongitude") %>%
-  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude)
 
 
-mam_master = rbind(mam_inat_combine, mam_chis_combine, mam_polecat_combine) %>%
+mam_master = rbind(mam_inat_combine, mam_chis_combine) %>%
   # reorder the island names to show up N -> S on list
   mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente"))
 
@@ -153,7 +150,9 @@ ggsave(plot=mam_ismonth, filename="mammal/MammalGraphs/mam_seasonal.png", height
 ```{r Mammal Collection Type}
 mam_chis2 <- na.omit(subset(mam_chis, select = c(CollectionType, island, acceptedName))) 
                      
-mam_coll <- ggplot(mam_chis2, aes(x=CollectionType, fill=CollectionType)) + geom_bar() + theme_bw() + theme(legend.position = "none") + theme(axis.text.x = element_text(angle =90)) + labs(x="Collection Type", y="Number of Mammal Specimens")
+mam_coll <- ggplot(mam_chis2, aes(x=CollectionType, fill=CollectionType)) + geom_bar() + theme_bw() + theme(legend.position = "none") + theme(axis.text.x = element_text(angle =90)) + labs(x="Collection Type", y="Number of Mammal Specimens") + stat_count(geom = "text", aes(label = stat(count)))
+
+
 
 mam_coll
 ggsave(plot=mam_coll, filename="mammal/MammalGraphs/mam_type.png", height=5, width=8, units="in", dpi=300)
@@ -334,7 +333,7 @@ ggsave(plot=rep_ismonth, filename="reptile/ReptileGraphs/rep_seasonal.png", heig
 
 ```{r Reptile Collection Type}
 rep_coll <-na.omit(subset(rep_chis, select=c(island_2, year, collectionType, order_, acceptedFamily, acceptedGenus, acceptedName)))
-rep_collgraph <- ggplot(rep_coll, aes(x=collectionType, fill=collectionType)) + geom_bar() + theme_bw() + theme(legend.position = "none") + labs(x="Collection Type", y="Number of Reptile Specimens") + scale_y_continuous(expand=expansion(mult=c(0,0.05)))
+rep_collgraph <- ggplot(rep_coll, aes(x=collectionType, fill=collectionType)) + geom_bar() + theme_bw() + theme(legend.position = "none") + labs(x="Collection Type", y="Number of Reptile Specimens") + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + stat_count(geom = "text", aes(label = stat(count)))
 
 rep_collgraph
 ggsave(plot=rep_collgraph, filename="reptile/ReptileGraphs/rep_type.png", height=5, width=8, units="in", dpi=300)
@@ -493,11 +492,12 @@ ggsave(plot=amph_ismonth, filename="amphibian/AmphibianGraphs/amph_seasonal.png"
 
 ```
 
-```{r Reptile Collection Type}
+```{r Amph Collection Type}
 amph_coll <-na.omit(subset(amph_chis, select=c(collectionType, order_, acceptedGenus, acceptedName)))
-amph_collgraph <- ggplot(amph_coll, aes(x=collectionType, fill=collectionType)) + geom_bar() + theme_bw() + theme(legend.position = "none") + labs(x="Collection Type", y="Number of Amphibian Specimens") + scale_y_continuous(expand=expansion(mult=c(0,0.05)))
+amph_collgraph <- ggplot(amph_coll, aes(x=collectionType, fill=collectionType)) + geom_bar() + theme_bw() + theme(legend.position = "none") + labs(x="Collection Type", y="Number of Amphibian Specimens") + scale_y_continuous(expand=expansion(mult=c(0,0.05))) + stat_count(geom = "text", aes(label = stat(count)))
 
 amph_collgraph
+
 ggsave(plot=amph_collgraph, filename="amphibian/AmphibianGraphs/amph_type.png", height=5, width=8, units="in", dpi=300)
 ```
 
