@@ -333,7 +333,12 @@ mol_master = rbind(mol_inat_combine, mol_chis_combine) %>%
   mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente")) %>%
   rename(order= "acceptedOrder") %>% add_column(phylum = "Mollusca", class=NA)
 
+mol_master_synfix = mol_master %>% distinct(scientificName, .keep_all=TRUE)
+
 write.csv(mol_master, "master/mollusk_master.csv")
+
+mol_master_synfix = mol_master %>% distinct(scientificName, .keep_all=TRUE)
+write.csv(mol_master_synfix, "mollusks/mol_master_synfix.csv", na="")
 ```
 
 ###Mol Step. 3 Make Graphs! 

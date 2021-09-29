@@ -19,14 +19,22 @@ library(RColorBrewer)
 library(readxl)
 ```
 
+```{r Synonymy List }
+aves_master = read_csv("Aves/aves_master.csv")
+
+aves_master_syn = aves_master %>% distinct(scientificName, .keep_all=TRUE) %>% select(scientificName, acceptedFamily, acceptedGenus, acceptedName)
+write.csv(aves_master_syn, "Aves/aves_master_syn.csv", na="")
+```
+
+
 ```{r download datasets}
-#using inat3, ebird2, chis_onlyegg2, sbmnh_obs4, and sbmnh_col4.
+#using inat3, ebird_new2 chis_onlyegg2, sbmnh_obs4, and sbmnh_col4.
 aves_inat <- read_csv("aves/aves_inat4.csv")
-aves_ebird <- read_csv("aves/aves_ebird2.csv")
+aves_ebird <- read_csv("aves/aves_ebird_new2.csv")
 aves_chis <- read_csv("aves/aves_chis_onlyeggs2.csv")
 aves_sbmnh_obs <- read_csv("aves/aves_sbmnh_obs4.csv")
 aves_sbmnh_col <- read_excel("aves/aves_sbmnh_col.xlsx")
-aves_ebird_erem <- read_csv("aves/aves_ebird_empid2.csv")
+
 ```
 
 ```{r EBIRD!!!!!! ):<}
@@ -68,31 +76,28 @@ write_csv(aves_ebird_new, "aves/ave_ebird.new.csv")
 aves_inat_combine <- aves_inat %>%
   rename(class="iconic_tax", type="collectionType") %>%
   select(source, month, year, island, class,  acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, scientificName) %>%
-  add_column(family= NA, genus =NA)
+  add_column(family= NA, genus =NA, type2="Observation", type3="Observation")
 
 aves_chis_combine <- aves_chis %>%
   rename(latitude = "decimalLatitude", longitude="decimalLongitude", year="year_", month="month_", type="collectionType") %>%
-  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, family, genus, scientificName)
+  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, family, genus, scientificName) %>%
+  add_column(type2="Collection: Egg/Nest", type3="Collection")
 
 aves_sbmnh_obs_combine <- aves_sbmnh_obs %>%
   rename(latitude = "decimalLatitude", longitude="decimalLongitude", type="collectionType") %>%
-  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, family, genus, scientificName)
+  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, family, genus, scientificName) %>%
+  add_column(type2="Observation", type3="Observation")
 
 aves_sbmnh_col_combine <- aves_sbmnh_col %>%
   rename(latitude = "decimalLatitude", longitude="decimalLongitude", type="collectionType2") %>%
-  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, family, genus, scientificName)
+  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, family, genus, scientificName) %>%
+  add_column(type2="Collection: Specimen", type3="Collection")
 
-aves_ebird_orig <- aves_ebird %>%
-  rename(latitude = "decimalLatitude", longitude="decimalLongitude", year="year_", month="month_") %>%
+aves_ebird_combine <- aves_ebird %>%
+  rename(latitude = "decimalLatitude", longitude="decimalLongitude") %>%
   select(month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, family, genus, scientificName) %>%
-  add_column(source="EBIRD", type="Observation")
+  add_column(source="EBIRD", type="Observation", type2= NA, type3="Observation")
 
-aves_ebird_new <- aves_ebird_erem %>%
-  rename(latitude = "decimalLatitude", longitude="decimalLongitude", island="island...127", scientificName="scientificName...202") %>%
-  select(month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, family, genus, scientificName) %>%
-  add_column(source="EBIRD", type="Observation")
-aves_ebird_combine = rbind(aves_ebird_orig, aves_ebird_new)
-  
 aves_master_na = rbind(aves_inat_combine, aves_chis_combine, aves_sbmnh_obs_combine, aves_sbmnh_col_combine, aves_ebird_combine) %>%
   # reorder the island names to show up N -> S on list
   mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente")) %>%
@@ -103,6 +108,7 @@ aves_master <- filter(aves_master_na, rowSums(is.na(aves_master_na)) != ncol(ave
 
 
 ```{r}
+write_csv(aves_master, "Aves/aves_master.csv")
 aves_chis_combine_ord <- aves_chis %>%
   rename(latitude = "decimalLatitude", longitude="decimalLongitude", year="year_", month="month_", type="collectionType") %>%
   select(source, month, year, island, class, order, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, family, genus, scientificName)
@@ -115,23 +121,18 @@ aves_sbmnh_col_combine_ord <- aves_sbmnh_col %>%
   rename(latitude = "decimalLatitude", longitude="decimalLongitude", type="collectionType2") %>%
   select(source, month, year, island, class, order, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, family, genus, scientificName)
 
-aves_ebird_ord_orig <- aves_ebird %>%
-  rename(latitude = "decimalLatitude", longitude="decimalLongitude", year="year_", month="month_", type = "collection Type") %>%
-  select(month, year, island, class, order, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, family, genus, scientificName) %>%
-  add_column(source="EBIRD")
-
-aves_ebird_ord_new <- aves_ebird_erem %>%
-  rename(latitude = "decimalLatitude", longitude="decimalLongitude", island="island...127", scientificName="scientificName...202") %>%
+aves_ebird_combine_ord <- aves_ebird %>%
+  rename(latitude = "decimalLatitude", longitude="decimalLongitude") %>%
   select(month, year, island, class, order, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, family, genus, scientificName) %>%
   add_column(source="EBIRD", type="Observation")
-aves_ebird_combine_ord = rbind(aves_ebird_ord_orig, aves_ebird_ord_new)
+
   
 aves_master_na_ord = rbind( aves_chis_combine_ord, aves_sbmnh_obs_combine_ord, aves_sbmnh_col_combine_ord, aves_ebird_combine_ord) %>%
   # reorder the island names to show up N -> S on list
   mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente")) %>%
  mutate(source2 = fct_relevel(source, "Cal-IBIS (Egg Only)", "EBIRD", "SBMNH Collections", "SBMNH Observations"))
 #filter out all NA rows 
-aves_master <- filter(aves_master_na, rowSums(is.na(aves_master_na)) != ncol(aves_master_na)) # Apply 
+aves_master_na <- filter(aves_master_na, rowSums(is.na(aves_master_na)) != ncol(aves_master_na)) # Apply 
 ```
 
 #Aves Step. 3 Make Graphs! 
@@ -153,7 +154,7 @@ aves_island <- ggplot(data = aves_islandsum, aes(x = samples, y = fct_rev(island
        x = "Number of Bird Data Points",
        fill = "Data Source") +
   theme_bw() + 
-  scale_x_continuous(limits =c(0,126000), expand = c(0,0)) +
+  scale_x_continuous(limits =c(0,140000), expand = c(0,0), breaks=c(10000, 30000, 50000, 70000, 90000, 110000, 130000)) +
   scale_fill_brewer(palette = "Dark2")
 
 aves_island 
@@ -161,25 +162,25 @@ aves_island
 ggsave(plot=aves_island, filename="aves/AvesGraphs/aves_island.png", height=5, width=8, units="in", dpi=300)
 
 #by collection type
-aves_master$type = as.character(aves_master$type)
+aves_master$type3 = as.character(aves_master$type3)
 aves_islandsumty <- aves_master %>%
   mutate(no_sample = 1) %>%
-  group_by(island, type) %>%
+  group_by(island, type3, type) %>%
   summarise(samples = sum(no_sample)) %>%
 filter(!is.na(island)) 
-aves_islandsumty <- na.omit(subset(aves_islandsumty, select = c(island, samples, type)))
 
-aves_islandtype <- ggplot(data = aves_islandsumty, aes(x = samples, y = fct_rev(island), fill = type)) + 
+aves_islandsumty <- na.omit(subset(aves_islandsumty, select = c(island, samples, type3, type)))
+
+aves_islandtype <- ggplot(data = aves_islandsumty, aes(x = samples, y = fct_rev(island), fill=type)) + 
   geom_bar(stat = "identity") +
   labs(y ="Island", 
        x = "Number of Bird Data Points",
        fill = "Type") +
-  theme_bw() + 
-  scale_x_continuous(limits =c(0,126000), expand = c(0,0)) +
-  scale_fill_brewer(palette = "Paired")
+  theme_bw() + facet_wrap(vars(type3), nrow=1, scales="free") +
+  scale_fill_brewer(palette = "Paired") + scale_x_continuous(expand=expansion(mult=c(0,0.2)))
 
 aves_islandtype
-ggsave(plot=aves_islandtype, filename="aves/AvesGraphs/aves_island_type.png", height=5, width=8, units="in", dpi=300)
+ggsave(plot=aves_islandtype, filename="aves/AvesGraphs/aves_island_type.png", height=10, width=30, units="cm", dpi=300)
 
 
 ```
@@ -202,6 +203,7 @@ aves_island_prop
 
 ggsave(plot=aves_island_prop, filename="aves/AvesGraphs/aves_island_prop.png", height=5, width=8, units="in", dpi=300)
 
+#collection type
 aves_islandsumty2 = merge(aves_islandsumty, island_size, by="island", all.y=TRUE)
 aves_islandsumty_prop = aves_islandsumty2 %>% group_by(island) %>% mutate(by_area = samples/island_size_85)
 
@@ -210,12 +212,12 @@ aves_island_prop_type <- ggplot(data = aves_islandsumty_prop, aes(x = by_area, y
   labs(y ="Island", 
        x = "Number of Bird Data Points/Island Area (km^2)",
        fill = "Type") +
-  theme_bw() + 
-  scale_x_continuous(limits =c(0,10000), expand = c(0,0)) +
-  scale_fill_brewer(palette = "Paired" )
+  theme_bw() + facet_wrap(vars(type3), nrow=1, scales="free") +
+  scale_fill_brewer(palette = "Paired") + scale_x_continuous(expand=expansion(mult=c(0,0.2)))
+
 aves_island_prop_type
 
-ggsave(plot=aves_island_prop_type, filename="aves/AvesGraphs/aves_island_prop_type.png", height=5, width=8, units="in", dpi=300)
+ggsave(plot=aves_island_prop_type, filename="aves/AvesGraphs/aves_island_prop_type.png", height=10, width=30, units="cm", dpi=300)
 
 ```
 
@@ -246,18 +248,19 @@ aves_yeargraph2
 ggsave(plot=aves_yeargraph2, filename="aves/AvesGraphs/aves_year2.png", height=5, width=9, units="in", dpi=300)
 
 #collection type
-
-aves_yeargraph3 = ggplot(aves_year, aes(x=year, fill=source2)) + 
-  geom_bar() + 
-  theme_bw() +   facet_wrap(vars(type), nrow=3, scales="free") +
+dPalette <- c("#1B9E77", "#D95F02", "#E7298A", "#7FBC41")
+aves_year2 <- na.omit(subset(aves_master, select = c(island, year, source, type2))) %>%
+  mutate(source2 = fct_relevel(source, "Cal-IBIS (Egg Only)", "iNaturalist", "EBIRD", "SBMNH Collections", "SBMNH Observations"))
+aves_yeargraph3 = ggplot(aves_year2, aes(x=year, fill=source2)) + 
+  geom_bar(width=0.75) + 
+  theme_bw() +   facet_wrap(vars(type2), nrow=3, scales="free") +
   scale_y_continuous(expand=expansion(mult=c(0,0.02))) + 
   scale_x_continuous(expand=c(0,0), n.breaks=10) +
-  labs(x="Year", y="Number of Bird Data Points", fill="Data Source") + scale_fill_brewer(palette = "Dark2") 
-
+  labs(x="Year", y="Number of Bird Data Points", fill="Data Source") + scale_fill_manual(values=dPalette)
 
 aves_yeargraph3
 
-ggsave(plot=aves_yeargraph3, filename="aves/AvesGraphs/aves_year_coll.png", height=25, width=40, units="cm", dpi=300)
+ggsave(plot=aves_yeargraph3, filename="aves/AvesGraphs/aves_year_coll_noebird.png", height=25, width=40, units="cm", dpi=300)
 
 #collection type 2 
 
@@ -480,12 +483,12 @@ ggsave(plot=aves_b_island, filename="aves/AvesGraphs/aves_B_island.png", height=
 ```{r bird group C Hummingbird }
 #brewer.pal(5, name="Dark2") Color codes for the brewer colors, need 1, 2 and 4 for this one
 #[1] Cal-IBIS "#1B9E77" iNaturalist "#D95F02" "EBIRD #7570B3" SBMNH Col "#E7298A" SBMNH Obs "#7FBC41"
-cPalette <- c( "#D95F02", "#7570b3", "#E7298A", "#7FBC41")
+cPalette <- c("#E7298A", "#7FBC41")
 
-aves_end_c1 = filter(aves_master, acceptedName=="Selasphorus sasin")
-aves_end_c2 = filter(aves_master, acceptedName=="Selasphorus sasin sedentarius")
-aves_end_c = rbind(aves_end_c1, aves_end_c2)
-
+aves_end_c = filter(aves_master, acceptedName=="Selasphorus sasin sedentarius")
+aves_end_cc = filter(aves_end_c, type=="Collection: Specimen")
+aves_end_co = filter(aves_end_c, source=="SBMNH Observations")
+aves_end_c2 = rbind(aves_end_cc, aves_end_co)
 #temporal
 aves_c_year = ggplot(aves_end_c2, aes(x=year, fill=source2)) + 
   geom_bar(width=0.5, ) + 
@@ -749,7 +752,7 @@ ggsave(plot=aves_i_island, filename="aves/AvesGraphs/aves_I_island.png", height=
 #brewer.pal(5, name="Dark2") Color codes for the brewer colors, need 1, 2 and 4 for this one
 #Cal-IBIS "#1B9E77"            iNaturalist "#D95F02"            EBIRD #7570B3"
 #SBMNH Col "#E7298A"            SBMNH Obs "#7FBC41"
-jPalette <- c("#1B9E77", "#D95F02", "#E7298A", "#7FBC41")
+jPalette <- c("#D95F02", "#7570B3", "#E7298A", "#7FBC41")
 
 aves_end_j = filter(aves_end_join, group=="j")
 

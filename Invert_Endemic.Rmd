@@ -7,30 +7,58 @@ editor_options:
   chunk_output_type: console
 ---
 
-This is a R Markdown to make graphs for the Channel Islands endemic invertebrates for the TNC Gap Analysis. The master occurence data files were made in "Invert_Code.Rmd" from the various sources per taxa and then saved to the project. I am using the masster master data file created for this code. To do:aran, C3,C4,C8
-C5
-C7
-C9
-dipt
-hemi
-bee
-wasp
-ant
-diplo
-L1
-L4
-butt&skip
-L6
-L7
-opil
-grass
-crick
-phas
-scor
-moll1moll2,moll3,moll4
+This is a R Markdown to make graphs for the Channel Islands endemic invertebrates for the TNC Gap Analysis. The master occurrence data files were made in "Invert_Code.Rmd" from the various sources per taxa and then saved to the project. I am using the master master data file created for this code. To do:aran, C3,C4,C8,C5,C7,C9,dipt,hemi,bee,wasp,ant,diplo,L1,L4,butt&skip,L6,L7,opil,grass,crick,phas,scor,moll1,moll2,moll3,moll4
+
+Shifting gears not making this smaller tables for each endemic but will make a nice table for all of them documenting what islands they are known to be on and what we actually see in the data, totalling the number in the occurrence data and adding the last date collected.
+
+#Making a nice table 
+```{r Added the occurence counts to the list}
+invert_end_list = read_csv("endemics/invert_endemic_list1_clean.csv")
+
+invertcount_occ = table(invert_end_join$acceptedName)
+invertcount_occ = as.data.frame.table(invertcount_occ) %>%
+  rename(Occurence= "Freq",  acceptedName = "Var1")
+
+invert_end_list2 = left_join(invert_end_list, invertcount_occ)
+write_csv(invert_end_list2, "endemics/invert_endemic_list2.csv", na="")
+
+```
+
+```{r Occurence data islands adding to matrix}
+master_inverts <-read_csv("master/master_inverts2.csv")
+invert_end <-read_csv("endemics/invert_endemic_list2.csv")
+invert_end_cut <- invert_end %>%
+  select(acceptedName, commonName, Endemic)
+
+invert_end_join <- inner_join(master_inverts, invert_end, by="acceptedName") %>% 
+  select(source, island, year, acceptedName) 
+
+in_end_compress <- invert_end_join %>%
+  mutate(no_sample = 1) %>%
+  group_by(acceptedName, island) %>%
+  summarise(samples = sum(no_sample))
+
+library(data.table)
+in_end_matrix <- in_end_compress %>% spread(island, samples)
+
+in_end_year <- invert_end_join %>% group_by(acceptedName) %>% summarise(max_year=max(year, na.rm=TRUE))
+
+in_end_matyr = left_join(in_end_matrix, in_end_year) %>%
+  rename(year="max_year")
+
+in_end_table = left_join(in_end_matyr, invert_end_join)
+  
+in_end_table_distinct = distinct(in_end_table, acceptedName, .keep_all=TRUE)
+
+invert_end_complete = left_join(invert_end, in_end_table_distinct)
+
+write.csv(invert_end_complete, "endemics/invert_end_complete.csv", na="")
+
+```
 
 
-#Download data
+#First Pass Endemic..not using
+##Download data
 ```{r Endemic List}
 invert_end <- read_csv("invert_endemic2.csv") %>%
   rename(endemic_source = "source", islands="Island(s)")
@@ -39,7 +67,7 @@ invert_end <- read_csv("invert_endemic2.csv") %>%
 master_inverts <-read_csv("master/master_inverts2.csv")
 ```
 
-#Join endemic data to master data
+##Join endemic data to master data
 ```{r join data}
 invert_end_join = inner_join(master_inverts, invert_end, by="acceptedName")
 
@@ -60,25 +88,9 @@ invert_end_syn = left_join(invert_end, master_invert_syn)
 write_csv(invert_end_syn, "invert_end_syn.csv", na="")
 ```
 
-```{r}
-output <- matrix(data=invert_end$islands, nrow=151, ncol = 8, byrow = FALSE)
-island = as.data.frame(output)
-endemics =cbind(invert_end, island)
-write_csv(endemics, "endemics/invert_endemic_list1.csv", na="")
-```
-```{r}
-invert_end_list = read_csv("endemics/invert_endemic_list1_clean.csv")
 
 
-invertcount_occ = table(invert_end_join$acceptedName)
-invertcount_occ = as.data.frame.table(invertcount_occ) %>%
-  rename(Occurence= "Freq",  acceptedName = "Var1")
-
-invert_end_list2 = left_join(invert_end_list, invertcount_occ)
-write_csv(invert_end_list2, "endemics/invert_endemic_list2.csv", na="")
-```
-
-#Arachnida 
+##Arachnida 
 ```{r Acari}
 arac_end = filter(invert_end_join, group_forR=="aran")
 arac_islandsum <- arac_end %>%
@@ -104,7 +116,7 @@ arac_island
 ggsave(plot=arac_island, filename="endemics/InvertGraphs/arac_island.png", height=10, width=35, units="cm", dpi=300)
 ```
 
-#Coleoptera
+##Coleoptera
 ##C5
 ```{r}
 #brewer.pal(5, name="Dark2") Color codes for the brewer colors, need 1, 2 and 4 for this one
@@ -134,7 +146,7 @@ col5_island
 
 ggsave(plot=col5_island, filename="endemics/InvertGraphs/col5_island.png", height=20, width=35, units="cm", dpi=300)
 ```
-#C7
+##C7
 ```{r}
 #brewer.pal(5, name="Dark2") Color codes for the brewer colors, need 1, 2 and 4 for this one
 #Cal-IBIS "#1B9E77"            iNaturalist "#D95F02"            EBIRD #7570B3"

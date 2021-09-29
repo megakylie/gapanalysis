@@ -1,4 +1,9 @@
 ---
+title: "R Notebook"
+output: html_notebook
+---
+
+---
 title: "Aves Synonymy & Hemiptera Synonymy"
 output: html_notebook
 editor_options: 
@@ -81,64 +86,3 @@ write.csv(aves_sbmnh_col2, "Aves/aves_sbmnh_col2.csv", na="")
 #Issues when rare taxa list came up, some were synonymized up to species and there are subspecies on the list, fixed the inat and ebird synonymy here but because there were some unkwn changes done to the the sbmnh obs and col list I will do it separately in excel
 ```
 
-#Hemiptera R1 
-```{r Add Data}
-hem_syn = read_csv("hemiptera/hem_syn.csv")
-hem_inat_incomp = read_csv("hemiptera/hem_inat.csv") %>%
-  rename(scientificName ="scientific_name")
-hem_chis_incomp = read_csv("hemiptera/hem_chis.csv")
-hem_bold_incomp = read_csv("hemiptera/hem_bold.csv")
-hem_lacm_incomp = read_csv("hemiptera/hem_lacm.csv") 
-```
-
-## Hemiptera R1 Synonymy
-```{r}
-hem_inat1 <- left_join(hem_inat_incomp, hem_syn)
-write.csv(hem_inat1, "hemiptera/hem_inat1.csv", na="")
-
-hem_chis1 <- left_join(hem_chis_incomp, hem_syn)
-write.csv(hem_chis1, "hemiptera/hem_chis1.csv", na="")
-
-hem_bold1 <- left_join(hem_bold_incomp, hem_syn)
-write.csv(hem_bold1, "hemiptera/hem_bold1.csv", na="")
-
-hem_lacm1 <- left_join(hem_lacm_incomp, hem_syn)
-write.csv(hem_lacm1, "hemiptera/hem_lacm1.csv", na="")
-
-hem_inat_syn <- hem_inat1 %>%
-  select(scientificName, acceptedName, acceptedFamily, acceptedGenus)
-hem_chis_syn <- hem_chis1 %>%
-  select(scientificName, acceptedName, acceptedFamily, acceptedGenus)
-hem_bold_syn <- hem_bold1 %>%
-  select(scientificName, acceptedName, acceptedFamily, acceptedGenus)
-hem_lacm_syn <- hem_lacm1 %>%
-  select(scientificName, acceptedName, acceptedFamily, acceptedGenus)
-
-hem_syn_tocheck = rbind(hem_inat_syn, hem_chis_syn, hem_bold_syn, hem_lacm_syn)
-write.csv(hem_syn_tocheck, "hemiptera/hem_syn_tocheck.csv", na="")
-```
-
-#Hemiptera R2 Synonymy
-```{r Add Data}
-hem_syn_round2 = read_csv("hemiptera/hym_syn_round2.csv") %>%
-  select(acceptedFamily, acceptedGenus, acceptedName, scientificName)
-hem_inat1 = read_csv("hemiptera/hem_inat.csv") %>%
-  rename(scientificName ="scientific_name")
-hem_chis1 = read_csv("hemiptera/hem_chis.csv")
-hem_bold1 = read_csv("hemiptera/hem_bold.csv")
-hem_lacm1 = read_csv("hemiptera/hem_lacm.csv") 
-
-hem_inat2 <- left_join(hem_inat1, hem_syn_round2)
-write.csv(hem_inat2, "hemiptera/hem_inat2.csv", na="")
-
-hem_chis2 <- left_join(hem_chis1, hem_syn_round2)
-write.csv(hem_chis2, "hemiptera/hem_chis2.csv", na="")
-
-hem_bold2 <- left_join(hem_bold1, hem_syn_round2)
-write.csv(hem_bold2, "hemiptera/hem_bold2.csv", na="")
-
-hem_lacm2 <- left_join(hem_lacm1, hem_syn_round2)
-write.csv(hem_lacm2, "hemiptera/hem_lacm2.csv", na="")
-
-
-```
