@@ -386,18 +386,21 @@ amph_chis <- read_csv("amphibian/amph_chis.csv")
 #inat doesn't have order listed..would need to add 
 amph_inat_combine <- amph_inat %>%
   rename(class="iconic_tax") %>%
-  select(source, month, year, island, class, acceptedGenus, acceptedName, latitude, longitude)
+  select(source, month, year, island, class, acceptedGenus, acceptedName, latitude, longitude) %>%
+  add_column(type="Observation")
 
 amph_chis_combine <- amph_chis %>%
   rename(latitude = "decimalLatitude", longitude="decimalLongitude", month="month_", year="year_") %>%
   select( month, year, island...128, class, acceptedGenus, acceptedName, latitude, longitude) %>%
   rename(island = "island...128") %>%
-  add_column(source="Cal-IBIS")
+  add_column(source="Cal-IBIS", type="Collection")
 
 
 amph_master = rbind(amph_inat_combine, amph_chis_combine) %>%
   # reorder the island names to show up N -> S on list
   mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente"))
+
+write.csv(amph_master, "Amphibian/AmphibianGraphs/amph_master.csv")
 
 ```
 

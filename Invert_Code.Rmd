@@ -17,6 +17,7 @@ library(lubridate)
 library(ggplot2)
 library(dplyr)
 library(RColorBrewer)
+library(readxl)
 ```
 
 
@@ -49,8 +50,8 @@ dip_chis_combine <- dip_chis %>%
   select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, scientificName, latitude, longitude)
 
 dip_nic_combine <- dip_nic %>%
-  select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName) %>% 
-  add_column(scientificName =NA, latitude=NA, longitude=NA)
+  select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, Latitude, Longitude) %>% 
+  add_column(scientificName =NA) %>% rename(latitude="Latitude", longitude="Longitude")
 
 dip_master = rbind(dip_inat_combine, dip_chis_combine, dip_lacm_combine, dip_nic_combine) %>%
   # reorder the island names to show up N -> S on list
@@ -77,6 +78,10 @@ dip_inat_map <- dip_inat %>%
 
 #### Island Graph 
 ```{r Graphing by island}
+dip_islandsumx <- dip_master %>%
+  mutate(no_sample = 1) %>%
+  group_by(island) %>%
+  summarise(samples = sum(no_sample))
 
 dip_islandsum <- dip_master %>%
   mutate(no_sample = 1) %>%
@@ -121,10 +126,10 @@ ggsave(plot=dip_island_prop, filename="diptera/DipteraGraphs/dip_island_prop.png
 #### Temporal Graph
 ```{r Graphing by year}
 dip_year = ggplot(dip_master, aes(x=year, fill=source)) + 
-  geom_bar() + 
+  geom_bar(width=0.75) + 
   theme_bw() + 
   scale_y_continuous(expand=c(0,0), limits = c(0, 1000)) + 
-  scale_x_continuous(limits=c(1910, 2025)) + 
+  scale_x_continuous(limits=c(1910, 2022), breaks=c(1910, 1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020), expand=c(0,0)) + 
   labs(x="Year", y ="Number of Diptera Data Points") +   scale_fill_brewer(palette = "Dark2")
 
 dip_year
@@ -328,11 +333,13 @@ write.csv(mol_chis2, "mollusks/mol_chis2syn.csv", na="")
 ```{r selecting and combining}
 #inat doesn't have order listed..would need to add 
 mol_inat_combine <- mol_inat2 %>%
-  select(source, month, year, island, acceptedOrder, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, scientificName) 
+  select(source, month, year, island, acceptedOrder, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, scientificName) %>% 
+  add_column(source2="iNaturalist")
 
 mol_chis_combine <- mol_chis2 %>%
   rename(latitude = "decimalLat", longitude="decimalLon") %>%
-  select(source, month, year, island, acceptedOrder, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, scientificName) 
+  select(source, month, year, island, acceptedOrder, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, scientificName) %>%
+  add_column(source2="Cal-IBIS")
 
 
 
@@ -353,7 +360,7 @@ write.csv(mol_master_synfix, "mollusks/mol_master_synfix.csv", na="")
 
 #### Island Graph 
 ```{r Graphing by island}
-
+mol_inat3 = filter(mol_inat2, quality_grade=="research")
 mol_islandsum <- mol_master %>%
   mutate(no_sample = 1) %>%
   group_by(island, source) %>%
@@ -399,12 +406,12 @@ ggsave(plot=mol_island_prop, filename="mollusks/MolluskGraphs/mol_island_prop.pn
 There is no year information for about half of the Cal-IBIS records
 ```{r Graphing by year}
 
-mol_year = ggplot(mol_master, aes(x=year, fill=source)) + 
-  geom_bar() + 
+mol_year = ggplot(mol_master, aes(x=year, fill=source2)) + 
+  geom_bar(width=0.75) + 
   theme_bw() + 
-  scale_y_continuous(expand=c(0,0), limits = c(0, 400)) + 
-  scale_x_continuous(expand=c(0,0), limits=c(1790, 2025), breaks=c(1800, 1863, 1875, 1885, 1900, 1915, 1930, 1945, 1960, 1975, 1990, 2005, 2020)) + 
-  labs(x="Year", y ="Number of Mollusk Data Points") +   scale_fill_brewer(palette = "Dark2")
+  scale_y_continuous(expand=c(0,0), limits = c(0, 350)) + 
+  scale_x_continuous(expand=c(0,0), limits=c(1790, 2022), breaks=c(1800, 1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980,2000, 2020)) + 
+  labs(x="Year", y ="Number of Mollusk Data Points", fill="source") +   scale_fill_brewer(palette = "Dark2")
 
 mol_year
 
@@ -589,7 +596,9 @@ chilo_islandsum <- chilo_master %>%
   summarise(samples = sum(no_sample))
 ##FF6600
 island_size = read_csv("island_size.csv")
-chilo_islandsum2 = merge(chilo_islandsum, island_size, by="island", all.y=TRUE)
+chilo_islandsum2 = merge(chilo_islandsum, island_size, by="island", all.y=TRUE) %>%
+  # reorder the island names to show up N -> S on list
+  mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente"))
 
 chilo_island <- ggplot(data = chilo_islandsum2, aes(x = samples, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
@@ -609,7 +618,9 @@ ggsave(plot=chilo_island, filename="chilopoda/ChilopodaGraphs/chilo_island.png",
 ```{r Graphing by island proportional}
 island_size = read_csv("island_size.csv")
 chilo_islandsum2 = merge(chilo_islandsum, island_size, by="island", all.y=TRUE)
-chilo_islandprop = chilo_islandsum2 %>% group_by(island) %>% mutate(by_area = samples/island_size_85)
+chilo_islandprop = chilo_islandsum2 %>% group_by(island) %>% mutate(by_area = samples/island_size_85) %>%
+  # reorder the island names to show up N -> S on list
+  mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente"))
 
 chilo_island_prop <- ggplot(data = chilo_islandprop, aes(x = by_area, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
@@ -632,7 +643,7 @@ chilo_year = ggplot(chilo_master, aes(x=year, fill=source)) +
   geom_bar() + 
   theme_bw() + 
   scale_y_continuous(expand=c(0,0), limits = c(0, 30)) + 
-  scale_x_continuous(limits=c(2000, 2022),   breaks=c(2000, 2005, 2010, 2015, 2020)) + 
+  scale_x_continuous(limits=c(2000, 2022),   breaks=c(2000, 2005, 2010, 2015, 2020), expand=c(0,0)) + 
   labs(x="Year", y ="Number of Chilopoda Data Points") +  scale_fill_manual(values=c("#D95F02"))
 
 chilo_year
@@ -676,7 +687,7 @@ chilotab2
 ```
 
 ```{r Mollusk Literature Comparison}
-lit_new = read_csv("new_invert_literature_R3_syninprog_Final.csv")
+lit_new = read_csv("new_invert_literature_Final2.csv")
 chilo_miller = read_excel("chilopoda/chilo_miller.xlsx") %>%
   select(acceptedFamily, acceptedGenus, acceptedName)
 chilo_lit_new = filter(lit_new, order=="Chilopoda")  %>% 
@@ -773,10 +784,14 @@ diplo_master$source <- as.factor(diplo_master$source)
 diplo_islandsum <- diplo_master %>%
   mutate(no_sample = 1) %>%
   group_by(island, source) %>%
-  summarise(samples = sum(no_sample))
+  summarise(samples = sum(no_sample)) %>%
+  # reorder the island names to show up N -> S on list
+  mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente"))
 
 island_size = read_csv("island_size.csv")
-diplo_islandsum2 = merge(diplo_islandsum, island_size, by="island", all.y=TRUE)
+diplo_islandsum2 = merge(diplo_islandsum, island_size, by="island", all.y=TRUE) %>%
+  # reorder the island names to show up N -> S on list
+  mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente"))
 
 diplo_island <- ggplot(data = diplo_islandsum2, aes(x = samples, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
@@ -796,7 +811,9 @@ ggsave(plot=diplo_island, filename="diplopoda/DiplopodaGraphs/diplo_island.png",
 ```{r Graphing by island proportional}
 island_size = read_csv("island_size.csv")
 diplo_islandsum2 = merge(diplo_islandsum, island_size, by="island", all.y=TRUE)
-diplo_islandprop = diplo_islandsum2 %>% group_by(island) %>% mutate(by_area = samples/island_size_85)
+diplo_islandprop = diplo_islandsum2 %>% group_by(island) %>% mutate(by_area = samples/island_size_85) %>%
+  # reorder the island names to show up N -> S on list
+  mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente"))
 
 diplo_island_prop <- ggplot(data = diplo_islandprop, aes(x = by_area, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
@@ -819,7 +836,7 @@ diplo_year = ggplot(diplo_master, aes(x=year, fill=source)) +
   geom_bar(width=0.75) + 
   theme_bw() + 
   scale_y_continuous(expand=c(0,0), limits = c(0, 12)) + 
-  scale_x_continuous(limits=c(1925, 2025),   breaks=c(1925, 1935, 1945, 1955, 1965, 1975, 1985, 1995, 2005, 2015, 2025)) + 
+  scale_x_continuous(limits=c(1920, 2022),   breaks=c(1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020), expand=c(0,0)) + 
   labs(x="Year", y ="Number of Diplopoda Data Points") +   scale_fill_brewer(palette = "Dark2")
 
 diplo_year
@@ -969,7 +986,8 @@ bla_islandsum <- bla_master %>%
   summarise(samples = sum(no_sample))
 
 island_size = read_csv("island_size.csv")
-bla_islandsum2 = merge(bla_islandsum, island_size, by="island", all.y=TRUE)
+bla_islandsum2 = merge(bla_islandsum, island_size, by="island", all.y=TRUE) %>%
+   mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente"))
 
 bla_island <- ggplot(data = bla_islandsum2, aes(x = samples, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
@@ -989,7 +1007,8 @@ ggsave(plot=bla_island, filename="blattodea/BlattodeaGraphs/bla_island.png", hei
 ```{r Graphing by island proportional}
 island_size = read_csv("island_size.csv")
 bla_islandsum2 = merge(bla_islandsum, island_size, by="island", all.y=TRUE)
-bla_islandprop = bla_islandsum2 %>% group_by(island) %>% mutate(by_area = samples/island_size_85)
+bla_islandprop = bla_islandsum2 %>% group_by(island) %>% mutate(by_area = samples/island_size_85) %>%
+   mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente"))
 
 bla_island_prop <- ggplot(data = bla_islandprop, aes(x = by_area, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
@@ -997,7 +1016,7 @@ bla_island_prop <- ggplot(data = bla_islandprop, aes(x = by_area, y = fct_rev(is
        x = "Blattodea Data Points/Island Area (km^2)",
        fill = "Data Source") +
   theme_bw() + 
-  scale_x_continuous(limits =c(0,0.25), expand = c(0,0)) +
+  scale_x_continuous(limits =c(0,0.15), expand = c(0,0)) +
   scale_fill_brewer(palette = "Dark2")
 
 bla_island_prop 
@@ -1012,7 +1031,7 @@ bla_year = ggplot(bla_master, aes(x=year, fill=source)) +
   geom_bar() + 
   theme_bw() + 
   scale_y_continuous(expand=c(0,0), limits = c(0, 12)) + 
-  scale_x_continuous(limits=c(1928, 2025),   breaks=c(1930, 1977, 2020)) + 
+  scale_x_continuous(limits=c(1928, 2022),   breaks=c(1930, 1977, 2020), expand=c(0,0)) + 
   labs(x="Year", y ="Number of Blattodea Data Points") +   scale_fill_brewer(palette = "Dark2")
 
 bla_year
@@ -1188,15 +1207,15 @@ ggsave(plot=odo_island_prop, filename="odonata/OdonataGraphs/odo_island_prop.png
 #### Temporal Graph
 ```{r Graphing by year}
 odo_year = ggplot(odo_master, aes(x=year, fill=source)) + 
-  geom_bar() + 
+  geom_bar(width=0.75) + 
   theme_bw() + 
   scale_y_continuous(expand=c(0,0), limits = c(0, 50)) + 
-  scale_x_continuous(limits=c(1910, 2025),   breaks=c(1915, 1930, 1945, 1960, 1975, 1990, 2005, 2020)) + 
+  scale_x_continuous(limits=c(1910, 2022),   breaks=c(1915, 1930, 1945, 1960, 1975, 1990, 2005, 2020), expand=c(0,0)) + 
   labs(x="Year", y ="Number of Odonata Data Points") +   scale_fill_brewer(palette = "Dark2")
 
 odo_year
 
-ggsave(plot=odo_year, filename="odonata/OdonataGraphs/odo_year.png", height=5, width=9, units="in", dpi=300)
+ggsave(plot=odo_year, filename="odonata/odo_year.png", height=5, width=9, units="in", dpi=300)
 
 ```
 
@@ -1372,10 +1391,10 @@ ggsave(plot=phas_island_prop, filename="phasmida/PhasmidaGraphs/odo_island_prop.
 #### Temporal Graph
 ```{r Graphing by year}
 phas_year = ggplot(phas_master, aes(x=year, fill=source)) + 
-  geom_bar() + 
+  geom_bar(width=0.75) + 
   theme_bw() + 
-  scale_y_continuous(expand=c(0,0), limits = c(0, 5)) + 
-  scale_x_continuous(limits=c(1930, 2025),   breaks=c(1930, 1945, 1960, 1975, 1990, 2005, 2020)) + 
+  scale_y_continuous(expand=c(0,0), limits = c(0, 3)) + 
+  scale_x_continuous(limits=c(1930, 2022),   breaks=c(1930, 1945, 1960, 1975, 1990, 2005, 2020), expand=c(0,0)) + 
   labs(x="Year", y ="Number of Phasmida Data Points") +   scale_fill_brewer(palette = "Dark2")
 
 phas_year
@@ -1554,7 +1573,7 @@ col_year = ggplot(col_master, aes(x=year, fill=source)) +
   geom_bar() + 
   theme_bw() + 
   scale_y_continuous(expand=c(0,0), limits = c(0, 8000)) + 
-  scale_x_continuous(limits=c(1890, 2025), breaks=c(1890, 1900, 1910,  1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020)) + 
+  scale_x_continuous(limits=c(1890, 2022), breaks=c(1890, 1900, 1910,  1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020)) + 
   labs(x="Year", y ="Number of Coleoptera Data Points") +   scale_fill_brewer(palette = "Dark2")
 
 col_year
@@ -1563,10 +1582,10 @@ ggsave(plot=col_year, filename="coleoptera/ColeopteraGraphs/col_year.png", heigh
 
 #logging it bc such a heavy skew
 col_yeargraph2 = ggplot(col_master, aes(x=year, fill=source)) + 
-  geom_bar() + 
+  geom_bar(width=0.75) + 
   theme_bw() + 
   scale_y_continuous(trans='log10', expand=c(0,0)) + 
-  scale_x_continuous(expand=c(0,0), limits=c(1890, 2025), breaks=c(1890, 1900, 1910,  1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020)) + 
+  scale_x_continuous(expand=c(0,0), limits=c(1890, 2020), breaks=c(1890, 1900, 1910,  1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020)) + 
   labs(x="Year", y ="Log Transformed Number of Coleoptera Data Points") +   scale_fill_brewer(palette = "Dark2")
 
 col_yeargraph2
@@ -1749,6 +1768,11 @@ write.csv(lep_master, "master/lep_master.csv")
 
 #### Island Graph 
 ```{r Graphing by island}
+lep_islandsumx <- na.omit(subset(lep_master, select = c(island))) %>%
+  mutate(no_sample = 1) %>%
+  group_by(island) %>%
+  summarise(samples = sum(no_sample)) 
+
 lep_islandsum <- na.omit(subset(lep_master, select = c(island, source))) %>%
   mutate(no_sample = 1) %>%
   group_by(island, source) %>%
@@ -1868,7 +1892,7 @@ write.csv(lep_master, "lepidoptera/lep_master.csv", na="")
 
 #USING X_" " for easy copy and paste through taxa (MAKE SURE EVERYTHING IS CORRECT)
 
-lit_new = read_csv("new_invert_literature_R3_syninprog_Final.csv")
+lit_new = read_csv("new_invert_literature_Final2.csv")
 x_miller = read_csv("lepidoptera/lep_miller.csv") %>%
   select(acceptedFamily, acceptedGenus, acceptedName)
 x_lit_new = filter(lit_new, acceptedOrder=="Lepidoptera")  %>% 
@@ -2240,7 +2264,7 @@ write.csv(master_master, "arachnida/master_master.csv", na="")
 #Hemiptera
 #### Hem Step1. Download Packages *above* and Import Data
 ```{r setup}
-hem_inat <- read_csv("hemiptera/hem_inat3.csv")
+hem_inat <- read_csv("hemiptera/hem_inat4.csv")
 hem_lacm <- read_csv("hemiptera/hem_lacm3.csv")
 hem_chis <- read_csv("hemiptera/hem_chis3.csv")
 hem_bold <- read_csv("hemiptera/hem_bold3.csv")
@@ -2270,7 +2294,8 @@ hem_master = rbind(hem_inat_combine, hem_chis_combine, hem_bold_combine, hem_lac
   # reorder the island names to show up N -> S on list
   mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente")) %>%
   add_column(phylum="Arthropoda", class="Insecta", order="Hemiptera")
-
+hem_master2 = hem_master %>% 
+  mutate(source = fct_relevel(source, "Cal-IBIS", "iNaturalist", "LACM", "BOLD"))
 #some base R script to get rid of the silly 0 months, years and lat/long (done above to coord data)
 hem_master[hem_master == 0] <- NA
 
@@ -2282,7 +2307,7 @@ write.csv(hem_master, "master/hem_master.csv")
 #### Island Graph 
 ```{r Graphing by island}
 
-hem_islandsum <- na.omit(subset(hem_master, select = c(island, source))) %>%
+hem_islandsum <- na.omit(subset(hem_master2, select = c(island, source))) %>%
   mutate(no_sample = 1) %>%
   group_by(island, source) %>%
   summarise(samples = sum(no_sample)) 
@@ -2327,7 +2352,7 @@ ggsave(plot=hem_island_propgraph, filename="hemiptera/HemipteraGraphs/hem_island
 
 hem_year <- na.omit(subset(hem_master, select = c(island, year, month, source)))
 hem_yeargraph = ggplot(hem_year, aes(x=year, fill=source)) + 
-  geom_bar() + 
+  geom_bar(width=0.75) + 
   theme_bw() + 
   scale_y_continuous(expand=c(0,0), limits=c(0, 300)) + 
   scale_x_continuous(expand=c(0,0), limits=c(1908, 2022), breaks=c(1910,  1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020)) + 
@@ -2346,7 +2371,7 @@ hem_year$month2 <- as.factor(hem_year$month)
 hem_ismonth <- ggplot(hem_year, aes(x=month2, fill=month2)) + 
   geom_bar() + 
   theme_bw() + 
-  scale_y_continuous(expand=expansion(mult=c(0,0.05))) + 
+  scale_y_continuous(expand=expansion(mult=c(0,0.05)), breaks=function(x) unique(floor(pretty(seq(0, (max(x)+1 *1.1)))))) + 
   labs(x="Hemiptera Data Points per Island by Month", y ="Number of Hemiptera Data Points", fill="month") +  facet_wrap(vars(island), nrow=2, scales="free_y")
 
 hem_ismonth 
@@ -2770,6 +2795,7 @@ filter(!is.na(source))
 bohart_column <- bohart %>%
   select(source, month_arabic, day_arabic, year, island, order, family, genus, specificEp, scientificName)
 
+chis_hym_2012 = filter(chis, year==2012)
 ```
 
 ## Step 3. Make master dataset.
@@ -2785,6 +2811,8 @@ Updated master dataset with the synonymy.
 ```{r synonymy dataset}
 mastersyn = read.csv("hymenoptera/hym_master_syn.csv")
 write_csv(mastersyn, "master/hym_master.csv")
+
+hym_master = mastersyn %>%  mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente")) %>% add_column(phylum="Arthropoda", class="Insecta")
 ```
 ## Adding the BOLD data to the mastersyn. 
 Mastersyn2 documnet has no temporal information
@@ -2800,7 +2828,13 @@ mastersyn2 = rbind(mastersyn_column, bold_column)
 ##Hym Step. 3 Make Graphs! New Standardized code with edits 
 ### Island Graph 
 ```{r Graphing by island}
- hym_islandsum <- mastersyn %>%
+ hym_islandsumx <- hym_master %>%
+   mutate(no_sample = 1) %>%
+   group_by(island) %>%
+   summarise(samples = sum(no_sample)) %>%
+   filter(!is.na(island)) 
+
+ hym_islandsum <- hym_master %>%
    mutate(no_sample = 1) %>%
    group_by(island, source) %>%
    summarise(samples = sum(no_sample)) %>%
@@ -2808,7 +2842,7 @@ mastersyn2 = rbind(mastersyn_column, bold_column)
    ungroup() %>%
    mutate(source2 = fct_relevel(source, "Cal-IBIS", "iNaturalist", "LACM", "Bohart"))
 
-hym_islandsum = hym_islandsum[c(2:33),] 
+hym_islandsum = hym_islandsum[c(1:32),] 
 
 hym_island <- ggplot(data = hym_islandsum, aes(x = samples, y = fct_rev(island), fill = source2)) + 
   geom_bar(stat = "identity") +
@@ -2854,8 +2888,8 @@ hym_year = ggplot(hymyear, aes(x=year, fill=source2)) +
   geom_bar(width=0.75) + 
   theme_bw() + 
   scale_y_continuous(expand=c(0,0), limits = c(0, 3500)) + 
-  scale_x_continuous(expand=c(0,0), limits=c(1890, 2025), breaks=c(1900, 1915, 1930, 1945, 1960, 1975, 1990, 2005, 2020)) + 
-  labs(x="Year", y ="Number of Hymenoptera Data Points") +   scale_fill_brewer(palette = "Dark2")
+  scale_x_continuous(expand=c(0,0), limits=c(1890, 2022), breaks=c(1900, 1910, 1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020)) + 
+  labs(x="Year", y ="Number of Hymenoptera Data Points", fill="source") +   scale_fill_brewer(palette = "Dark2")
 
 hym_year
 
@@ -2883,7 +2917,7 @@ hym_ismonth
 ggsave(plot=hym_ismonth, filename="hymenoptera/HymenopteraGraphs/hym_seasonal.png", height=5, width=9, units="in", dpi=300)
 ```
 
-```{r Lep Literature Comparison}
+```{r Hym Literature Comparison}
 
 #USING X_" " for easy copy and paste through taxa (MAKE SURE EVERYTHING IS CORRECT)
 
@@ -2996,8 +3030,12 @@ ggsave(plot=derm_island, filename="dermaptera/DermapteraGraphs/derm_island.png",
 
 ```{r Graphing by island proportional}
 island_size = read_csv("island_size.csv")
-derm_islandsum2 = merge(derm_islandsum, island_size, by="island", all.y=TRUE)
-derm_islandprop = derm_islandsum2 %>% group_by(island) %>% mutate(by_area = samples/island_size_85)
+derm_islandsum2 = merge(derm_islandsum, island_size, by="island", all.y=TRUE) %>%
+  # reorder the island names to show up N -> S on list
+  mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente"))
+derm_islandprop = derm_islandsum2 %>% group_by(island) %>% mutate(by_area = samples/island_size_85) %>%
+  # reorder the island names to show up N -> S on list
+  mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente"))
 
 derm_island_propgraph <- ggplot(data = derm_islandprop, aes(x = by_area, y = fct_rev(island), fill = source)) + 
   geom_bar(stat = "identity") +
@@ -3148,7 +3186,8 @@ This code is messy and not the most straight forward way to do this, but it shou
 ```{r MASTER MASTER!}
 
 #masterlists download if don't have already
-mol_master = read_csv("master/mollusk_master.csv")
+mol_master = read_csv("master/mollusk_master.csv") %>% 
+  select(...1, source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, scientificName, latitude, longitude, phylum, class)
 chilo_master = read_csv("master/chilo_master.csv")
 diplo_master = read_csv("master/diplo_master.csv")
 bla_master = read_csv("master/bla_master.csv")

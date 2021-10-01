@@ -1,0 +1,22 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+
+master_invert_inat = filter(master_inverts, source=="iNaturalist")
+
+inat_order = table(master_invert_inat$order)
+inat_order = as.data.frame(inat_order)
+
+inat_class = table(master_invert_inat$class)
+inat_class = as.data.frame(inat_class)
+
+inat_iconic = rbind(inat_order, inat_class)
+write_csv(inat_iconic, "inat_taxa_table.csv")
+```

@@ -1,0 +1,527 @@
+---
+title: "R Notebook"
+output: html_notebook
+editor_options: 
+  chunk_output_type: console
+---
+
+This R Markdown is to make collection intensity heat maps for Invertebrates. The collections are separated out and heatmaps only include collected specimen (iNaturalist data is available in the maps). Figuring out the dates to remove is still an issue. 
+
+```{r}
+### --- Load Packages --- ###
+library(tidyverse)
+library(raster)
+library(sf)
+library(sp)
+library(rgdal)
+library(raster)
+library(rgeos)
+library(CoordinateCleaner)
+library(scrubr)
+library(scales)
+library(rasterVis)
+
+```
+
+#Coleoptera
+```{r import coleoptera}
+col_data2 <-read_csv("master/col_master.csv")
+col_data <- col_data2 %>% filter(source %in% c("Cal-IBIS", "LACM")) %>%
+  filter(year > 1939)
+```
+
+
+
+```{r Cleaning up coleoptera data}
+# create a dataframe of all complete cases of name, lat/long, island, and year
+
+all_data_coords <- col_data %>%
+  dplyr::filter(!is.na(latitude), !is.na(longitude))
+
+############### drop points with meaningless coords - this removes any specimens that have long/lats that are not in the vicinity of the islands
+
+########## Remove obvious georeferencing errors by hand- the 'identify' function allows you to click on a scatterplot (ie distribution map) to identify individual points. This is nice if you have a few coords out in the ocean. If you have a bunch, you'll probably want to do an intersection with island polygons, but I didn't have an island polygon file when I was doing this (the maps I used are line shapefiles, not polygons)
+
+## JL: will do this with the coord cleaner package 
+
+flags <- clean_coordinates(x = all_data_coords, lon = "longitude", lat = "latitude",
+                          species = "acceptedName",
+                          tests = c("capitals", "centroids", "equal","gbif", "institutions",
+                                     "zeros"))
+all_data_coords <- all_data_coords[flags$.summary,] 
+
+all_data_coords <- all_data_coords %>%
+  filter(longitude <= -118, longitude >= -120.5,
+         latitude <= 34.1, latitude >= 32.7)
+
+  
+plot(all_data_coords$longitude, all_data_coords$latitude, asp=1)
+
+# using Ben's modified code and a shapefile found online to isolate counties of interest, 
+# Albers projection is used in order to have grids in km^2
+
+
+counties <- readOGR("Heatmap_files", layer="cnty24k09_1_line")
+chis_counties <- counties[counties$NAME%in%c("Ventura", "Santa Barbara","Los Angeles","San Diego","Orange")]
+is.map <- crop(counties, extent(-1.5e+05,2.5e+05,-6e+05,-4e+05))
+
+plot(is.map, col="black")
+rm(counties)
+rm(chis_counties)
+
+####### Project Long + Lat Coords into Albers (Island maps are in Albers)
+P4S.latlon <- CRS("+proj=longlat +datum=WGS84")
+new_proj <- "+proj=aea +lat_1=34 +lat_2=40.5 +lat_0=0 +lon_0=-120 +x_0=0 +y_0=-4000000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
+
+sp <- SpatialPointsDataFrame(coords = cbind(as.numeric(all_data_coords$longitude),
+                                            as.numeric(all_data_coords$latitude)), 
+                             data = all_data_coords, proj4string = P4S.latlon)
+pointsX <- spTransform(sp, CRS(new_proj))
+
+
+# attach projected points to 'all_data'
+all_data_coords1 <- cbind(all_data_coords,pointsX@coords) %>%
+  mutate(Lat_alb = coords.x2,
+         Lon_alb = coords.x1)
+
+### --- Remove things in the middle of the ocean --- ###
+  
+# Import island polygons
+ibis <- st_read("Heatmap_files/Master_Islands.shp")
+
+chis_ibis <- ibis %>%
+  filter(ISL_NAME %in% c("Santa Rosa", "Santa Cruz", "San Miguel", "Anacapa", "San Clemente", "Santa Barbara", "Santa Catalina", "San Nicolas")) 
+
+chis_ibis <- st_transform(chis_ibis, crs = st_crs(new_proj))
+
+# Remove points waaaaaay off of the islands, josie-style
+all_data_coords2 <- st_as_sf(all_data_coords1, coords = c("coords.x1", "coords.x2"), crs = new_proj)
+
+all_data_coords3 <- st_join(all_data_coords2, chis_ibis, join = st_intersects) %>%
+  filter(!is.na(ISL_NAME))
+
+ggplot(chis_ibis) +
+  geom_sf(data = all_data_coords3, color = "red", size = 0.3) +
+  geom_sf(fill = alpha("black", 0.2)) 
+
+write_csv(all_data_coords3, "Coleoptera/col_all_data_coords_clean.csv")
+```
+
+```{r grid data download COLEOPTERA}
+################# Grid maps ############
+# Matrix indicating which cells from islandRaster correspond to which island
+island.cells <- read.csv("Heatmap_files/islandCells.csv")
+
+# binary raster of the islands and coastline
+isl.rast <- raster("Heatmap_files/islandRaster.asc")
+ 
+# Data
+occ <- read_csv("Coleoptera/col_all_data_coords_clean.csv") 
+
+# The xlim & ylim (in albers) for plotting each island
+plot.lims <- read.csv("Heatmap_files/islandPlotLimits.csv")
+
+```
+
+
+#Diptera
+```{r import diptera data }
+dip_data2 <-read_csv("master/dip_master.csv")
+dip_data = dip_data2 %>% filter(source %in% c("Cal-lBIS", "LACM"))
+
+```
+
+
+
+```{r Cleaning up coleoptera data}
+# create a dataframe of all complete cases of name, lat/long, island, and year
+all_data_coords <- dip_data %>%
+  dplyr::filter(!is.na(latitude), !is.na(longitude))
+
+############### drop points with meaningless coords - this removes any specimens that have long/lats that are not in the vicinity of the islands
+
+########## Remove obvious georeferencing errors by hand- the 'identify' function allows you to click on a scatterplot (ie distribution map) to identify individual points. This is nice if you have a few coords out in the ocean. If you have a bunch, you'll probably want to do an intersection with island polygons, but I didn't have an island polygon file when I was doing this (the maps I used are line shapefiles, not polygons)
+
+## JL: will do this with the coord cleaner package 
+
+flags <- clean_coordinates(x = all_data_coords, lon = "longitude", lat = "latitude",
+                          species = "acceptedName",
+                          tests = c("capitals", "centroids", "equal","gbif", "institutions",
+                                     "zeros"))
+all_data_coords <- all_data_coords[flags$.summary,] 
+
+all_data_coords <- all_data_coords %>%
+  filter(longitude <= -118, longitude >= -120.5,
+         latitude <= 34.1, latitude >= 32.7)
+
+  
+plot(all_data_coords$longitude, all_data_coords$latitude, asp=1)
+
+# using Ben's modified code and a shapefile found online to isolate counties of interest, 
+# Albers projection is used in order to have grids in km^2
+
+
+counties <- readOGR("Heatmap_files", layer="cnty24k09_1_line")
+chis_counties <- counties[counties$NAME%in%c("Ventura", "Santa Barbara","Los Angeles","San Diego","Orange")]
+is.map <- crop(counties, extent(-1.5e+05,2.5e+05,-6e+05,-4e+05))
+
+plot(is.map, col="black")
+rm(counties)
+rm(chis_counties)
+
+####### Project Long + Lat Coords into Albers (Island maps are in Albers)
+P4S.latlon <- CRS("+proj=longlat +datum=WGS84")
+new_proj <- "+proj=aea +lat_1=34 +lat_2=40.5 +lat_0=0 +lon_0=-120 +x_0=0 +y_0=-4000000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
+
+sp <- SpatialPointsDataFrame(coords = cbind(as.numeric(all_data_coords$longitude),
+                                            as.numeric(all_data_coords$latitude)), 
+                             data = all_data_coords, proj4string = P4S.latlon)
+pointsX <- spTransform(sp, CRS(new_proj))
+
+
+# attach projected points to 'all_data'
+all_data_coords1 <- cbind(all_data_coords,pointsX@coords) %>%
+  mutate(Lat_alb = coords.x2,
+         Lon_alb = coords.x1)
+
+### --- Remove things in the middle of the ocean --- ###
+  
+# Import island polygons
+ibis <- st_read("Heatmap_files/Master_Islands.shp")
+
+chis_ibis <- ibis %>%
+  filter(ISL_NAME %in% c("Santa Rosa", "Santa Cruz", "San Miguel", "Anacapa", "San Clemente", "Santa Barbara", "Santa Catalina", "San Nicolas")) 
+
+chis_ibis <- st_transform(chis_ibis, crs = st_crs(new_proj))
+
+# Remove points waaaaaay off of the islands, josie-style
+all_data_coords2 <- st_as_sf(all_data_coords1, coords = c("coords.x1", "coords.x2"), crs = new_proj)
+
+all_data_coords3 <- st_join(all_data_coords2, chis_ibis, join = st_intersects) %>%
+  filter(!is.na(island))
+
+ggplot(chis_ibis) +
+  geom_sf(data = all_data_coords3, color = "red", size = 0.3) +
+  geom_sf(fill = alpha("black", 0.2)) 
+
+write_csv(all_data_coords3, "Diptera/dip_all_data_coords_clean.csv")
+```
+
+```{r grid data download Diptera}
+################# Grid maps ############
+# Matrix indicating which cells from islandRaster correspond to which island
+island.cells <- read.csv("Heatmap_files/islandCells.csv")
+
+# binary raster of the islands and coastline
+isl.rast <- raster("Heatmap_files/islandRaster.asc")
+ 
+# Data
+occ <- read_csv("Diptera/dip_all_data_coords_clean.csv") 
+
+# The xlim & ylim (in albers) for plotting each island
+plot.lims <- read.csv("Heatmap_files/islandPlotLimits.csv")
+
+```
+
+
+
+#Hemiptera ##Didn't finish Hemiptera code because only 574 across the islands, going to be very poor maps 
+```{r import diptera data }
+
+lacm = read.csv("hymenoptera/hym_lacm_clean.csv")
+chis = read_csv("hymenoptera/hym_chis_clean.csv")
+bohart = read.csv("hymenoptera/hym_bohart_clean.csv")
+bold = read.csv("hymenoptera/BOLD_IslandHymenoptera_Feb2021.csv")
+
+
+
+chis_column <- chis %>%
+  select(source, month_arabic, day_arabic, year, island, order, family, genus, specificEp, scientificName, decimalLat, decimalLon) %>% rename(latitude="decimalLat", longitude="decimalLon")
+bohart_column <- bohart %>%
+  select(source, month_arabic, day_arabic, year, island, order, family, genus, specificEp, scientificName, Decimal.Latitude, Decimal.Longitude) %>%
+  rename(latitude="Decimal.Latitude", longitude="Decimal.Longitude")
+
+hym_coord_data=rbind(chis_column, bohart_column)
+
+
+write.csv(hym_coord_data, "hymenoptera/hym_coord_data.csv")
+
+```
+
+
+
+```{r Cleaning up coleoptera data}
+# create a dataframe of all complete cases of name, lat/long, island, and year
+all_data_coords <- hym_coord_data %>%
+  dplyr::filter(!is.na(latitude), !is.na(longitude)) %>%
+    filter(year >1939)
+
+############### drop points with meaningless coords - this removes any specimens that have long/lats that are not in the vicinity of the islands
+
+########## Remove obvious georeferencing errors by hand- the 'identify' function allows you to click on a scatterplot (ie distribution map) to identify individual points. This is nice if you have a few coords out in the ocean. If you have a bunch, you'll probably want to do an intersection with island polygons, but I didn't have an island polygon file when I was doing this (the maps I used are line shapefiles, not polygons)
+
+## JL: will do this with the coord cleaner package 
+
+flags <- clean_coordinates(x = all_data_coords, lon = "longitude", lat = "latitude", species="scientificName",
+                          tests = c("capitals", "centroids", "equal","gbif", "institutions",
+                                     "zeros"))
+all_data_coords <- all_data_coords[flags$.summary,] 
+
+all_data_coords <- all_data_coords %>%
+  filter(longitude <= -118, longitude >= -120.5,
+         latitude <= 34.1, latitude >= 32.7)
+
+  
+plot(all_data_coords$longitude, all_data_coords$latitude, asp=1)
+
+# using Ben's modified code and a shapefile found online to isolate counties of interest, 
+# Albers projection is used in order to have grids in km^2
+
+
+counties <- readOGR("Heatmap_files", layer="cnty24k09_1_line")
+chis_counties <- counties[counties$NAME%in%c("Ventura", "Santa Barbara","Los Angeles","San Diego","Orange")]
+is.map <- crop(counties, extent(-1.5e+05,2.5e+05,-6e+05,-4e+05))
+
+plot(is.map, col="black")
+rm(counties)
+rm(chis_counties)
+
+####### Project Long + Lat Coords into Albers (Island maps are in Albers)
+P4S.latlon <- CRS("+proj=longlat +datum=WGS84")
+new_proj <- "+proj=aea +lat_1=34 +lat_2=40.5 +lat_0=0 +lon_0=-120 +x_0=0 +y_0=-4000000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
+
+sp <- SpatialPointsDataFrame(coords = cbind(as.numeric(all_data_coords$longitude),
+                                            as.numeric(all_data_coords$latitude)), 
+                             data = all_data_coords, proj4string = P4S.latlon)
+pointsX <- spTransform(sp, CRS(new_proj))
+
+
+# attach projected points to 'all_data'
+all_data_coords1 <- cbind(all_data_coords,pointsX@coords) %>%
+  mutate(Lat_alb = coords.x2,
+         Lon_alb = coords.x1)
+
+### --- Remove things in the middle of the ocean --- ###
+  
+# Import island polygons
+ibis <- st_read("Heatmap_files/Master_Islands.shp")
+
+chis_ibis <- ibis %>%
+  filter(ISL_NAME %in% c("Santa Rosa", "Santa Cruz", "San Miguel", "Anacapa", "San Clemente", "Santa Barbara", "Santa Catalina", "San Nicolas")) 
+
+chis_ibis <- st_transform(chis_ibis, crs = st_crs(new_proj))
+
+# Remove points waaaaaay off of the islands, josie-style
+all_data_coords2 <- st_as_sf(all_data_coords1, coords = c("coords.x1", "coords.x2"), crs = new_proj)
+
+all_data_coords3 <- st_join(all_data_coords2, chis_ibis, join = st_intersects) %>%
+  filter(!is.na(island))
+
+ggplot(chis_ibis) +
+  geom_sf(data = all_data_coords3, color = "red", size = 0.3) +
+  geom_sf(fill = alpha("black", 0.2)) 
+
+write_csv(all_data_coords3, "Diptera/dip_all_data_coords_clean.csv")
+```
+
+```{r grid data download Diptera}
+################# Grid maps ############
+# Matrix indicating which cells from islandRaster correspond to which island
+island.cells <- read.csv("Heatmap_files/islandCells.csv")
+
+# binary raster of the islands and coastline
+isl.rast <- raster("Heatmap_files/islandRaster.asc")
+ 
+# Data
+occ <- read_csv("Diptera/dip_all_data_coords_clean.csv") 
+
+# The xlim & ylim (in albers) for plotting each island
+plot.lims <- read.csv("Heatmap_files/islandPlotLimits.csv")
+
+```
+
+
+
+#Making the graphs
+```{r grid making}
+# Lines for island edges
+counties <- readOGR("Heatmap_files", layer="cnty24k09_1_line")
+chis_counties <- counties[counties$NAME%in%c("Ventura", "Santa Barbara","Los Angeles","San Diego","Orange")]
+is.map <- crop(counties, extent(-1.5e+05,2.5e+05,-6e+05,-4e+05))
+
+
+isl.names <- c("Anacapa","Santa Cruz","Santa Rosa","San Miguel",
+"Santa Catalina","San Clemente","San Nicolas","Santa Barbara")
+
+### Analysis - Build Tables/Rasters
+# get cellIDs for each occurrence
+cellID <- cellFromXY(isl.rast, xy = cbind(occ$Lon_alb, occ$Lat_alb))
+occ <- cbind(occ,cellID); rm(cellID)
+length(unique(occ$cellID))
+
+# make a big grid
+w <- which(!is.na(isl.rast[]))
+taxa <- sort(unique(occ$order))
+taxGrid <- matrix(nrow=length(taxa),ncol=length(w))
+colnames(taxGrid) <- w
+rownames(taxGrid) <- taxa
+taxGrid[] <- 0
+
+for(i in 1:dim(taxGrid)[1]){
+	spCells <- occ$cellID[occ$order==taxa[i]]
+	for(j in 1:length(spCells)){
+		taxGrid[i,w %in% spCells[j]]<-taxGrid[i,w %in% spCells[j]]+1
+	}
+}
+
+# make a binary version (this is presence/abs of each sp in each cell rather than num of collections of each sp in each cell)
+binaryGrid <- taxGrid
+binaryGrid[binaryGrid>0] <- 1
+
+# make corresponding rasters
+rich.rast <- isl.rast
+rich.rast[rich.rast == 1] <- 0
+rich.rast[w] <- colSums(binaryGrid)
+coll.rast <- isl.rast
+coll.rast[coll.rast == 1] <- 0
+coll.rast[w] <- colSums(taxGrid)
+
+plot(rich.rast)
+plot(coll.rast)
+
+### Calculate % Empty and Redundancy for Islands ##
+
+k=1
+is.cel <- island.cells$isl.rastCell[island.cells$island == isl.names[k]]
+rich.cel <- rich.rast[is.cel]
+coll.cel <- coll.rast[is.cel]
+
+k=2
+is.cel<-island.cells$isl.rastCell[island.cells$island==isl.names[k]]
+rich.cel<-rich.rast[is.cel]
+coll.cel<-coll.rast[is.cel]
+
+k=3
+is.cel<-island.cells$isl.rastCell[island.cells$island==isl.names[k]]
+rich.cel<-rich.rast[is.cel]
+coll.cel<-coll.rast[is.cel]
+
+k=4
+is.cel<-island.cells$isl.rastCell[island.cells$island==isl.names[k]]
+rich.cel<-rich.rast[is.cel]
+coll.cel<-coll.rast[is.cel]
+
+k=5
+is.cel<-island.cells$isl.rastCell[island.cells$island==isl.names[k]]
+rich.cel<-rich.rast[is.cel]
+coll.cel<-coll.rast[is.cel]
+
+k=6
+is.cel<-island.cells$isl.rastCell[island.cells$island==isl.names[k]]
+rich.cel<-rich.rast[is.cel]
+coll.cel<-coll.rast[is.cel]
+
+k=7
+is.cel<-island.cells$isl.rastCell[island.cells$island==isl.names[k]]
+rich.cel<-rich.rast[is.cel]
+coll.cel<-coll.rast[is.cel]
+
+k=8
+is.cel<-island.cells$isl.rastCell[island.cells$island==isl.names[k]]
+rich.cel<-rich.rast[is.cel]
+coll.cel<-coll.rast[is.cel]
+
+
+coll.Summary<-matrix(nrow=8,ncol=9)
+
+# Red =  1-R/N
+rownames(coll.Summary) <- isl.names
+colnames(coll.Summary) <- c("totCells","totColls","totRich","Empty","perEmpty",
+                            "mnRich","mnColl","mnRedund","mnRedundwE")
+for(i in 1:8){
+	is.cel<-island.cells$isl.rastCell[island.cells$island==isl.names[i]]
+	rich.cel<-rich.rast[is.cel]
+	coll.cel<-coll.rast[is.cel]
+	coll.Summary[i,"totCells"] <- length(rich.cel)
+	coll.Summary[i,"totColls"] <- sum(coll.cel)
+	coll.Summary[i,"Empty"] <- length(which(rich.cel==0))
+	coll.Summary[i,"perEmpty"] <- round(length(which(rich.cel==0))/length(rich.cel),3)
+	coll.Summary[i,"mnRich"] <- mean(rich.cel[rich.cel!=0])
+	coll.Summary[i,"mnColl"] <- mean(coll.cel[rich.cel!=0])
+	coll.Summary[i,"totRich"] <- length(unique(occ$Sci_Name[occ$isl_name==isl.names[i]]))
+	coll.Summary[i,"mnRedund"] <- round(mean(1-(rich.cel[rich.cel!=0]/coll.cel[rich.cel!=0])),3)
+	coll.Summary[i,"mnRedundwE"] <- round(1/mean((coll.cel-rich.cel)),3)
+}
+
+sum_table <- as.data.frame(coll.Summary) %>%
+  rownames_to_column(var = "island") %>% 
+  rename("Island Collections" ="totColls", "1 km cells" ="totCells", "Empty 1 km cells" ="Empty", "Mean records/cell"="mnColl", "Mean redundancy" ="mnRedundwE", "% empty cells"="perEmpty") %>%
+  relocate("island", "Island Collections", "1 km cells", "Empty 1 km cells", "% empty cells", "Mean records/cell", "Mean redundancy" )
+```
+
+
+```{r}
+### choose your fighter..this is a really silly way to leave this for now...
+write.csv(sum_table, "diptera/dip_sum_table.csv", na="")
+write.csv(sum_table, "coleoptera/col_sum_table.csv", na="")
+```
+
+
+```{r}
+######### Make Grid-based maps ##################
+colorfunc <- colorRampPalette(c("gray90","red"))
+colRamp <- colorfunc(20)
+
+
+
+### Sampling intensity
+#anacapa
+i=1
+plot(coll.rast, col=colRamp, xlim=c(50000,61000), ylim=c(-450000,-440000),
+     xaxt = "n", yaxt = "n") +
+  plot(is.map, add=T) +
+  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="blue", pch=19) 
+#cruz
+i=2
+plot(coll.rast, col = colRamp, xlim=c(5000,46000), ylim=c(-460000,-420000),
+     xaxt = "n", yaxt = "n") +
+  plot(is.map, add=T) +
+  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="blue", pch=19) 
+#rosa
+i=3
+plot(coll.rast, col=colRamp, xlim=c(-25000,5000), ylim=c(-470000,-430000),
+     xaxt = "n", yaxt = "n") +
+  plot(is.map, add=T) +
+  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="blue", pch=19) 
+#miguel
+i=4
+plot(coll.rast, col=colRamp,xlim=c(-45000,-25000),ylim=c(-450000,-430000),
+     xaxt = "n", yaxt = "n") +
+  plot(is.map, add=T) +
+  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="blue", pch=19)  
+#catalina
+i=5
+plot(coll.rast, col=colRamp,xlim=c(125000,165000),ylim=c(-530000,-500000),
+     xaxt = "n", yaxt = "n") +
+  plot(is.map, add=T) +
+  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="blue", pch=19)  
+#clemente
+i=6
+plot(coll.rast, col=colRamp,xlim=c(125000,160000),ylim=c(-580000,-550000),
+     xaxt = "n", yaxt = "n") +
+  plot(is.map, add=T) +
+  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="blue", pch=19) 
+#nicolas
+i=7
+plot(coll.rast, col=colRamp,xlim=c(35000,58000),ylim=c(-540000,-520000),
+     xaxt = "n", yaxt = "n") +
+  plot(is.map, add=T) +
+  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="blue", pch=19) 
+#barbara
+i=8
+plot(coll.rast, col=colRamp,xlim=c(86000,94000),ylim=c(-508000,-500000),
+     xaxt = "n", yaxt = "n") +
+  plot(is.map, add=T) +
+  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="blue", pch=19)
+
+```
