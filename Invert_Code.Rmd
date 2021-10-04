@@ -3207,7 +3207,7 @@ master_invert_1 = rbind(mol_master, chilo_master, diplo_master, bla_master, odo_
    select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, scientificName, latitude, longitude, phylum, class)
 
 master_inverts = rbind(master_invert_1, dip_master, hym_master)
-write_csv(master_inverts, "master/master_inverts2.csv")
+write_csv(master_inverts, "master/master_inverts2.csv", na="")
 
 master_invert_syn =master_inverts %>%
   rename(scientificName_accepted="scientificName") %>%
@@ -3218,12 +3218,12 @@ master_invert_syn =master_inverts %>%
 
 #Master synonymy list of distinct scientificName values
 master_invert_syn = master_inverts %>% distinct(scientificName, .keep_all=TRUE) %>% select(phylum, class, order, scientificName, acceptedFamily, acceptedGenus, acceptedName)
-write_csv(master_invert_syn, "master/master_invert_syn.csv")
+write_csv(master_invert_syn, "master/master_invert_syn.csv", na="")
 #SEEMS TO BE AN ISSUE WITH THE MOLLUSK OCCURENCE DATA NOT BEING SYNONYMIZED !!!
 
 #list of San Clemenete for Kristen
 invert_scl = filter(master_inverts, island=="San Clemente") %>% distinct(scientificName, .keep_all=TRUE) %>% select(island, phylum, class, order, acceptedFamily, acceptedGenus, acceptedName, scientificName)
-write_csv(invert_scl, "master/invert_scl.csv")
+write_csv(invert_scl, "master/invert_scl.csv", na="")
 ```
 ``` {r}
 
