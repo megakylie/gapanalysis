@@ -1,5 +1,5 @@
 ---
-title: "Redownload_check"
+title: "Cleaning plants"
 author: "Josie Lesage"
 date: "8/16/2021"
 output: html_document
@@ -20,16 +20,19 @@ The goal of this file is to finish the data prep of a partially cleaned dataset 
 In step 1 of this process, we'll ensure that the locality information or spatial information from each island is encoded and remove any records with such poor info that that we can't assign an island. I started this process by passing the data through a ArcGIS map layer to spatially join the island names for points that were accurately GPS'd.
 
 ```{r}
-
+# import two files (bc one is too big)
 plants_raw_1 <- read_csv("Josie/Data/plants_raw_1.csv", col_types = cols(.default = "c", isl_name = "c")) 
 plants_raw_2 <- read_csv("Josie/Data/plants_raw_2.csv", col_types = cols(.default = "c", isl_name = "c")) 
 
+# smoosh together
 plants_raw <- full_join(plants_raw_1, plants_raw_2)
 
+# change locality data to lowercase
 plants_isl1 <- plants_raw %>%
   mutate(locality_low = str_to_lower(locality)) 
 
 plants_isl <- plants_isl1 %>%
+  # remove weird states/locations
   filter(stateProvince != "Missouri" | is.na(stateProvince),
          stateProvince != "Alaska" | is.na(stateProvince),
          stateProvince != "Michigan" | is.na(stateProvince),
@@ -44,6 +47,7 @@ plants_isl <- plants_isl1 %>%
          stateProvince != "Galapagos Islands" | is.na(stateProvince),
          stateProvince != "Provincia de Galapagos" | is.na(stateProvince),
          stateProvince != "Galapagos" | is.na(stateProvince)) %>%
+  # start adding real island names
   mutate(isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "san nicolas"), "San Nicolas", isl_name),
          isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "san nicholas"), "San Nicolas", isl_name),
          isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "nicholas"), "San Nicolas", isl_name),
@@ -75,9 +79,7 @@ plants_isl <- plants_isl1 %>%
   filter(isl_name == "San Nicolas" | isl_name == "Santa Catalina" | isl_name == "Santa Rosa" | isl_name == "Santa Barbara" | 
            isl_name == "Anacapa" | isl_name == "Santa Cruz" | isl_name == "San Clemente" | isl_name == "San Miguel") 
 
-remove(plants_raw_1)
-remove(plants_raw_2)
-remove(plants_isl1)
+remove(plants_raw_1, plants_raw_2, plants_isl1)
 ```
 
 
@@ -88,6 +90,7 @@ In step 2, we'll remove any obvious horticulture species from the dataset and fi
 plants_genus <- plants_isl %>%
   mutate(epithetfilter =  scientificName) %>%
   separate(epithetfilter, sep = " ", into = c("genus_filter", "epithet_filter"), extra = "merge") %>%
+  #remove anything that wasn't given an epithet
   filter(!is.na(epithet_filter)) %>%
   # fix poaceae - they need to chill tf out
   mutate(family = ifelse(family == "POACEAE", "Poaceae", family),
@@ -480,7 +483,7 @@ remove(SBA, SCA, SCL, SCR, SMI, SNI, SR, A)
 ```{r}
 all_clean <- full_join(plants_nonisl_clean, plants_byisl_join2_clean)
 
-plants_keep <- plants_nonisl_clean %>% 
+plants_keep <- all_clean %>% 
   mutate(Sci_Name = str_to_sentence(sciname_4)) %>%
   dplyr::select(kingdom_final, phylum_final, class_final, order_final, family_final, old_name, Sci_Name,
          eventDate, year, month, day, startDayOfYear, endDayOfYear, verbatimEventDate, associatedTaxa, 
@@ -490,7 +493,7 @@ plants_keep <- plants_nonisl_clean %>%
          scientificNameAuthorship, identifiedBy, dateIdentified, recordedBy, associatedCollectors) %>%
   filter(institutionCode != "iNaturalist")
 
-write_csv(plants_keep, "Josie/Data/DraftData_20210825.csv")
+write_csv(plants_keep, "Josie/Data/DraftData_20210921.csv")
 ```
 
 
