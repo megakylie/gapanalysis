@@ -314,29 +314,93 @@ library(RColorBrewer)
 ```
 
 ```{r download data}
+#downloading the inaturalist and cal-ibis data
 mol_inat <- read_csv("mollusks/mol_inat.csv") %>%
   rename(scientificName = "scientific_name", x= "acceptedFamily", y="acceptedGenus", z="acceptedName")
+mol_chis <- read_csv("mollusks/mol_chis_redo.csv") %>%
+  rename(scientificName = "scientific")
 
-mol_chis <- read_csv("mollusks/mol_chis2.csv") %>%
-  rename(scientificName = "scientific", x= "acceptedFamily", y="acceptedGenus", z="acceptedName")
+# mollusks synonymy 
+mol_syn <- read_csv("mollusks/mol_synlist.csv")
+mol_sea <- read_csv("mollusks/mol_sea.csv")
 
-mol_syn <- read_csv("mollusks/mol_syn3.csv")
+mol_chis2 = left_join(mol_chis, mol_syn, by=c("scientificName"))
+mol_inat2 = left_join(mol_inat, mol_syn, by=c("scientificName"))
 
-mol_inat2 <- left_join(mol_inat, mol_syn)
-mol_chis2 <- left_join(mol_chis, mol_syn)
-write.csv(mol_chis2, "mollusks/mol_chis2syn.csv", na="")
+#remove sea animals first 
+mol_remove <- paste(mol_sea, collapse="|")
+mol_remove
+   mol_chis3 <- mol_chis2 %>%  rename(acceptedName="acceptedName.y", acceptedGenus="acceptedGenus.y", acceptedFamily= "acceptedFamily.y") %>%
+        filter(acceptedFamily != "Anabathridae" | is.na(acceptedFamily),
+           acceptedFamily != "Areneidae" | is.na(acceptedFamily), 
+           acceptedFamily != "Borsoniidae" | is.na(acceptedFamily), 
+           acceptedFamily != "Cadlinidae" | is.na(acceptedFamily), 
+           acceptedFamily != "Clathurellidae" | is.na(acceptedFamily),
+           acceptedFamily != "Colloniidae" | is.na(acceptedFamily),
+           acceptedFamily != "Creseidae" | is.na(acceptedFamily),
+           acceptedFamily != "Dialidae" | is.na(acceptedFamily),
+           acceptedFamily != "Enteroctopodidae" | is.na(acceptedFamily),
+           acceptedFamily != "Eucyclidae" | is.na(acceptedFamily),
+           acceptedFamily != "Flabellinopsidae" | is.na(acceptedFamily),
+           acceptedFamily != "Lepidochitonidae" | is.na(acceptedFamily),
+           acceptedFamily != "Mangeliidae" | is.na(acceptedFamily),
+           acceptedFamily != "Margaritidae" | is.na(acceptedFamily),
+           acceptedFamily != "Mitromorphidae" | is.na(acceptedFamily),
+           acceptedFamily != "Newtoniellidae" | is.na(acceptedFamily),
+           acceptedFamily != "Pleurobranchaeidae" | is.na(acceptedFamily),
+           acceptedFamily != "Propeamussiidae" | is.na(acceptedFamily),
+           acceptedFamily != "Rhizoridae" | is.na(acceptedFamily),
+           acceptedFamily != "Solariellidae" | is.na(acceptedFamily),
+           acceptedFamily != "Tegulidae" | is.na(acceptedFamily),
+           acceptedFamily != "Tonicellidae" | is.na(acceptedFamily),
+           acceptedFamily != "Tornatinidae" | is.na(acceptedFamily),
+           acceptedFamily != "Xylophagaidae" | is.na(acceptedFamily),
+           acceptedFamily != "Zebinidae" | is.na(acceptedFamily),
+           acceptedFamily != "Solariellidae" | is.na(acceptedFamily),
+           acceptedFamily != "Solariellidae" | is.na(acceptedFamily))
 
+mol_inat3 <- mol_inat2  %>%
+        filter(acceptedFamily != "Anabathridae" | is.na(acceptedFamily),
+           acceptedFamily != "Areneidae" | is.na(acceptedFamily), 
+           acceptedFamily != "Borsoniidae" | is.na(acceptedFamily), 
+           acceptedFamily != "Cadlinidae" | is.na(acceptedFamily), 
+           acceptedFamily != "Clathurellidae" | is.na(acceptedFamily),
+           acceptedFamily != "Colloniidae" | is.na(acceptedFamily),
+           acceptedFamily != "Creseidae" | is.na(acceptedFamily),
+           acceptedFamily != "Dialidae" | is.na(acceptedFamily),
+           acceptedFamily != "Enteroctopodidae" | is.na(acceptedFamily),
+           acceptedFamily != "Eucyclidae" | is.na(acceptedFamily),
+           acceptedFamily != "Flabellinopsidae" | is.na(acceptedFamily),
+           acceptedFamily != "Lepidochitonidae" | is.na(acceptedFamily),
+           acceptedFamily != "Mangeliidae" | is.na(acceptedFamily),
+           acceptedFamily != "Margaritidae" | is.na(acceptedFamily),
+           acceptedFamily != "Mitromorphidae" | is.na(acceptedFamily),
+           acceptedFamily != "Newtoniellidae" | is.na(acceptedFamily),
+           acceptedFamily != "Pleurobranchaeidae" | is.na(acceptedFamily),
+           acceptedFamily != "Propeamussiidae" | is.na(acceptedFamily),
+           acceptedFamily != "Rhizoridae" | is.na(acceptedFamily),
+           acceptedFamily != "Solariellidae" | is.na(acceptedFamily),
+           acceptedFamily != "Tegulidae" | is.na(acceptedFamily),
+           acceptedFamily != "Tonicellidae" | is.na(acceptedFamily),
+           acceptedFamily != "Tornatinidae" | is.na(acceptedFamily),
+           acceptedFamily != "Xylophagaidae" | is.na(acceptedFamily),
+           acceptedFamily != "Zebinidae" | is.na(acceptedFamily),
+           acceptedFamily != "Solariellidae" | is.na(acceptedFamily),
+           acceptedFamily != "Solariellidae" | is.na(acceptedFamily))
+
+write_csv(mol_chis3, "mollusks/mol_chis3.csv")            
+write_csv(mol_inat3, "mollusks/mol_inat3.csv")  
 ```
 
 
 ###Mol Step 2. Combine datasets 
 ```{r selecting and combining}
 #inat doesn't have order listed..would need to add 
-mol_inat_combine <- mol_inat2 %>%
-  select(source, month, year, island, acceptedOrder, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, scientificName) %>% 
+mol_inat_combine <- mol_inat3 %>%
+  select(source, month, year, island, acceptedOrder, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, scientificName, quality_grade) %>% 
   add_column(source2="iNaturalist")
 
-mol_chis_combine <- mol_chis2 %>%
+mol_chis_combine <- mol_chis3 %>%
   rename(latitude = "decimalLat", longitude="decimalLon") %>%
   select(source, month, year, island, acceptedOrder, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, scientificName) %>%
   add_column(source2="Cal-IBIS")
@@ -346,13 +410,16 @@ mol_chis_combine <- mol_chis2 %>%
 mol_master = rbind(mol_inat_combine, mol_chis_combine) %>%
   # reorder the island names to show up N -> S on list
   mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente")) %>%
-  rename(order= "acceptedOrder") %>% add_column(phylum = "Mollusca", class=NA)
+  rename(order= "acceptedOrder") %>% add_column(phylum = "Mollusca", class=NA) %>%
+  filter(island != "Cedros" | is.na(island),
+       island != "Coronados" | is.na(island),
+       island != "Guadalupe" | is.na(island),
+       island != "Todos Santos" | is.na(island))
+
 
 mol_master_synfix = mol_master %>% distinct(scientificName, .keep_all=TRUE)
 
 write.csv(mol_master, "master/mollusk_master.csv")
-
-mol_master_synfix = mol_master %>% distinct(scientificName, .keep_all=TRUE)
 write.csv(mol_master_synfix, "mollusks/mol_master_synfix.csv", na="")
 ```
 
@@ -363,17 +430,17 @@ write.csv(mol_master_synfix, "mollusks/mol_master_synfix.csv", na="")
 mol_inat3 = filter(mol_inat2, quality_grade=="research")
 mol_islandsum <- mol_master %>%
   mutate(no_sample = 1) %>%
-  group_by(island, source) %>%
+  group_by(island, source2) %>%
   summarise(samples = sum(no_sample))
-mol_islandsum <- na.omit(subset(mol_islandsum, select = c(island, samples, source)))
+mol_islandsum <- na.omit(subset(mol_islandsum, select = c(island, samples, source2)))
 
-mol_island <- ggplot(data = mol_islandsum, aes(x = samples, y = fct_rev(island), fill = source)) + 
+mol_island <- ggplot(data = mol_islandsum, aes(x = samples, y = fct_rev(island), fill = source2)) + 
   geom_bar(stat = "identity") +
   labs(y ="Island", 
        x = "Number of Mollusk Data Points",
        fill = "Data Source") +
   theme_bw() + 
-  scale_x_continuous(limits =c(0,900), expand = c(0,0)) +
+  scale_x_continuous(limits =c(0,800), expand = c(0,0)) +
   scale_fill_brewer(palette = "Dark2")
 
 mol_island 
@@ -387,13 +454,13 @@ island_size = read_csv("island_size.csv")
 mol_islandsum2 = merge(mol_islandsum, island_size, by="island", all.y=TRUE)
 mol_islandprop = mol_islandsum2 %>% group_by(island) %>% mutate(by_area = samples/island_size_85)
 
-mol_island_prop <- ggplot(data = mol_islandprop, aes(x = by_area, y = fct_rev(island), fill = source)) + 
+mol_island_prop <- ggplot(data = mol_islandprop, aes(x = by_area, y = fct_rev(island), fill = source2)) + 
   geom_bar(stat = "identity") +
   labs(y ="Island", 
        x = "Mollusk Data Points/Island Area (km^2)",
        fill = "Data Source") +
   theme_bw() + 
-  scale_x_continuous(limits =c(0,65), expand = c(0,0)) +
+  scale_x_continuous(limits =c(0,60), expand = c(0,0)) +
   scale_fill_brewer(palette = "Dark2")
 
 mol_island_prop 
@@ -409,7 +476,7 @@ There is no year information for about half of the Cal-IBIS records
 mol_year = ggplot(mol_master, aes(x=year, fill=source2)) + 
   geom_bar(width=0.75) + 
   theme_bw() + 
-  scale_y_continuous(expand=c(0,0), limits = c(0, 350)) + 
+  scale_y_continuous(expand=c(0,0), limits = c(0, 300)) + 
   scale_x_continuous(expand=c(0,0), limits=c(1790, 2022), breaks=c(1800, 1820, 1840, 1860, 1880, 1900, 1920, 1940, 1960, 1980,2000, 2020)) + 
   labs(x="Year", y ="Number of Mollusk Data Points", fill="source") +   scale_fill_brewer(palette = "Dark2")
 
@@ -429,10 +496,9 @@ mol_month <- na.omit(subset(mol_master, select = c(island, month)))
 
 mol_ismonth <- ggplot(mol_month, aes(x=month, fill=month)) + 
   geom_bar() + 
-  theme_bw() + 
-  scale_y_continuous(expand=expansion(mult=c(0,0.05))) + 
+  theme_bw()  + scale_y_continuous(expand=expansion(mult=c(0,0.05)), breaks=function(x) unique(floor(pretty(seq(0, (max(x)+1 *1.1)))))) +
   labs(x="Mollusk Data Points per Island by Month", y ="Number of Mollusk Data Points") +  
-  facet_wrap(vars(island), nrow=2, scales="free_y")
+  facet_wrap(vars(island), nrow=2, scales="free_y") 
 
 mol_ismonth 
 
@@ -445,12 +511,12 @@ ggsave(plot=mol_ismonth, filename="mollusks/MolluskGraphs/mol_seasonal.png", hei
 moltab= table(mol_master$acceptedFamily)
 moltab = as.data.frame.table(moltab)
 
-moltab_inat = table(mol_inat2$acceptedFamily)
+moltab_inat = table(mol_inat3$acceptedFamily)
 moltab_inat = as.data.frame.table(moltab_inat)
 moltab_inat <- moltab_inat %>%
   rename(iNaturalist = "Freq") 
 
-moltab_chis = table(mol_chis2$acceptedFamily)
+moltab_chis = table(mol_chis3$acceptedFamily)
 moltab_chis = as.data.frame.table(moltab_chis)
 moltab_chis <- moltab_chis %>%
   rename(CalIBIS = "Freq") 
@@ -465,7 +531,7 @@ mol_table_complete <-mol_table2 %>%
 
 mol_table_complete2 <- mol_table_complete %>%
   relocate("Family", "CalIBIS", "iNaturalist", "Sum") %>%
-  mutate(Percentage = (Sum/1904))
+  mutate(Percentage = (Sum/1528))
 
 
 write.csv(mol_table_complete2, "mollusks/MolluskGraphs/mol_table_complete.csv", na="0")
@@ -528,30 +594,9 @@ mol_table6 <- left_join(mol_table5, moltab_lit_fam, by="acceptedFamily")
 mol_lit_complete <-mol_table6 %>%
   rename(Species = "acceptedName", Family = "acceptedFamily", Genus = "acceptedGenus")
 
-write.csv(mol_lit_complete, "mollusks/MollusksGraphs/mol_lit_complete.csv", na="")
+write.csv(mol_lit_complete, "mollusks/MolluskGraphs/mol_lit_complete.csv", na="")
 
 
-#DIDNT DO
-col_complete_family = col_lit_complete %>%
-  distinct(Family, .keep_all=TRUE) %>% 
-  select(Family, OccurenceFam, LiteratureFam) %>%
-  rename(Occurence="OccurenceFam", Literature="LiteratureFam") 
-
-col_complete_gen = col_lit_complete %>%
-  distinct(Genus, .keep_all=TRUE) %>% 
-  select(Genus, OccurenceGen, LiteratureGen) %>%
-  rename(Occurence="OccurenceGen", Literature="LiteratureGen")
-
-col_complete_sp = col_lit_complete %>%
-  distinct(Species, .keep_all=TRUE) %>% 
-  select(Species, Occurence, Literature) 
-
-write.csv(col_complete_sp, "coleoptera/ColeopteraGraphs/col_table_sp.csv", na="")
-
-dipocc = unique(c(as.character(dip_master$acceptedGenus)))
-diplit = unique(c(as.character(dip_lit$acceptedGenus)))
-diffdip = setdiff(diplit, dipocc)
-diffdip
 ```
 
 #

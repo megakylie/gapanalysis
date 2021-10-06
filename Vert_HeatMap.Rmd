@@ -579,7 +579,7 @@ plot(coll.rast, col=colRamp,xlim=c(86000,94000),ylim=c(-508000,-500000),
 ```{r Step 1. import data REPTILE}
 rep_data2 <- read_csv("reptile/rep_master.csv")
 rep_data = filter(rep_data2, source=="Cal-IBIS") %>% 
-  filter(year > 1939)
+  filter(year > 1937)
 ```
 
 ## Island heat map
