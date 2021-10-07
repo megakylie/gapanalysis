@@ -28,7 +28,11 @@ mam_inat <- read_csv("mammal/mam_inat.csv")
 
 mam_chis <- read_csv("mammal/mam_chis.csv")
 
-
+#print for Denise 
+mam_chis_dak <- mam_chis %>%
+  rename(latitude = "decimalLatitude", longitude = "decimalLongitude") %>%
+  select(source, gbifID, institutionCode, catalogNumber, recordedBy, month, year, island, locality, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, CollectionType, preparations)
+write_csv(mam_chis_dak, "mam_chis_dak.csv", na="")
 
 ```
 

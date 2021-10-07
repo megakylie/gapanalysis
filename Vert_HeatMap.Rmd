@@ -23,39 +23,84 @@ library(rasterVis)
 
 ```
 
-#Aves data
+#Aves data clean up 
 ```{r import bird data}
 
-aves_master = read_csv("Aves/aves_master.csv")
-aves_data = aves_master %>% filter(source %in% c("Cal-IBIS (Egg Only)"))
+## importing individual datasets as well so can pull out locality info 
+#using inat3, ebird_new2 chis_onlyegg2, sbmnh_obs4, and sbmnh_col4.
+library(readxl)
+aves_chis <- read_csv("aves/aves_chis_onlyeggs2.csv")
+aves_sbmnh_col <- read_excel("aves/aves_sbmnh_col.xlsx")
 
 ```
 
-```{r Cleaning up data AMPHIBIAN}
-# create a dataframe of all complete cases of name, lat/long, island, and year
 
-all_data_coords_aves <- aves_data %>%
-  dplyr::filter(!is.na(latitude), !is.na(longitude))%>%
-  filter(year > 1939)
+##Aves Step 2. Combine datasets. Lat and Long included. 
+```{r selecting and combining}
 
+aves_chis_combine <- aves_chis %>%
+  rename(latitude = "decimalLatitude", longitude="decimalLongitude", year="year_", month="month_", type="collectionType") %>%
+  select(id, source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, family, genus, scientificName, locality) %>%
+  add_column(type2="Collection: Egg/Nest", type3="Collection")
+
+aves_sbmnh_col_combine <- aves_sbmnh_col %>%
+  rename(latitude = "decimalLatitude", longitude="decimalLongitude", type="collectionType2") %>%
+  select(id, source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, family, genus, scientificName, locality) %>%
+  add_column(type2="Collection: Specimen", type3="Collection")
+
+aves_master_coll = rbind(aves_chis_combine, aves_sbmnh_col_combine) %>%
+  # reorder the island names to show up N -> S on list
+  mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente"))
+#filter out all NA rows 
+aves_master_coll <- filter(aves_master_coll, rowSums(is.na(aves_master_coll)) != ncol(aves_master_coll)) # Apply 
+
+```
+
+
+```{r Cleaning up data Aves}
+# create a dataframe of all complete cases of name, lat/long, island, and year with unique lat/long and locality to check, made a list of ones to remove from excel sheet
+
+all_data_coords_aves_unclean <- aves_master_coll %>%
+  dplyr::filter(!is.na(latitude), !is.na(longitude))
+
+aves_data = all_data_coords_aves_unclean %>% 
+  unite("latlong", latitude:longitude, remove=FALSE, sep="")
+
+avescoord= table(aves_data$latlong)
+avescoord = as.data.frame.table(avescoord) %>% rename(latlong="Var1")
+
+aves_latlong = aves_data %>% select(id, island, latlong, latitude, longitude, locality, year)
+avescoord2 = left_join(avescoord, aves_latlong) %>% rename(locality_latlong ="latlong")
+avescoord3 = distinct(avescoord2, across(contains("locality")), .keep_all=TRUE) %>% add_column(taxa="aves")
+
+write_csv(avescoord3, "coordinates/Aves_coordinates_locality.csv")
+
+#download list of ones to remove
+aves_coord_remove = read_csv("coordinates/Aves_coordinates_remove.csv")
+
+all_data_coords_aves = anti_join(all_data_coords_aves, aves_coord_remove)
+all_data_coord_aves_removedlist = semi_join(all_data_coords_aves, aves_coord_remove)
+```
+
+```{r Actually Heat map code}
 ############### drop points with meaningless coords - this removes any specimens that have long/lats that are not in the vicinity of the islands
 
 ########## Remove obvious georeferencing errors by hand- the 'identify' function allows you to click on a scatterplot (ie distribution map) to identify individual points. This is nice if you have a few coords out in the ocean. If you have a bunch, you'll probably want to do an intersection with island polygons, but I didn't have an island polygon file when I was doing this (the maps I used are line shapefiles, not polygons)
 
 ## JL: will do this with the coord cleaner package 
-
-flags <- clean_coordinates(x = all_data_coords_aves, lon = "longitude", lat = "latitude",
+all_data_coords = all_data_coords_aves
+flags <- clean_coordinates(x = all_data_coords, lon = "longitude", lat = "latitude",
                           species = "acceptedName",
                           tests = c("capitals", "centroids", "equal","gbif", "institutions",
                                      "zeros"))
-all_data_coords_aves <- all_data_coords_aves[flags$.summary,] 
+all_data_coords <- all_data_coords[flags$.summary,] 
 
-all_data_coords_aves <- all_data_coords_aves %>%
+all_data_coords <- all_data_coords %>%
   filter(longitude <= -118, longitude >= -120.5,
          latitude <= 34.1, latitude >= 32.7)
 
   
-plot(all_data_coords_aves$longitude, all_data_coords_aves$latitude, asp=1)
+plot(all_data_coords$longitude, all_data_coords$latitude, asp=1)
 
 # using Ben's modified code and a shapefile found online to isolate counties of interest, 
 # Albers projection is used in order to have grids in km^2
@@ -292,19 +337,51 @@ plot(coll.rast, col=colRamp,xlim=c(35000,58000),ylim=c(-540000,-520000),
   points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="blue", pch=19) 
 #barbara
 i=8
-plot(coll.rast, col=colRamp,xlim=c(86000,94000),ylim=c(-508000,-500000),
+sj = plot(coll.rast, col=colRamp,xlim=c(86000,94000),ylim=c(-508000,-500000),
      xaxt = "n", yaxt = "n") +
   plot(is.map, add=T) +
   points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="blue", pch=19)
-
+sj
 ```
 
 #Amphibian data
-```{r import amphibian data}
-amp_data2 <- read_csv("amphibian/AmphibianGraphs/amph_master.csv")
-amp_data = filter(amp_data2, type=="Collection") %>%
-  filter(year >1939)
+
+##Amph Step 2. Combine datasets. Lat and Long included. 
+```{r selecting and combining}
+amph_chis <- read_csv("amphibian/amph_chis.csv")
+amph_chis_combine <- amph_chis %>%
+  rename(latitude = "decimalLatitude", longitude="decimalLongitude", month="month_", year="year_", id="gbifID") %>%
+  select(id, month, year, island...128, class, acceptedGenus, acceptedName, latitude, longitude, locality) %>%
+  rename(island = "island...128") %>%
+  add_column(source="Cal-IBIS", type="Collection")
+
 ```
+
+```{r Cleaning up data Aves}
+# create a dataframe of all complete cases of name, lat/long, island, and year with unique lat/long and locality to check, made a list of ones to remove from excel sheet
+
+all_data_coords_amph_unclean <- amph_chis_combine %>%
+  dplyr::filter(!is.na(latitude), !is.na(longitude))
+
+amph_data = all_data_coords_amph_unclean %>% 
+  unite("latlong", latitude:longitude, remove=FALSE, sep="")
+
+amphcoord= table(amph_data$latlong)
+amphcoord = as.data.frame.table(amphcoord) %>% rename(latlong="Var1")
+
+amph_latlong = amph_data %>% select(id, island, latlong, latitude, longitude, locality, year)
+amphcoord2 = left_join(amphcoord, amph_latlong) %>% rename(locality_latlong ="latlong")
+amphcoord3 = distinct(amphcoord2, across(contains("locality")), .keep_all=TRUE) %>% add_column(taxa="amphibian")
+
+write_csv(amphcoord3, "coordinates/amph_coordinates_locality.csv")
+
+#download list of ones to remove
+amph_coord_remove = read_csv("coordinates/amph_coordinates_remove.csv")
+
+all_data_coords_amph = anti_join(all_data_coords_amph, amph_coord_remove)
+all_data_coord_amph_removedlist = semi_join(all_data_coords_amph, amph_coord_remove)
+```
+
 
 ## Island heat map
 
@@ -576,11 +653,42 @@ plot(coll.rast, col=colRamp,xlim=c(86000,94000),ylim=c(-508000,-500000),
 
 
 #REPTILE data
-```{r Step 1. import data REPTILE}
-rep_data2 <- read_csv("reptile/rep_master.csv")
-rep_data = filter(rep_data2, source=="Cal-IBIS") %>% 
-  filter(year > 1937)
+
+##Rep Step 2. Combine datasets. Lat and Long included. 
+```{r selecting and combining}
+rep_chis <- read_csv("reptile/rep_chis.csv")
+
+rep_chis_coord <- rep_chis %>%
+  rename(latitude = "decimalLatitude", longitude="decimalLongitude", id="gbifID", island="island...128") %>%
+  select(id, institutionCode, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, locality) 
+
 ```
+
+```{r Cleaning up data Rep}
+# create a dataframe of all complete cases of name, lat/long, island, and year with unique lat/long and locality to check, made a list of ones to remove from excel sheet
+
+all_data_coords_rep_unclean <- rep_chis_coord %>%
+  dplyr::filter(!is.na(latitude), !is.na(longitude))
+
+rep_data = all_data_coords_rep_unclean %>% 
+  unite("latlong", latitude:longitude, remove=FALSE, sep="")
+
+repcoord= table(rep_data$latlong)
+repcoord = as.data.frame.table(repcoord) %>% rename(latlong="Var1")
+
+rep_latlong = rep_data %>% select(id, island, latlong, latitude, longitude, locality, year)
+repcoord2 = left_join(repcoord, rep_latlong) %>% rename(locality_latlong ="latlong")
+repcoord3 = distinct(repcoord2, across(contains("locality")), .keep_all=TRUE) %>% add_column(taxa="reptile")
+
+write_csv(amphcoord3, "coordinates/rep_coordinates_locality.csv")
+
+#download list of ones to remove
+rep_coord_remove = read_csv("coordinates/rep_coordinates_remove.csv")
+
+all_data_coords_amph = anti_join(all_data_coords_amph, amph_coord_remove)
+all_data_coord_amph_removedlist = semi_join(all_data_coords_amph, amph_coord_remove)
+```
+
 
 ## Island heat map
 
@@ -851,12 +959,42 @@ plot(coll.rast, col=colRamp,xlim=c(86000,94000),ylim=c(-508000,-500000),
 ```
 
 #Mammal data
-```{r Step 1. import data REPTILE}
+ Lat and Long included. 
+```{r selecting and combining}
 mam_chis <- read_csv("mammal/mam_chis.csv")
-mam_data = mam_chis %>% 
-  filter(year > 1939) %>%
-  rename(latitude = "decimalLatitude", longitude = "decimalLongitude")
+
+mam_chis_coord <- mam_chis %>%
+  rename(latitude = "decimalLatitude", longitude = "decimalLongitude", id="gbifID") %>%
+  select(id, institutionCode, source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, locality )
+
 ```
+
+```{r Cleaning up data Mammals }
+# create a dataframe of all complete cases of name, lat/long, island, and year with unique lat/long and locality to check, made a list of ones to remove from excel sheet
+
+all_data_coords_mam_unclean <- mam_chis_coord %>%
+  dplyr::filter(!is.na(latitude), !is.na(longitude))
+
+mam_data = all_data_coords_mam_unclean %>% 
+  unite("latlong", latitude:longitude, remove=FALSE, sep="")
+
+mamcoord= table(mam_data$latlong)
+mamcoord = as.data.frame.table(mamcoord) %>% rename(latlong="Var1")
+
+mam_latlong = mam_data %>% select(id, island, latlong, latitude, longitude, locality, year)
+mamcoord2 = left_join(mamcoord, mam_latlong) %>% rename(locality_latlong ="latlong")
+mamcoord3 = distinct(mamcoord2, across(contains("locality")), .keep_all=TRUE) %>% add_column(taxa="mammal")
+
+write_csv(mamcoord3, "coordinates/mam_coordinates_locality.csv")
+
+#download list of ones to remove
+mam_coord_remove = read_csv("coordinates/mam_coordinates_remove.csv")
+
+all_data_coords_amph = anti_join(all_data_coords_amph, amph_coord_remove)
+all_data_coord_amph_removedlist = semi_join(all_data_coords_amph, amph_coord_remove)
+```
+
+
 
 ## Island heat map
 

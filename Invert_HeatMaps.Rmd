@@ -24,11 +24,44 @@ library(rasterVis)
 ```
 
 #Coleoptera
-```{r import coleoptera}
-col_data2 <-read_csv("master/col_master.csv")
-col_data <- col_data2 %>% filter(source %in% c("Cal-IBIS", "LACM")) %>%
-  filter(year > 1939)
+
+#Coleoptera data
+ Lat and Long included. 
+```{r selecting and combining}
+col_chis <- read_csv("coleoptera/col_chis.csv")
+
+
+col_chis_coord <- col_chis %>%
+  rename(latitude = "decimalLat", longitude = "decimalLon", institution="institutio") %>%
+  select(id, institution, source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, locality )
+
 ```
+
+```{r Cleaning up data Coleoptera }
+# create a dataframe of all complete cases of name, lat/long, island, and year with unique lat/long and locality to check, made a list of ones to remove from excel sheet
+
+all_data_coords_col_unclean <- col_chis_coord %>%
+  dplyr::filter(!is.na(latitude), !is.na(longitude)) %>% filter(latitude != 0 | is.na(latitude))
+
+col_data = all_data_coords_col_unclean %>% 
+  unite("latlong", latitude:longitude, remove=FALSE, sep="")
+
+colcoord= table(col_data$latlong)
+colcoord = as.data.frame.table(colcoord) %>% rename(latlong="Var1")
+
+col_latlong = col_data %>% select(id, island, latlong, latitude, longitude, locality, year)
+colcoord2 = left_join(colcoord, col_latlong) %>% rename(locality_latlong ="latlong")
+colcoord3 = distinct(colcoord2, across(contains("locality")), .keep_all=TRUE) %>% add_column(taxa="coleoptera")
+
+write_csv(colcoord3, "coordinates/col_coordinates_locality.csv")
+
+#download list of ones to remove
+col_coord_remove = read_csv("coordinates/col_coordinates_remove.csv")
+
+all_data_coords_col = anti_join(all_data_coords_col_unclean, col_coord_remove)
+all_data_coord_col_removedlist = semi_join(all_data_coords_col, col_coord_remove)
+```
+
 
 
 
@@ -129,6 +162,46 @@ plot.lims <- read.csv("Heatmap_files/islandPlotLimits.csv")
 dip_data2 <-read_csv("master/dip_master.csv")
 dip_data = dip_data2 %>% filter(source %in% c("Cal-lBIS", "LACM"))
 
+```
+
+```{r selecting and combining}
+dip_chis <- read_csv("diptera/dip_chis.csv")
+dip_nic <- read_csv("diptera/dip_nic.csv")
+dip_chis_coord <- dip_chis %>%
+  rename(latitude = "decimalLat", longitude = "decimalLon", institution="institutio") %>%
+  select(id, institution, source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, locality )
+
+dip_nic_coord <- dip_nic %>%
+  select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, Latitude, Longitude, Location, Barcode) %>% 
+  add_column( institution = "SBBG Collected") %>% rename(latitude="Latitude", longitude="Longitude", locality="Location", id="Barcode")
+
+dip_collection_coord = rbind(dip_chis_coord, dip_nic_coord)
+
+```
+
+```{r Cleaning up data Coleoptera }
+# create a dataframe of all complete cases of name, lat/long, island, and year with unique lat/long and locality to check, made a list of ones to remove from excel sheet
+
+all_data_coords_dip_unclean <- dip_collection_coord %>%
+  dplyr::filter(!is.na(latitude), !is.na(longitude)) %>% filter(latitude != 0 | is.na(latitude))
+
+dip_data = all_data_coords_dip_unclean %>% 
+  unite("latlong", latitude:longitude, remove=FALSE, sep="")
+
+dipcoord= table(dip_data$latlong)
+dipcoord = as.data.frame.table(dipcoord) %>% rename(latlong="Var1")
+
+dip_latlong = dip_data %>% select(id, island, latlong, latitude, longitude, locality, year)
+dipcoord2 = left_join(dipcoord, dip_latlong) %>% rename(locality_latlong ="latlong")
+dipcoord3 = distinct(dipcoord2, across(contains("locality")), .keep_all=TRUE) %>% add_column(taxa="diptera")
+
+write_csv(colcoord3, "coordinates/dip_coordinates_locality.csv")
+
+#download list of ones to remove
+dip_coord_remove = read_csv("coordinates/dip_coordinates_remove.csv")
+
+all_data_coords_dip = anti_join(all_data_coords_dip_unclean, dip_coord_remove)
+all_data_coord_dip_removedlist = semi_join(all_data_coords_dip, dip_coord_remove)
 ```
 
 

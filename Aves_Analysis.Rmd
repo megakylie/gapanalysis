@@ -35,6 +35,20 @@ aves_chis <- read_csv("aves/aves_chis_onlyeggs2.csv")
 aves_sbmnh_obs <- read_csv("aves/aves_sbmnh_obs4.csv")
 aves_sbmnh_col <- read_excel("aves/aves_sbmnh_col.xlsx")
 
+#for Denise
+aves_chis_dak <- aves_chis %>%
+  rename(latitude = "decimalLatitude", longitude="decimalLongitude", year="year_", month="month_", type="collectionType") %>%
+  select(id, source, institutionCode, catalogNumber, recordedBy, month, year, island, locality, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, family, genus, scientificName) %>%
+  add_column(type2="Collection: Egg/Nest")
+
+aves_sbmnh_col_dak <- aves_sbmnh_col %>%
+  rename(latitude = "decimalLatitude", longitude="decimalLongitude", type="collectionType2") %>%
+  select(id, source, institutionCode, catalogNumber, recordedBy, month, year, island, locality, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, family, genus, scientificName) %>%
+  add_column(type2="Collection: Specimen")
+
+aves_collections = rbind(aves_chis_dak, aves_sbmnh_col_dak)
+write_csv(aves_collections, "aves_collections_dak.csv", na="")
+
 ```
 
 
