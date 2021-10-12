@@ -40,12 +40,12 @@ aves_sbmnh_col <- read_excel("aves/aves_sbmnh_col.xlsx")
 
 aves_chis_combine <- aves_chis %>%
   rename(latitude = "decimalLatitude", longitude="decimalLongitude", year="year_", month="month_", type="collectionType") %>%
-  select(id, source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, family, genus, scientificName, locality) %>%
+  select(id, source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, family, genus, scientificName, locality, institutionCode) %>%
   add_column(type2="Collection: Egg/Nest", type3="Collection")
 
 aves_sbmnh_col_combine <- aves_sbmnh_col %>%
   rename(latitude = "decimalLatitude", longitude="decimalLongitude", type="collectionType2") %>%
-  select(id, source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, family, genus, scientificName, locality) %>%
+  select(id, source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, family, genus, scientificName, locality, institutionCode) %>%
   add_column(type2="Collection: Specimen", type3="Collection")
 
 aves_master_coll = rbind(aves_chis_combine, aves_sbmnh_col_combine) %>%
@@ -78,8 +78,12 @@ write_csv(avescoord3, "coordinates/Aves_coordinates_locality.csv")
 #download list of ones to remove
 aves_coord_remove = read_csv("coordinates/Aves_coordinates_remove.csv")
 
-all_data_coords_aves = anti_join(all_data_coords_aves, aves_coord_remove)
-all_data_coord_aves_removedlist = semi_join(all_data_coords_aves, aves_coord_remove)
+all_data_coords_aves = anti_join(all_data_coords_aves_unclean, aves_coord_remove)
+all_data_coord_aves_removedlist = semi_join(all_data_coords_aves_unclean, aves_coord_remove)
+
+aves_removelist = all_data_coord_aves_removedlist %>% add_count(latitude, longitude, locality, institutionCode, year, sort=TRUE) %>% select(latitude, longitude, locality, institutionCode, year, n)
+aves_removelist2 = distinct(aves_removelist, .keep_all=TRUE)
+write_csv(aves_removelist2, "aves/avesGraphs/aves_removelist2.csv")
 ```
 
 ```{r Actually Heat map code}
@@ -337,11 +341,10 @@ plot(coll.rast, col=colRamp,xlim=c(35000,58000),ylim=c(-540000,-520000),
   points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="blue", pch=19) 
 #barbara
 i=8
-sj = plot(coll.rast, col=colRamp,xlim=c(86000,94000),ylim=c(-508000,-500000),
+plot(coll.rast, col=colRamp,xlim=c(86000,94000),ylim=c(-508000,-500000),
      xaxt = "n", yaxt = "n") +
   plot(is.map, add=T) +
   points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="blue", pch=19)
-sj
 ```
 
 #Amphibian data
@@ -351,13 +354,13 @@ sj
 amph_chis <- read_csv("amphibian/amph_chis.csv")
 amph_chis_combine <- amph_chis %>%
   rename(latitude = "decimalLatitude", longitude="decimalLongitude", month="month_", year="year_", id="gbifID") %>%
-  select(id, month, year, island...128, class, acceptedGenus, acceptedName, latitude, longitude, locality) %>%
+  select(id, month, year, island...128, class, acceptedGenus, acceptedName, latitude, longitude, locality, institutionCode) %>%
   rename(island = "island...128") %>%
   add_column(source="Cal-IBIS", type="Collection")
 
 ```
 
-```{r Cleaning up data Aves}
+```{r Cleaning up data Amphibians}
 # create a dataframe of all complete cases of name, lat/long, island, and year with unique lat/long and locality to check, made a list of ones to remove from excel sheet
 
 all_data_coords_amph_unclean <- amph_chis_combine %>%
@@ -369,7 +372,7 @@ amph_data = all_data_coords_amph_unclean %>%
 amphcoord= table(amph_data$latlong)
 amphcoord = as.data.frame.table(amphcoord) %>% rename(latlong="Var1")
 
-amph_latlong = amph_data %>% select(id, island, latlong, latitude, longitude, locality, year)
+amph_latlong = amph_data %>% select(id, island, latlong, latitude, longitude, locality, year, institutionCode)
 amphcoord2 = left_join(amphcoord, amph_latlong) %>% rename(locality_latlong ="latlong")
 amphcoord3 = distinct(amphcoord2, across(contains("locality")), .keep_all=TRUE) %>% add_column(taxa="amphibian")
 
@@ -378,8 +381,12 @@ write_csv(amphcoord3, "coordinates/amph_coordinates_locality.csv")
 #download list of ones to remove
 amph_coord_remove = read_csv("coordinates/amph_coordinates_remove.csv")
 
-all_data_coords_amph = anti_join(all_data_coords_amph, amph_coord_remove)
-all_data_coord_amph_removedlist = semi_join(all_data_coords_amph, amph_coord_remove)
+all_data_coords_amph = anti_join(all_data_coords_amph_unclean, amph_coord_remove)
+all_data_coord_amph_removedlist = semi_join(all_data_coords_amph_unclean, amph_coord_remove)
+
+amph_removelist = all_data_coord_amph_removedlist %>% add_count(latitude, longitude, locality, institutionCode, year, sort=TRUE) %>% select(latitude, longitude, locality, institutionCode, year, n)
+amph_removelist2 = distinct(amph_removelist, .keep_all=TRUE)
+write_csv(amph_removelist2, "amphibian/amphibianGraphs/amph_removelist2.csv")
 ```
 
 
@@ -388,7 +395,7 @@ all_data_coord_amph_removedlist = semi_join(all_data_coords_amph, amph_coord_rem
 ```{r Cleaning up data AMPHIBIAN}
 # create a dataframe of all complete cases of name, lat/long, island, and year
 
-all_data_coords <- amp_data %>%
+all_data_coords <- all_data_coords_amph %>%
   dplyr::filter(!is.na(latitude), !is.na(longitude))
 
 ############### drop points with meaningless coords - this removes any specimens that have long/lats that are not in the vicinity of the islands
@@ -601,11 +608,16 @@ colRamp <- colorfunc(20)
 
 ### Sampling intensity
 #anacapa
+
+png("amph_anacapa.png", width=300, height=250, res=300)
+dev.off()
+
 i=1
 plot(coll.rast, col=colRamp, xlim=c(50000,61000), ylim=c(-450000,-440000),
      xaxt = "n", yaxt = "n") +
   plot(is.map, add=T) +
   points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="blue", pch=19) 
+
 #cruz
 i=2
 plot(coll.rast, col = colRamp, xlim=c(5000,46000), ylim=c(-460000,-420000),
@@ -614,40 +626,24 @@ plot(coll.rast, col = colRamp, xlim=c(5000,46000), ylim=c(-460000,-420000),
   points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="blue", pch=19) 
 #rosa
 i=3
-plot(coll.rast, col=colRamp, xlim=c(-25000,5000), ylim=c(-470000,-430000),
+ro=plot(coll.rast, col=colRamp, xlim=c(-25000,5000), ylim=c(-470000,-430000),
      xaxt = "n", yaxt = "n") +
   plot(is.map, add=T) +
   points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="blue", pch=19) 
 #miguel
 i=4
-plot(coll.rast, col=colRamp,xlim=c(-45000,-25000),ylim=c(-450000,-430000),
+mi=plot(coll.rast, col=colRamp,xlim=c(-45000,-25000),ylim=c(-450000,-430000),
      xaxt = "n", yaxt = "n") +
   plot(is.map, add=T) +
   points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="blue", pch=19)  
 #catalina
 i=5
-plot(coll.rast, col=colRamp,xlim=c(125000,165000),ylim=c(-530000,-500000),
+ca=plot(coll.rast, col=colRamp,xlim=c(125000,165000),ylim=c(-530000,-500000),
      xaxt = "n", yaxt = "n") +
   plot(is.map, add=T) +
   points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="blue", pch=19)  
-#clemente
-i=6
-plot(coll.rast, col=colRamp,xlim=c(125000,160000),ylim=c(-580000,-550000),
-     xaxt = "n", yaxt = "n") +
-  plot(is.map, add=T) +
-  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="blue", pch=19) 
-#nicolas
-i=7
-plot(coll.rast, col=colRamp,xlim=c(35000,58000),ylim=c(-540000,-520000),
-     xaxt = "n", yaxt = "n") +
-  plot(is.map, add=T) +
-  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="blue", pch=19) 
-#barbara
-i=8
-plot(coll.rast, col=colRamp,xlim=c(86000,94000),ylim=c(-508000,-500000),
-     xaxt = "n", yaxt = "n") +
-  plot(is.map, add=T) +
-  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="blue", pch=19)
+
+facet_wrap(an, ba)
 
 ```
 
@@ -676,17 +672,22 @@ rep_data = all_data_coords_rep_unclean %>%
 repcoord= table(rep_data$latlong)
 repcoord = as.data.frame.table(repcoord) %>% rename(latlong="Var1")
 
-rep_latlong = rep_data %>% select(id, island, latlong, latitude, longitude, locality, year)
+rep_latlong = rep_data %>% select(id, island, latlong, latitude, longitude, locality, year, institutionCode)
 repcoord2 = left_join(repcoord, rep_latlong) %>% rename(locality_latlong ="latlong")
 repcoord3 = distinct(repcoord2, across(contains("locality")), .keep_all=TRUE) %>% add_column(taxa="reptile")
 
-write_csv(amphcoord3, "coordinates/rep_coordinates_locality.csv")
+write_csv(repcoord3, "coordinates/rep_coordinates_locality.csv")
 
 #download list of ones to remove
-rep_coord_remove = read_csv("coordinates/rep_coordinates_remove.csv")
+rep_coord_remove = read_csv("coordinates/rep_coordinates_locality.csv")
 
-all_data_coords_amph = anti_join(all_data_coords_amph, amph_coord_remove)
-all_data_coord_amph_removedlist = semi_join(all_data_coords_amph, amph_coord_remove)
+all_data_coords_rep = anti_join(all_data_coords_rep_unclean, rep_coord_remove)
+all_data_coord_rep_removedlist = semi_join(all_data_coords_rep_unclean, rep_coord_remove)
+
+rep_removelist = all_data_coord_rep_removedlist %>% add_count(latitude, longitude, locality, institutionCode, year, sort=TRUE) %>% select(latitude, longitude, locality, institutionCode, year, n)
+rep_removelist2 = distinct(rep_removelist, .keep_all=TRUE)
+write_csv(rep_removelist2, "reptile/reptileGraphs/rep_removelist2.csv")
+
 ```
 
 
@@ -981,7 +982,7 @@ mam_data = all_data_coords_mam_unclean %>%
 mamcoord= table(mam_data$latlong)
 mamcoord = as.data.frame.table(mamcoord) %>% rename(latlong="Var1")
 
-mam_latlong = mam_data %>% select(id, island, latlong, latitude, longitude, locality, year)
+mam_latlong = mam_data %>% select(id, island, latlong, latitude, longitude, locality, year, institutionCode)
 mamcoord2 = left_join(mamcoord, mam_latlong) %>% rename(locality_latlong ="latlong")
 mamcoord3 = distinct(mamcoord2, across(contains("locality")), .keep_all=TRUE) %>% add_column(taxa="mammal")
 
@@ -990,18 +991,21 @@ write_csv(mamcoord3, "coordinates/mam_coordinates_locality.csv")
 #download list of ones to remove
 mam_coord_remove = read_csv("coordinates/mam_coordinates_remove.csv")
 
-all_data_coords_amph = anti_join(all_data_coords_amph, amph_coord_remove)
-all_data_coord_amph_removedlist = semi_join(all_data_coords_amph, amph_coord_remove)
+all_data_coords_mam = anti_join(all_data_coords_mam_unclean, mam_coord_remove)
+all_data_coord_mam_removedlist = semi_join(all_data_coords_mam_unclean, mam_coord_remove)
+
+
+mam_removelist = all_data_coord_mam_removedlist %>% add_count(latitude, longitude, locality, institutionCode, year, sort=TRUE) %>% select(latitude, longitude, locality, institutionCode, year, n)
+mam_removelist2 = distinct(mam_removelist, .keep_all=TRUE)
+write_csv(mam_removelist2, "mammal/mammalGraphs/mam_removelist2.csv")
 ```
-
-
 
 ## Island heat map
 
 ```{r Step 2. Cleaning up data AMPHIBIAN}
 # create a dataframe of all complete cases of name, lat/long, island, and year
 
-all_data_coords <- mam_data %>%
+all_data_coords <- all_data_coords_mam %>%
   dplyr::filter(!is.na(latitude), !is.na(longitude))
 
 ############### drop points with meaningless coords - this removes any specimens that have long/lats that are not in the vicinity of the islands

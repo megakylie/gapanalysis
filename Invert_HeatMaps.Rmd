@@ -7,7 +7,7 @@ editor_options:
 
 This R Markdown is to make collection intensity heat maps for Invertebrates. The collections are separated out and heatmaps only include collected specimen (iNaturalist data is available in the maps). Figuring out the dates to remove is still an issue. 
 
-```{r}
+```{r Packages}
 ### --- Load Packages --- ###
 library(tidyverse)
 library(raster)
@@ -17,7 +17,6 @@ library(rgdal)
 library(raster)
 library(rgeos)
 library(CoordinateCleaner)
-library(scrubr)
 library(scales)
 library(rasterVis)
 
@@ -25,9 +24,8 @@ library(rasterVis)
 
 #Coleoptera
 
-#Coleoptera data
  Lat and Long included. 
-```{r selecting and combining}
+```{r Coleoptera data download}
 col_chis <- read_csv("coleoptera/col_chis.csv")
 
 
@@ -37,7 +35,7 @@ col_chis_coord <- col_chis %>%
 
 ```
 
-```{r Cleaning up data Coleoptera }
+```{r Cleaning up locality data}
 # create a dataframe of all complete cases of name, lat/long, island, and year with unique lat/long and locality to check, made a list of ones to remove from excel sheet
 
 all_data_coords_col_unclean <- col_chis_coord %>%
@@ -56,19 +54,23 @@ colcoord3 = distinct(colcoord2, across(contains("locality")), .keep_all=TRUE) %>
 write_csv(colcoord3, "coordinates/col_coordinates_locality.csv")
 
 #download list of ones to remove
-col_coord_remove = read_csv("coordinates/col_coordinates_remove.csv")
+col_coord_remove = read_csv("coordinates/col_coordinates_remove2.csv")
 
-all_data_coords_col = anti_join(all_data_coords_col_unclean, col_coord_remove)
-all_data_coord_col_removedlist = semi_join(all_data_coords_col, col_coord_remove)
+all_data_coords_col = anti_join(all_data_coords_col_unclean, col_coord_remove, by=c("latitude", "longitude", "locality"))
+all_data_coord_col_removedlist = semi_join(all_data_coords_col_unclean, col_coord_remove)
+
+col_removelist = all_data_coord_col_removedlist %>% add_count(latitude, longitude, locality, institution, year, sort=TRUE) %>% select(latitude, longitude, locality, institution, year, n)
+col_removelist2 = distinct(col_removelist, .keep_all=TRUE)
+write_csv(col_removelist2, "coleoptera/coleopteraGraphs/col_removelist2.csv")
 ```
 
 
 
 
-```{r Cleaning up coleoptera data}
+```{r Cleaning up coleoptera data with R code}
 # create a dataframe of all complete cases of name, lat/long, island, and year
 
-all_data_coords <- col_data %>%
+all_data_coords <- all_data_coords_col %>%
   dplyr::filter(!is.na(latitude), !is.na(longitude))
 
 ############### drop points with meaningless coords - this removes any specimens that have long/lats that are not in the vicinity of the islands
@@ -78,7 +80,7 @@ all_data_coords <- col_data %>%
 ## JL: will do this with the coord cleaner package 
 
 flags <- clean_coordinates(x = all_data_coords, lon = "longitude", lat = "latitude",
-                          species = "acceptedName",
+                          species = "class",
                           tests = c("capitals", "centroids", "equal","gbif", "institutions",
                                      "zeros"))
 all_data_coords <- all_data_coords[flags$.summary,] 
@@ -155,7 +157,7 @@ occ <- read_csv("Coleoptera/col_all_data_coords_clean.csv")
 plot.lims <- read.csv("Heatmap_files/islandPlotLimits.csv")
 
 ```
-
+Please go the Grid Maps in the tabel of contents
 
 #Diptera
 ```{r import diptera data }
@@ -179,7 +181,7 @@ dip_collection_coord = rbind(dip_chis_coord, dip_nic_coord)
 
 ```
 
-```{r Cleaning up data Coleoptera }
+```{r Cleaning up data Diptera locality info }
 # create a dataframe of all complete cases of name, lat/long, island, and year with unique lat/long and locality to check, made a list of ones to remove from excel sheet
 
 all_data_coords_dip_unclean <- dip_collection_coord %>%
@@ -195,7 +197,7 @@ dip_latlong = dip_data %>% select(id, island, latlong, latitude, longitude, loca
 dipcoord2 = left_join(dipcoord, dip_latlong) %>% rename(locality_latlong ="latlong")
 dipcoord3 = distinct(dipcoord2, across(contains("locality")), .keep_all=TRUE) %>% add_column(taxa="diptera")
 
-write_csv(colcoord3, "coordinates/dip_coordinates_locality.csv")
+write_csv(dipcoord3, "coordinates/dip_coordinates_locality.csv")
 
 #download list of ones to remove
 dip_coord_remove = read_csv("coordinates/dip_coordinates_remove.csv")
@@ -206,9 +208,9 @@ all_data_coord_dip_removedlist = semi_join(all_data_coords_dip, dip_coord_remove
 
 
 
-```{r Cleaning up coleoptera data}
+```{r Cleaning up Diptera data with code}
 # create a dataframe of all complete cases of name, lat/long, island, and year
-all_data_coords <- dip_data %>%
+all_data_coords <- all_data_coords_dip_unclean %>%
   dplyr::filter(!is.na(latitude), !is.na(longitude))
 
 ############### drop points with meaningless coords - this removes any specimens that have long/lats that are not in the vicinity of the islands
@@ -218,7 +220,7 @@ all_data_coords <- dip_data %>%
 ## JL: will do this with the coord cleaner package 
 
 flags <- clean_coordinates(x = all_data_coords, lon = "longitude", lat = "latitude",
-                          species = "acceptedName",
+                          species = "order",
                           tests = c("capitals", "centroids", "equal","gbif", "institutions",
                                      "zeros"))
 all_data_coords <- all_data_coords[flags$.summary,] 
@@ -297,22 +299,18 @@ plot.lims <- read.csv("Heatmap_files/islandPlotLimits.csv")
 ```
 
 
-
-#Hemiptera ##Didn't finish Hemiptera code because only 574 across the islands, going to be very poor maps 
-```{r import diptera data }
-
-lacm = read.csv("hymenoptera/hym_lacm_clean.csv")
+#Hymenoptera
+```{r import hymenoptera data }
+library(readxl)
 chis = read_csv("hymenoptera/hym_chis_clean.csv")
-bohart = read.csv("hymenoptera/hym_bohart_clean.csv")
-bold = read.csv("hymenoptera/BOLD_IslandHymenoptera_Feb2021.csv")
-
+bohart = read_csv("hymenoptera/hym_bohart_clean.csv")
 
 
 chis_column <- chis %>%
-  select(source, month_arabic, day_arabic, year, island, order, family, genus, specificEp, scientificName, decimalLat, decimalLon) %>% rename(latitude="decimalLat", longitude="decimalLon")
+  select(source, month_arabic, day_arabic, year, island, order, family, genus, specificEp, scientificName, decimalLat, decimalLon, locality, institutio) %>% rename(institutionCode="institutio", latitude="decimalLat", longitude="decimalLon")
 bohart_column <- bohart %>%
-  select(source, month_arabic, day_arabic, year, island, order, family, genus, specificEp, scientificName, Decimal.Latitude, Decimal.Longitude) %>%
-  rename(latitude="Decimal.Latitude", longitude="Decimal.Longitude")
+  select(source, month_arabic, day_arabic, year, island, order, family, genus, specificEp, scientificName, "Decimal Latitude", "Decimal Longitude", locality) %>%
+  rename(latitude="Decimal Latitude", longitude="Decimal Longitude") %>% add_column(institutionCode="Bohart")
 
 hym_coord_data=rbind(chis_column, bohart_column)
 
@@ -322,12 +320,43 @@ write.csv(hym_coord_data, "hymenoptera/hym_coord_data.csv")
 ```
 
 
+```{r Cleaning up data Hymenoptera by locality info }
+# create a dataframe of all complete cases of name, lat/long, island, and year with unique lat/long and locality to check, made a list of ones to remove from excel sheet
 
-```{r Cleaning up coleoptera data}
+all_data_coords_hym_unclean <- hym_coord_data %>%
+  dplyr::filter(!is.na(latitude), !is.na(longitude)) %>% filter(latitude != 0 | is.na(latitude))
+
+hym_data = all_data_coords_hym_unclean %>% 
+  unite("latlong", latitude:longitude, remove=FALSE, sep="")
+
+hymcoord= table(hym_data$latlong)
+hymcoord = as.data.frame.table(hymcoord) %>% rename(latlong="Var1")
+
+hym_latlong = hym_data %>% select(island, latlong, latitude, longitude, locality, year)
+hymcoord2 = left_join(hymcoord, hym_latlong) %>% rename(locality_latlong ="latlong")
+hymcoord3 = distinct(hymcoord2, across(contains("locality")), .keep_all=TRUE) %>% add_column(taxa="hymenoptera")
+
+write_csv(hymcoord3, "coordinates/hym_coordinates_locality.csv")
+
+#download list of ones to remove
+hym_coord_remove = read_csv("coordinates/hym_coordinates_remove.csv")
+
+all_data_coords_hym = anti_join(all_data_coords_hym_unclean, hym_coord_remove)
+all_data_coord_hym_removedlist = semi_join(all_data_coords_hym_unclean, hym_coord_remove)
+
+hym_removelist = all_data_coord_hym_removedlist %>% add_count(latitude, longitude, locality, institutionCode, year, sort=TRUE) %>% select(latitude, longitude, locality, institutionCode, year, n)
+hym_removelist2 = distinct(hym_removelist, .keep_all=TRUE)
+write_csv(hym_removelist2, "hymenoptera/hymenopteraGraphs/hym_removelist2.csv")
+```
+
+
+
+
+```{r Cleaning up hymenoptera data with code}
 # create a dataframe of all complete cases of name, lat/long, island, and year
-all_data_coords <- hym_coord_data %>%
-  dplyr::filter(!is.na(latitude), !is.na(longitude)) %>%
-    filter(year >1939)
+
+all_data_coords <- all_data_coords_hym %>%
+  dplyr::filter(!is.na(latitude), !is.na(longitude))
 
 ############### drop points with meaningless coords - this removes any specimens that have long/lats that are not in the vicinity of the islands
 
@@ -335,7 +364,8 @@ all_data_coords <- hym_coord_data %>%
 
 ## JL: will do this with the coord cleaner package 
 
-flags <- clean_coordinates(x = all_data_coords, lon = "longitude", lat = "latitude", species="scientificName",
+flags <- clean_coordinates(x = all_data_coords, lon = "longitude", lat = "latitude",
+                          species = "order",
                           tests = c("capitals", "centroids", "equal","gbif", "institutions",
                                      "zeros"))
 all_data_coords <- all_data_coords[flags$.summary,] 
@@ -388,16 +418,16 @@ chis_ibis <- st_transform(chis_ibis, crs = st_crs(new_proj))
 all_data_coords2 <- st_as_sf(all_data_coords1, coords = c("coords.x1", "coords.x2"), crs = new_proj)
 
 all_data_coords3 <- st_join(all_data_coords2, chis_ibis, join = st_intersects) %>%
-  filter(!is.na(island))
+  filter(!is.na(ISL_NAME))
 
 ggplot(chis_ibis) +
   geom_sf(data = all_data_coords3, color = "red", size = 0.3) +
   geom_sf(fill = alpha("black", 0.2)) 
 
-write_csv(all_data_coords3, "Diptera/dip_all_data_coords_clean.csv")
+write_csv(all_data_coords3, "Hymenoptera/hym_all_data_coords_clean.csv")
 ```
 
-```{r grid data download Diptera}
+```{r grid data download Hymenoptera}
 ################# Grid maps ############
 # Matrix indicating which cells from islandRaster correspond to which island
 island.cells <- read.csv("Heatmap_files/islandCells.csv")
@@ -406,14 +436,12 @@ island.cells <- read.csv("Heatmap_files/islandCells.csv")
 isl.rast <- raster("Heatmap_files/islandRaster.asc")
  
 # Data
-occ <- read_csv("Diptera/dip_all_data_coords_clean.csv") 
+occ <- read_csv("Hymenoptera/hym_all_data_coords_clean.csv") 
 
 # The xlim & ylim (in albers) for plotting each island
 plot.lims <- read.csv("Heatmap_files/islandPlotLimits.csv")
 
 ```
-
-
 
 #Making the graphs
 ```{r grid making}
@@ -434,14 +462,14 @@ length(unique(occ$cellID))
 
 # make a big grid
 w <- which(!is.na(isl.rast[]))
-taxa <- sort(unique(occ$order))
+taxa <- sort(unique(occ$class))
 taxGrid <- matrix(nrow=length(taxa),ncol=length(w))
 colnames(taxGrid) <- w
 rownames(taxGrid) <- taxa
 taxGrid[] <- 0
 
 for(i in 1:dim(taxGrid)[1]){
-	spCells <- occ$cellID[occ$order==taxa[i]]
+	spCells <- occ$cellID[occ$class==taxa[i]]
 	for(j in 1:length(spCells)){
 		taxGrid[i,w %in% spCells[j]]<-taxGrid[i,w %in% spCells[j]]+1
 	}
@@ -533,10 +561,11 @@ sum_table <- as.data.frame(coll.Summary) %>%
 ```
 
 
-```{r}
+```{r Write csv of the table}
 ### choose your fighter..this is a really silly way to leave this for now...
 write.csv(sum_table, "diptera/dip_sum_table.csv", na="")
 write.csv(sum_table, "coleoptera/col_sum_table.csv", na="")
+write.csv(sum_table, "hymenoptera/hym_sum_table.csv", na="")
 ```
 
 
