@@ -85,7 +85,11 @@ aves_master_na = rbind(aves_inat_combine, aves_chis_combine, aves_sbmnh_obs_comb
   mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente")) %>%
  mutate(source2 = fct_relevel(source, "Cal-IBIS (Egg Only)", "iNaturalist", "EBIRD", "SBMNH Collections", "SBMNH Observations"))
 #filter out all NA rows 
-aves_master <- filter(aves_master_na, rowSums(is.na(aves_master_na)) != ncol(aves_master_na)) # Apply 
+aves_master = aves_master %>% filter(!is.na(source)) 
+aves_master_syn = read_csv("Aves/aves_master_syn.csv")
+aves_master_syn2 = left_join(aves_master, aves_master_syn, by="scientificName") %>% rename(acceptedFamily="acceptedFamily.y", acceptedGenus="acceptedGenus.y", acceptedName="acceptedName.y") %>%
+  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, type, family, genus, scientificName)
+# Apply 
 ```
 
 
@@ -307,16 +311,18 @@ ggsave(plot=aves_collgraph, filename="aves/AvesGraphs/aves_type2.png", height=5,
 #
 #Aves Step 4. Make Tables 
 ```{r Family by Source & Collection Type Tables}
-avestab= table(aves_master$acceptedName)
+
+
+avestab= table(aves_master_syn2$acceptedName)
 avestab = as.data.frame.table(avestab) 
 avestab2 = avestab %>%
   rename(acceptedName = "Var1", total = "Freq")
 
-aves_master2 = aves_master_na_ord %>%
-  select(order, acceptedFamily, acceptedGenus, acceptedName)
+aves_master2 = aves_master_syn2 %>%
+  select(acceptedFamily, acceptedGenus, acceptedName)
 
-avestable = left_join(avestab2, aves_master2 )
-avestable = distinct(avestable)
+avestable = left_join(avestab2, aves_master2)
+avestable = distinct(avestable) 
 
 avestab_inat = table(aves_inat$acceptedName)
 avestab_inat = as.data.frame.table(avestab_inat) %>%
@@ -344,8 +350,16 @@ aves_table3 <- left_join(aves_table2, avestab_ebird)
 aves_table4 <- left_join(aves_table3, avestab_sbmnh_col)
 aves_table5 <- left_join(aves_table4, avestab_sbmnh_obs)
 
-aves_table_complete <-aves_table5 %>%
-  rename(Order = "order", Species = "acceptedName", Family = "acceptedFamily", Genus = "acceptedGenus") %>%
+
+aves_phylo = read_csv("aves/NACC_list_species.csv") %>% rename(acceptedFamily="family", acceptedGenus="genus", acceptedName="species")
+
+
+
+
+aves_table_phylo = full_join(aves_phylo, aves_table5) #can't use filter to get rid of taxa not in our data rows with a na filter because it reorders the rows! also why full join was used so the rows would stay in the phylogenetic order
+
+aves_table_complete <-aves_table_phylo %>%
+  rename(Species = "acceptedName", Family = "acceptedFamily", Genus = "acceptedGenus") %>%
   relocate("Order", "Family", "Genus", "Species", "CalIBIS", "SBMNHcol", "SBMNHobs", "EBIRD", "iNaturalist","total") 
 
 
@@ -366,8 +380,11 @@ avestab_col = as.data.frame.table(avestab_col) %>%
 avestable_combo = left_join(avestable, avestab_obs)
 avestable_combo2 = left_join(avestable_combo, avestab_col)
 
-aves_table_combo_complete <- avestable_combo2 %>%
-   rename(Order= "order", Species = "acceptedName", Family = "acceptedFamily", Genus = "acceptedGenus") %>%
+aves_phylo_R2 = read_csv("aves/aves_phylogenetic_onlytaxainourdata.csv") %>% rename(acceptedFamily="Family", acceptedGenus="Genus", acceptedName="Species")
+avestable_combo_phylo = full_join(aves_phylo_R2, avestable_combo2)
+
+aves_table_combo_complete <- avestable_combo_phylo %>%
+   rename(Species = "acceptedName", Family = "acceptedFamily", Genus = "acceptedGenus") %>%
   relocate("Order", "Family", "Genus", "Species", "Collections", "Observations","total") 
 
 write.csv(aves_table_combo_complete, "aves/ave_table_combo_complete2.csv", na="0")

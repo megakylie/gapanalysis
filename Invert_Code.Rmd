@@ -41,19 +41,24 @@ dip_inat_combine <- dip_inat %>%
   select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, scientificName, latitude, longitude) %>% add_column(type="Observation", institution="iNaturalist")
 
 dip_lacm_combine <- dip_lacm %>%
-   select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, Genus, Species) %>% 
+   select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, Genus, Species, `Collector(s)`) %>% 
   add_column(latitude=NA, longitude=NA) %>%
-  unite("scientificName", c(Genus, Species), sep=" ", na.rm=TRUE) %>% add_column(type="Collection", institution="LACM")
+  unite("scientificName", c(Genus, Species), sep=" ", na.rm=TRUE) %>% add_column(type="Collection", institution="LACM") %>% rename(Collectors="Collector(s)")
 
 dip_chis_combine <- dip_chis %>%
-  rename(scientificName="scientific", latitude="decimalLat", longitude="decimalLon", institution="institutio") %>%
-  select(source, institution, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, scientificName, latitude, longitude) %>% add_column(type="Collection")
+  rename(scientificName="scientific", latitude="decimalLat", longitude="decimalLon", institution="institutio", Collectors="recordedBy") %>%
+  select(source, institution, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, scientificName, latitude, longitude, Collectors) %>% add_column(type="Collection")
 
 dip_nic_combine <- dip_nic %>%
-  select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, Latitude, Longitude) %>% 
+  select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, Latitude, Longitude, Collectors) %>% 
   add_column(scientificName =NA, institution = "SBBG Collected", type="Collection") %>% rename(latitude="Latitude", longitude="Longitude")
 
-dip_master = rbind(dip_inat_combine, dip_chis_combine, dip_lacm_combine, dip_nic_combine) %>%
+dip_collections = rbind(dip_chis_combine, dip_lacm_combine, dip_nic_combine)
+write_csv(dip_collections, "master/dip_collections.csv", na="")
+
+dip_coll_combine = dip_collections %>% select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, scientificName, latitude, longitude, type, institution)
+
+dip_master = rbind(dip_inat_combine, dip_coll_combine ) %>%
   # reorder the island names to show up N -> S on list
   mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente")) %>% add_column(phylum="Arthropoda", class="Insecta")
 write_csv(dip_master, "master/dip_master.csv")
@@ -423,6 +428,11 @@ mol_master_synfix = mol_master %>% distinct(scientificName, .keep_all=TRUE)
 
 write.csv(mol_master, "master/mollusk_master.csv")
 write.csv(mol_master_synfix, "mollusks/mol_master_synfix.csv", na="")
+
+#collections master for DAK
+mol_collections = mol_chis3 %>% rename(latitude = "decimalLat", longitude="decimalLon", institution="institutio", Collectors="recordedBy", order="acceptedOrder") %>%
+  select(source, institution, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, scientificName, Collectors) %>% add_column(type="Collection")
+write.csv(mol_collections, "master/mol_collections.csv", na="")
 ```
 
 ###Mol Step. 3 Make Graphs! 
@@ -819,6 +829,19 @@ diplo_master = rbind(diplo_inat_combine, diplo_chis_combine, diplo_lacm_combine)
   mutate(island = fct_relevel(island, "Santa Cruz", "Anacapa", "Santa Catalina", "San Nicolas", "San Clemente")) %>%
   rename(order = "acceptedOrder") %>% add_column(phylum = "Arthropoda", class = "Diplopoda")
 write.csv(diplo_master, "master/diplo_master.csv")
+
+#####master collections for DAK#####
+diplo_chis_combine <- diplo_chis %>%
+  rename(latitude = "decimalLatitude", longitude = "decimalLongitude", institution="institutionCode", Collectors="recordedBy") %>%
+  select(source, institution, Collectors, month, year, island, acceptedOrder, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, scientificName) %>% add_column(type="Collection")
+
+diplo_lacm_combine <- diplo_lacm %>% rename(Collectors="Collector") %>%
+  select(source, month, year, island, acceptedOrder, acceptedFamily, acceptedGenus, acceptedName, Family, Collectors) %>% rename(scientificName= "Family") %>%
+  add_column(latitude = NA, longitude =NA) %>% add_column(institution="LACM", type="Collection")
+
+
+diplo_collection = rbind(diplo_chis_combine, diplo_lacm_combine) %>% rename(order="acceptedOrder")
+write.csv(diplo_collection, "master/diplo_collection.csv", na="")
 ```
 
 ###Diplo Step. 3 Make Graphs! 
@@ -1020,6 +1043,13 @@ bla_master = rbind(bla_inat_combine, bla_chis_combine) %>%
   mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente")) %>%
   rename(order = "acceptedOrder") %>% add_column(phylum = "Arthropoda", class="Insecta")
 write.csv(bla_master, "master/bla_master.csv")
+
+#####master collections for DAK#####
+bla_collection <- bla_chis %>%
+  rename(latitude = "decimalLatitude", longitude = "decimalLongitude", institution="institutionCode", Collectors="recordedBy") %>%
+  select(source, institution, Collectors, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, scientificName) %>% add_column(type="Collection")
+
+write.csv(bla_collection, "master/bla_collections.csv", na="")
 ```
 
 ###Bla Step. 3 Make Graphs! 
@@ -1202,6 +1232,13 @@ odo_master = rbind(odo_inat_combine, odo_chis_combine) %>%
   # reorder the island names to show up N -> S on list
   mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente")) %>% add_column(phylum = "Arthropoda", class="Insecta")
 write.csv(odo_master, "master/odo_master.csv")
+
+#####master collections for DAK#####
+odo_collection <- odo_chis %>%
+  rename(latitude = "decimalLat", longitude = "decimalLon", institution="institutio", Collectors="recordedBy", scientificName="scientific") %>%
+  select(source, institution, Collectors, month, year, island, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, scientificName) %>% add_column(type="Collection", order="Odonata")
+
+write.csv(odo_collection, "master/odo_collection.csv", na="")
 
 ```
 
@@ -1387,6 +1424,13 @@ phas_master = rbind(phas_inat_combine, phas_chis_combine) %>%
   mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente")) %>% add_column(phylum="Arthropoda", class="Insecta")
 write.csv(phas_master, "master/phas_master.csv")
 
+#####master collections for DAK#####
+phas_collection <- phas_chis %>%
+  rename(latitude = "decimalLat", longitude = "decimalLon", institution="institutio", Collectors="recordedBy", scientificName="scientific") %>%
+  select(source, institution, Collectors, month, year, island, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, scientificName) %>% add_column(type="Collection", order="Phasmida")
+
+write.csv(phas_collection, "master/phas_collection.csv", na="")
+
 ```
 
 ###Phas Step. 3 Make Graphs! 
@@ -1566,7 +1610,19 @@ col_lacm_combine <- col_lacm %>%
 col_master = rbind(col_chis_combine, col_inat_combine, col_lacm_combine) %>%
   # reorder the island names to show up N -> S on list
   mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente")) %>% add_column(phylum="Arthropoda", class="Insecta")
-write.csv(col_master, "master/col_master.csv")
+write.csv(col_master, "master/col_master.csv", na="")
+
+##collections for DAK##
+col_chis_coll <- col_chis %>%
+  rename(order ="order_", latitude = "decimalLat", longitude="decimalLon", scientificName="scientific", institution="institutio", Collectors="recordedBy") %>%
+  select(source, institution, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, scientificName, latitude, longitude, Collectors) %>% add_column(type="Collection")
+
+col_lacm_coll <- col_lacm %>%
+  rename(Collectors='Collector(s)') %>%
+  select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, scientificName, Collectors) %>% add_column(latitude = NA, longitude =NA) %>% add_column(institution="LACM", type="Collection")
+
+col_collection = rbind(col_chis_coll, col_lacm_coll)
+write.csv(col_collection, "master/col_collection.csv", na="")
 ```
 
 ###Col Step. 3 Make Graphs! 
@@ -1809,6 +1865,19 @@ lep_master = rbind(lep_inat_combine, lep_chis_combine, lep_lacm_combine) %>%
   # reorder the island names to show up N -> S on list
   mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente")) %>% add_column(phylum="Arthropoda", class="Insecta")
 write.csv(lep_master, "master/lep_master.csv")
+
+##collections for DAK##
+lep_chis_coll <- lep_chis %>%
+  rename(order ="order_", latitude = "decimalLat", longitude="decimalLon", scientificName="scientific", institution="institutio", Collectors="recordedBy") %>%
+  select(source, institution, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, scientificName, latitude, longitude, Collectors) %>% add_column(type="Collection")
+
+lep_lacm_coll <- lep_lacm %>%
+  rename(Collectors='Collector(s)') %>%
+  select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, Collectors) %>% add_column(latitude = NA, longitude =NA) %>% add_column(institution="LACM", type="Collection", scientificName="NA")
+
+lep_collection = rbind(lep_chis_coll, lep_lacm_coll)
+write.csv(lep_collection, "master/lep_collection.csv", na="")
+
 ```
 
 ###Lep Step. 3 Make Graphs! 
@@ -2026,6 +2095,17 @@ arac_master = rbind(arac_inat_combine, arac_chis_combine, arac_lacm_combine) %>%
 arac_master[arac_master == 0] <- NA
 write.csv(arac_master, "master/arac_master.csv")
 
+##collections for DAK##
+arac_chis_coll <- arac_chis %>%
+  rename(order ="order_", latitude = "decimalLat", longitude="decimalLon", scientificName="scientific", institution="institutio", Collectors="recordedBy") %>%
+  select(source, institution, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, scientificName, latitude, longitude, Collectors) %>% add_column(type="Collection")
+
+arac_lacm_coll <- arac_lacm %>%
+  rename(Collectors='Collector(s)') %>%
+  select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, Collectors) %>% add_column(latitude = NA, longitude =NA) %>% add_column(institution="LACM", type="Collection", scientificName="Scorpiones")
+
+arac_collection = rbind(arac_chis_coll, arac_lacm_coll)
+write.csv(arac_collection, "master/arac_collection.csv", na="")
 ```
 
 ###Arac Step. 3 Make Graphs! 
@@ -2326,7 +2406,7 @@ hem_inat_combine <- hem_inat %>%
 
 hem_chis_combine <- hem_chis %>%
   rename(latitude = "decimalLat", longitude="decimalLon", institution="institutio") %>%
-  select(source, institution, month, year, island, acceptedFamily, acceptedGenus, acceptedName, scientificName, latitude, longitude) %>% filter_all(any_vars(!is.na(.))) %>% add_column(type="Collection")
+  select(institution, month, year, island, acceptedFamily, acceptedGenus, acceptedName, scientificName, latitude, longitude) %>% filter_all(any_vars(!is.na(.))) %>% add_column(type="Collection", source="Cal-IBIS")
 
 hem_lacm_combine <- hem_lacm %>%
   select(month, year, island, acceptedFamily, acceptedGenus, acceptedName, scientificName) %>%
@@ -2335,7 +2415,7 @@ hem_lacm_combine <- hem_lacm %>%
 hem_bold_combine <- hem_bold %>%
   rename(latitude = "lat", longitude = "lon", institution="institution_storing") %>%
   select(source, island, acceptedFamily, acceptedGenus, acceptedName, scientificName, latitude, longitude) %>%
-  add_column(month = NA, year= NA) %>% add_column(institution="iNaturalist", type="Collection")
+  add_column(month = NA, year= NA) %>% add_column(institution="BOLD", type="Collection")
 
 hem_master = rbind(hem_inat_combine, hem_chis_combine, hem_bold_combine, hem_lacm_combine) %>%
   # reorder the island names to show up N -> S on list
@@ -2346,7 +2426,23 @@ hem_master2 = hem_master %>%
 #some base R script to get rid of the silly 0 months, years and lat/long (done above to coord data)
 hem_master[hem_master == 0] <- NA
 
-write.csv(hem_master, "master/hem_master.csv")
+write.csv(hem_master, "master/hem_master.csv", na="")
+
+##collections for DAK##
+hem_chis_coll <- hem_chis %>%
+  rename( latitude = "decimalLat", longitude="decimalLon", institution="institutio", Collectors="recordedBy") %>%
+  select(institution, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, scientificName, latitude, longitude, Collectors) %>% filter(rowSums(is.na(.))!=ncol(.)) %>% add_column(type="Collection", source="Cal-IBIS")
+
+hem_lacm_coll <- hem_lacm %>%
+  rename(Collectors='Collector(s)') %>%
+  select(month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, scientificName, Collectors) %>% add_column(latitude = NA, longitude =NA, source="LACM", institution="LACM", type="Collection")
+
+hem_bold_coll <- hem_bold %>%
+  rename(latitude = "lat", longitude = "lon", institution="institution_storing", Collectors="collectors") %>%
+  select(source, island, acceptedFamily, acceptedGenus, acceptedName, scientificName, latitude, longitude, institution, Collectors) %>% add_column(month = NA, year= NA, order="Hemiptera", type="Collection")
+
+hem_collection = rbind(hem_chis_coll, hem_lacm_coll, hem_bold_coll)
+write.csv(hem_collection, "master/hem_collections.csv", na="")
 ```
 
 ###Hem Step. 3 Make Graphs! 
@@ -2630,6 +2726,18 @@ orth_master = rbind(orth_inat_combine, orth_chis_combine, orth_lacm_combine) %>%
   # reorder the island names to show up N -> S on list
   mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente")) %>% add_column(phylum="Arthropoda", class="Insecta")
 write.csv(orth_master, "master/orth_master.csv")
+
+##collections for DAK##
+orth_chis_coll <- orth_chis %>%
+    rename(latitude = "decimalLat", longitude="decimalLon", island="ArcMap_IslandNames", institution="institutio", Collectors="recordedBy") %>%select(institution, month, year, island, order_, acceptedFamily, acceptedGenus, acceptedName...92, scientificName, latitude, longitude, Collectors) %>%
+  rename(order = "order_", acceptedName="acceptedName...92") %>% add_column(source="Cal-IBIS", type="Collection")
+
+orth_lacm_coll <- orth_lacm %>%
+  rename(Collectors='Collector(s)', island="Island") %>%
+  select(month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, Collectors, scientificName) %>% add_column(latitude = NA, longitude =NA) %>% add_column(source ="LACM", institution="LACM", type="Collection")
+
+orth_collection = rbind(orth_chis_coll, orth_lacm_coll)
+write.csv(orth_collection, "master/orth_collection.csv", na="")
 ```
 
 ###Orth Step. 3 Make Graphs! 
@@ -2839,16 +2947,18 @@ hym_inat2 = left_join(hym_inat, hym_syn, by=c("scientificName"))
 hym_lacm2 = left_join(hym_lacm, hym_syn, by=c("scientificName"))
 hym_bohart2 = left_join(hym_bohart, hym_syn, by=c("scientificName"))
 
-hym_chis_combine <- hym_chis2 %>%
-  rename(latitude = "decimalLat", longitude="decimalLon", institution="institutio", month="month_arabic", acceptedName="acceptedName.y") %>%
-  select(source, institution, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, scientificName, latitude, longitude) %>%  filter_all(any_vars(!is.na(.))) %>% add_column(type="Collection")
+hym_chis_coll <- hym_chis2 %>%
+  rename(latitude = "decimalLat", longitude="decimalLon", institution="institutio", month="month_arabic", acceptedName="acceptedName.y", Collectors="recordedBy") %>%
+  select(source, institution, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, scientificName, latitude, longitude, Collectors) %>%  filter_all(any_vars(!is.na(.))) %>% add_column(type="Collection")
+
+hym_lacm_coll <- hym_lacm2 %>% rename(month="month_arabic", Collectors="collector") %>% select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, scientificName, Collectors) %>% add_column(type="Collections", institution="LACM", latitude=NA, longitude=NA )
+
+hym_bohart_coll <- hym_bohart2  %>% rename(month="month_arabic", Collectors="Collector", latitude="Decimal.Latitude", longitude="Decimal.Longitude") %>% select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, scientificName, latitude, longitude, Collectors)%>% add_column(type="Collections", institution="Bohart")
 
 ## hym_master from below and filter to only bohart and chis 
-hym_collection = hym_master %>% filter(source %in% c("Bohart", "LACM")) %>% select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, scientificName) %>% add_column(latitude="not_transferred", longitude = "not_transferred", type="Collection")
-hym_collection$institution = hym_collection$source
 
-hym_collection_master = rbind(hym_chis_combine, hym_collection) %>% add_column(phylum="Arthropoda", class="Insecta")
-write.csv(hym_collection_master, "master/hym_collection_master.csv")
+hym_collection = rbind(hym_chis_coll, hym_lacm_coll, hym_bohart_coll)
+write.csv(hym_collection, "master/hym_collection.csv", na="")
 ```
 
 ## Step 3. Make master dataset.
@@ -3043,7 +3153,7 @@ derm_chis <- read_csv("dermaptera/derm_chis.csv")
 ```
 
 
-### Orth Step 2. Combine datasets
+### Derm Step 2. Combine datasets
 ```{r Selecting columns and combining}
 derm_inat_combine <- derm_inat %>%
   select(month, year, island, acceptedFamily, acceptedGenus, acceptedName, scientificName, latitude, longitude) %>%
@@ -3058,6 +3168,13 @@ derm_master = rbind(derm_inat_combine, derm_chis_combine) %>%
   # reorder the island names to show up N -> S on list
   mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente")) %>% add_column(phylum="Arthropoda", class="Insecta")
 write.csv(derm_master, "master/derm_master.csv")
+
+#####master collections for DAK#####
+derm_collection <- derm_chis %>%
+  rename(latitude = "decimalLat", longitude = "decimalLon", institution="institutio", Collectors="recordedBy") %>%
+  select(institution, Collectors, month, year, island, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, scientificName) %>% add_column(type="Collection", order="Dermaptera", source="Cal-IBIS")
+
+write.csv(derm_collection, "master/derm_collection.csv", na="")
 ```
 
 ###Derm Step. 3 Make Graphs! 
@@ -3238,101 +3355,3 @@ orth_lit_complete <-x_table6 %>%
 write.csv(orth_lit_complete, "orthoptera/OrthopteraGraphs/orth_lit_complete.csv", na="0")
 ```
 #
-#Fixing up Literature species synonymy
-This code is messy and not the most straight forward way to do this, but it shouldn't be run against accepted for making a master list. After this is done and synonymy is finished for the new literature records I can make a really nice synonymy .csv for all invertebrate that can be used for future work. 
-```{r MASTER MASTER!}
-
-#masterlists download if don't have already
-mol_master = read_csv("master/mollusk_master.csv") %>% 
-  select(...1, source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, scientificName, latitude, longitude, phylum, class)
-chilo_master = read_csv("master/chilo_master.csv")
-diplo_master = read_csv("master/diplo_master.csv")
-bla_master = read_csv("master/bla_master.csv")
-odo_master = read_csv("master/odo_master.csv")
-phas_master = read_csv("master/phas_master.csv")
-col_master = read_csv("master/col_master.csv")
-lep_master = read_csv("master/lep_master.csv")
-arac_master = read_csv("master/arac_master.csv")
-hem_master = read_csv("master/hem_master.csv")
-dip_master = read_csv("master/dip_master.csv")
-derm_master = read_csv("master/derm_master.csv")
-orth_master = read_csv("master/orth_master.csv")
-hym_master = read_csv("hymenoptera/hym_master_syn.csv") %>% select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, scientificName) %>% add_column(latitude=NA, longitude=NA, phylum="Arthropoda", class="Insecta")
-
-#combined all the master lists
-master_invert_1 = rbind(mol_master, chilo_master, diplo_master, bla_master, odo_master, phas_master, col_master, lep_master, arac_master, orth_master, derm_master, hem_master) %>% 
-   select(source, institution, type, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, scientificName, latitude, longitude, phylum, class)
-
-#master
-master_inverts = rbind(master_invert_1, dip_master, hym_master)
-write_csv(master_inverts, "master/master_inverts2.csv", na="")
-
-#master collection to deal with silly hymenoptera 
-master_inverts_x = rbind(master_invert_1, dip_master, hym_collection_master) 
-master_inverts_collection = filter(master_inverts_x, type=="Collection")
-write_csv(master_inverts_collection, "master/master_inverts_collection.csv", na="")
-
-master_invert_syn =master_inverts %>%
-  rename(scientificName_accepted="scientificName") %>%
-  select(phylum, class, order, acceptedFamily,  acceptedGenus, acceptedName, scientificName_accepted) %>%
-  distinct(across(contains("accepted")), .keep_all=TRUE) %>%
-  rename(scientificName ="scientificName_accepted")
-
-
-#Master synonymy list of distinct scientificName values
-master_invert_syn = master_inverts %>% distinct(scientificName, .keep_all=TRUE) %>% select(phylum, class, order, scientificName, acceptedFamily, acceptedGenus, acceptedName)
-write_csv(master_invert_syn, "master/master_invert_syn.csv", na="")
-#SEEMS TO BE AN ISSUE WITH THE MOLLUSK OCCURENCE DATA NOT BEING SYNONYMIZED !!!
-
-#list of San Clemenete for Kristen
-invert_scl = filter(master_inverts, island=="San Clemente") %>% distinct(scientificName, .keep_all=TRUE) %>% select(island, phylum, class, order, acceptedFamily, acceptedGenus, acceptedName, scientificName)
-write_csv(invert_scl, "master/invert_scl.csv", na="")
-```
-``` {r}
-
-#adding new lit list 
-new_invert_lit = read_csv("Island_invert_lit_new-2.csv")
-
-master_invert_syn2 = master_invert_syn %>%
-  select(scientificName, acceptedGenus, acceptedName)
-
-
-#ONLY COMPARED TO OCCURENCE SYNONYMY, not Miller 
-new_invert_lit_synonymy = left_join(new_invert_lit, master_invert_syn2)
-write_csv(new_invert_lit_synonymy, "Kylie/new_invert_lit_synR1.csv", na="")
-
-# did spiders, hymenoptera and small orders by hand, reuploading dataset and then will compare to miller lit synonymy for hemiptera, coleoptera and lepidoptera
-new_invert_lit_synR1 = read_csv("Kylie/new_invert_lit_synR1edited.csv")
-col_miller = read_csv("coleoptera/col_lit.csv")
-lep_miller = read_csv("lepidoptera/lep_miller.csv")
-hem_miller = read_csv("hemiptera/hem_miller.csv")
-
-col_millersyn = col_miller %>%
-  select(family, acceptedFamily,  acceptedGenus, acceptedName, genus, species) %>%
-  unite("scientificName_accepted", genus:species, na.rm=TRUE, sep=" ") %>%
-  distinct(across(contains("accepted"))) %>%
-  rename(scientificName ="scientificName_accepted")
-
-hem_millersyn = hem_miller %>%
-  rename(family="FAMILY", genus="GENUS", scientificName_accepted="scientificName") %>%
-  select(family, acceptedFamily,  acceptedGenus, acceptedName, scientificName_accepted) %>%
-  distinct(across(contains("accepted"))) %>%
-  rename(scientificName ="scientificName_accepted")
-
-lep_millersyn = lep_miller %>%
-  select(family, acceptedFamily,  acceptedGenus, acceptedName, genus, species) %>%
-  unite("scientificName_accepted", genus:species, na.rm=TRUE, sep=" ") %>%
-  distinct(across(contains("accepted"))) %>%
-  rename(scientificName ="scientificName_accepted")
-
-millersyn_col_hem_lep = rbind(col_millersyn, hem_millersyn, lep_millersyn)
-
-newinvert_lit_syn2 = left_join(new_invert_lit_synR1, millersyn_col_hem_lep, by="scientificName")
-new_invert_lit_syn3 = left_join(newinvert_lit_syn2, master_invert_syn, by="scientificName")
-write_csv(newinvert_lit_syn2, "Kylie/new_invert_lit_synR2.csv", na="")
-write_csv(new_invert_lit_syn3, "Kylie/new_invert_lit_synR3.csv", na="")
-
-leptab= table(lep_master$acceptedGenus)
-leptab = as.data.frame.table(leptab)  %>%
-  rename(acceptedGenus = "Var1", total = "Freq")
-```

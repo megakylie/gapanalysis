@@ -307,15 +307,15 @@ bohart = read_csv("hymenoptera/hym_bohart_clean.csv")
 
 
 chis_column <- chis %>%
-  select(source, month_arabic, day_arabic, year, island, order, family, genus, specificEp, scientificName, decimalLat, decimalLon, locality, institutio) %>% rename(institutionCode="institutio", latitude="decimalLat", longitude="decimalLon")
+  select(source, month_arabic, day_arabic, year, island, order, family, genus, specificEp, scientificName, decimalLat, decimalLon, locality, institutio, recordedBy) %>% rename(institutionCode="institutio", latitude="decimalLat", longitude="decimalLon", Collector="recordedBy")
 bohart_column <- bohart %>%
-  select(source, month_arabic, day_arabic, year, island, order, family, genus, specificEp, scientificName, "Decimal Latitude", "Decimal Longitude", locality) %>%
+  select(source, month_arabic, day_arabic, year, island, order, family, genus, specificEp, scientificName, "Decimal Latitude", "Decimal Longitude", locality, Collector) %>%
   rename(latitude="Decimal Latitude", longitude="Decimal Longitude") %>% add_column(institutionCode="Bohart")
 
 hym_coord_data=rbind(chis_column, bohart_column)
 
 
-write.csv(hym_coord_data, "hymenoptera/hym_coord_data.csv")
+write.csv(hym_coord_data, "hymenoptera/HymenopteraGraphs/hym_coord_data.csv")
 
 ```
 

@@ -1,0 +1,168 @@
+---
+title: "R Notebook"
+output: html_notebook
+editor_options: 
+  chunk_output_type: console
+---
+
+Invert code extras because that markdown is too darn big. This markdown has the individual synonymy for the hymenoptera code and the master's combination code.
+
+```{r}
+hym_coord_data <- read_csv("hymenoptera/HymenopteraGraphs/hym_coord_data.csv") %>% select(island, source, month_arabic, day_arabic, year, island, order, scientificName, latitude, longitude, locality, institutionCode, Collector)
+
+hym_lacm = read.csv("hymenoptera/hym_lacm_clean.csv") %>% select(island, source, month_arabic, day_arabic, year, island, order, scientificName, locality, collector) %>% add_column(latitude=NA, longitude=NA, institutionCode="LACM") %>% rename(Collector="collector")
+
+hym_collections = rbind(hym_coord_data, hym_lacm)
+
+
+hym_syn= read_csv("hymenoptera/hym_synonymy_list.csv")
+hym_collections2 = left_join(hym_collections, hym_syn, by=c("scientificName"))
+
+hym_collections3 = hym_collections2 %>% add_count(island, acceptedFamily, acceptedGenus, acceptedName, sort=TRUE) %>% select(island, acceptedFamily, acceptedGenus, acceptedName, scientificName, n) %>%   filter(!is.na(island))
+hym_collections_short = distinct(hym_collections3, .keep_all=TRUE)
+
+
+
+hym_collections_matrix = spread(hym_collections_short, island, n)
+
+bees_collections_matrix = hym_collections_matrix %>% filter(acceptedFamily %in% c("Andrenidae", "Apidae", "Colletidae", "Megachilidae", "Halictidae"))
+
+write_csv(bees_collections_matrix, "hymenoptera/HymenopteraGraphs/bee_collections_matrix.csv", na="")
+write_csv(hym_collections2, "hymenoptera/HymenopteraGraphs/hymenoptera_collections_list.csv")
+```
+
+
+
+#Fixing up Literature species synonymy
+This code is messy and not the most straight forward way to do this, but it shouldn't be run against accepted for making a master list. After this is done and synonymy is finished for the new literature records I can make a really nice synonymy .csv for all invertebrate that can be used for future work. 
+```{r make master invert list}
+###MASTER LIST####
+#masterlists download if don't have already
+mol_master = read_csv("master/mollusk_master.csv") %>% 
+  select(...1, source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, scientificName, latitude, longitude, phylum, class)
+chilo_master = read_csv("master/chilo_master.csv")
+diplo_master = read_csv("master/diplo_master.csv")
+bla_master = read_csv("master/bla_master.csv")
+odo_master = read_csv("master/odo_master.csv")
+phas_master = read_csv("master/phas_master.csv")
+col_master = read_csv("master/col_master.csv")
+lep_master = read_csv("master/lep_master.csv")
+arac_master = read_csv("master/arac_master.csv")
+hem_master = read_csv("master/hem_master.csv")
+dip_master = read_csv("master/dip_master.csv")
+derm_master = read_csv("master/derm_master.csv")
+orth_master = read_csv("master/orth_master.csv")
+hym_master = read_csv("hymenoptera/hym_master_syn.csv") %>% select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, scientificName) %>% add_column(latitude=NA, longitude=NA, phylum="Arthropoda", class="Insecta")
+
+#combined all the master lists
+master_invert_1 = rbind(mol_master, chilo_master, diplo_master, bla_master, odo_master, phas_master, col_master, lep_master, arac_master, orth_master, derm_master, hem_master) %>% 
+   select(source, institution, type, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, scientificName, latitude, longitude, phylum, class)
+
+#master
+master_inverts = rbind(master_invert_1, dip_master, hym_master)
+write_csv(master_inverts, "master/master_inverts2.csv", na="")
+
+#master collection to deal with silly hymenoptera 
+master_inverts_x = rbind(master_invert_1, dip_master, hym_collection_master) 
+master_inverts_collection = filter(master_inverts_x, type=="Collection")
+write_csv(master_inverts_collection, "master/master_inverts_collection.csv", na="")
+
+master_invert_syn =master_inverts %>%
+  rename(scientificName_accepted="scientificName") %>%
+  select(phylum, class, order, acceptedFamily,  acceptedGenus, acceptedName, scientificName_accepted) %>%
+  distinct(across(contains("accepted")), .keep_all=TRUE) %>%
+  rename(scientificName ="scientificName_accepted")
+
+
+#Master synonymy list of distinct scientificName values#
+master_invert_syn = master_inverts %>% distinct(scientificName, .keep_all=TRUE) %>% select(phylum, class, order, scientificName, acceptedFamily, acceptedGenus, acceptedName)
+write_csv(master_invert_syn, "master/master_invert_syn.csv", na="")
+#SEEMS TO BE AN ISSUE WITH THE MOLLUSK OCCURENCE DATA NOT BEING SYNONYMIZED !!!
+
+#list of San Clemenete for Kristen
+invert_scl = filter(master_inverts, island=="San Clemente") %>% distinct(scientificName, .keep_all=TRUE) %>% select(island, phylum, class, order, acceptedFamily, acceptedGenus, acceptedName, scientificName)
+write_csv(invert_scl, "master/invert_scl.csv", na="")
+```
+
+``` {r Literature synonymy }
+
+#adding new lit list 
+new_invert_lit = read_csv("Island_invert_lit_new-2.csv")
+
+master_invert_syn2 = master_invert_syn %>%
+  select(scientificName, acceptedGenus, acceptedName)
+
+
+#ONLY COMPARED TO OCCURENCE SYNONYMY, not Miller 
+new_invert_lit_synonymy = left_join(new_invert_lit, master_invert_syn2)
+write_csv(new_invert_lit_synonymy, "Kylie/new_invert_lit_synR1.csv", na="")
+
+# did spiders, hymenoptera and small orders by hand, reuploading dataset and then will compare to miller lit synonymy for hemiptera, coleoptera and lepidoptera
+new_invert_lit_synR1 = read_csv("Kylie/new_invert_lit_synR1edited.csv")
+col_miller = read_csv("coleoptera/col_lit.csv")
+lep_miller = read_csv("lepidoptera/lep_miller.csv")
+hem_miller = read_csv("hemiptera/hem_miller.csv")
+
+col_millersyn = col_miller %>%
+  select(family, acceptedFamily,  acceptedGenus, acceptedName, genus, species) %>%
+  unite("scientificName_accepted", genus:species, na.rm=TRUE, sep=" ") %>%
+  distinct(across(contains("accepted"))) %>%
+  rename(scientificName ="scientificName_accepted")
+
+hem_millersyn = hem_miller %>%
+  rename(family="FAMILY", genus="GENUS", scientificName_accepted="scientificName") %>%
+  select(family, acceptedFamily,  acceptedGenus, acceptedName, scientificName_accepted) %>%
+  distinct(across(contains("accepted"))) %>%
+  rename(scientificName ="scientificName_accepted")
+
+lep_millersyn = lep_miller %>%
+  select(family, acceptedFamily,  acceptedGenus, acceptedName, genus, species) %>%
+  unite("scientificName_accepted", genus:species, na.rm=TRUE, sep=" ") %>%
+  distinct(across(contains("accepted"))) %>%
+  rename(scientificName ="scientificName_accepted")
+
+millersyn_col_hem_lep = rbind(col_millersyn, hem_millersyn, lep_millersyn)
+
+newinvert_lit_syn2 = left_join(new_invert_lit_synR1, millersyn_col_hem_lep, by="scientificName")
+new_invert_lit_syn3 = left_join(newinvert_lit_syn2, master_invert_syn, by="scientificName")
+write_csv(newinvert_lit_syn2, "Kylie/new_invert_lit_synR2.csv", na="")
+write_csv(new_invert_lit_syn3, "Kylie/new_invert_lit_synR3.csv", na="")
+
+leptab= table(lep_master$acceptedGenus)
+leptab = as.data.frame.table(leptab)  %>%
+  rename(acceptedGenus = "Var1", total = "Freq")
+```
+
+```{r make master collection list}
+###MASTER LIST####
+
+mol_collection = read_csv("master/mol_collections.csv") 
+diplo_collection = read_csv("master/diplo_collection.csv")
+bla_collection = read_csv("master/bla_collections.csv")
+odo_collection = read_csv("master/odo_collection.csv")
+phas_collection = read_csv("master/phas_collection.csv")
+col_collection = read_csv("master/col_collection.csv")
+lep_collection = read_csv("master/lep_collection.csv")
+arac_collection = read_csv("master/arac_collection.csv")
+hem_collection = read_csv("master/hem_collections.csv")
+dip_collection = read_csv("master/dip_collections.csv")
+derm_collection = read_csv("master/derm_collection.csv")
+orth_collection = read_csv("master/orth_collection.csv")
+hym_collection = read_csv("master/hym_collection.csv") 
+
+#combined all the master lists
+master_invert_collection = rbind(mol_collection, diplo_collection, bla_collection, odo_collection, phas_collection, col_collection, lep_collection, arac_collection, orth_collection, derm_collection, hem_collection, hym_collection) %>% 
+   select(source, type, institution, Collectors, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, scientificName, latitude, longitude) %>% drop_na(source) 
+
+master_invert_collection1 = rbind(master_invert_collection, dip_collection) %>% rename(collectors="Collectors")
+
+write_csv(master_invert_collection1, "master/master_invert_collection.csv", na="")
+
+## table by institution 
+invert_instit = table(master_invert_collection1$institution)
+invert_instit = as.data.frame.table(invert_instit)
+
+invert_instit2 = invert_instit %>% rename(Institution = "Var1", n="Freq") %>%  arrange(desc(n))
+write.csv(invert_instit2, "extratables/invert_institution.csv")
+
+```
