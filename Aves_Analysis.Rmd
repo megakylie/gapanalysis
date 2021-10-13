@@ -49,6 +49,10 @@ aves_sbmnh_col_dak <- aves_sbmnh_col %>%
 aves_collections = rbind(aves_chis_dak, aves_sbmnh_col_dak)
 write_csv(aves_collections, "aves_collections_dak.csv", na="")
 
+aves_instit = table(aves_collections$institutionCode)
+aves_instit_table = as.data.frame(aves_instit) %>% rename(Institution = "Var1", n = "Freq" ) %>% arrange(desc(n))
+write_csv(aves_instit_table, "extratables/aves_instit.csv")
+
 ```
 
 

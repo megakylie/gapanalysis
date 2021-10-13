@@ -34,6 +34,10 @@ mam_chis_dak <- mam_chis %>%
   select(source, gbifID, institutionCode, catalogNumber, recordedBy, month, year, island, locality, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, CollectionType, preparations)
 write_csv(mam_chis_dak, "mam_chis_dak.csv", na="")
 
+mam_instit = table(mam_chis_dak$institutionCode)
+mam_instit_table = as.data.frame(mam_instit) %>% rename(Institution = "Var1", n = "Freq" ) %>% arrange(desc(n))
+write_csv(mam_instit_table, "extratables/mam_instit.csv")
+
 ```
 
 
@@ -229,7 +233,6 @@ library(RColorBrewer)
 rep_inat <- read_csv("reptile/rep_inat.csv")
 
 rep_chis <- read_csv("reptile/rep_chis.csv")
-
 ```
 
 
@@ -238,17 +241,23 @@ rep_chis <- read_csv("reptile/rep_chis.csv")
 #inat doesn't have order listed..would need to add 
 rep_inat_combine <- rep_inat %>%
   rename(class="iconic_tax") %>%
-  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude)
+  select(source, month, year, island, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude) %>% add_column(institutionCode="iNaturalist")
 
 rep_chis_combine <- rep_chis %>%
   rename(latitude = "decimalLatitude", longitude="decimalLongitude") %>%
-  select(source_1, month, year, island_2, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude) %>%
-  rename(island="island_2", source = "source_1")
+  select(source...60, month, year, island...122, class, acceptedFamily, acceptedGenus, acceptedName, latitude, longitude, institutionCode) %>%
+  rename(island="island...122", source = "source...60")
 
 
 rep_master = rbind(rep_inat_combine, rep_chis_combine) %>%
   # reorder the island names to show up N -> S on list
   mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente"))
+
+
+#print for Denise 
+rep_instit = table(rep_chis_combine$institutionCode)
+rep_instit_table = as.data.frame(rep_instit) %>% rename(Institution = "Var1", n = "Freq" ) %>% arrange(desc(n))
+write_csv(rep_instit_table, "extratables/rep_instit.csv")
 
 ```
 
@@ -391,11 +400,11 @@ amph_chis <- read_csv("amphibian/amph_chis.csv")
 amph_inat_combine <- amph_inat %>%
   rename(class="iconic_tax") %>%
   select(source, month, year, island, class, acceptedGenus, acceptedName, latitude, longitude) %>%
-  add_column(type="Observation")
+  add_column(type="Observation", institutionCode="iNaturalist")
 
 amph_chis_combine <- amph_chis %>%
   rename(latitude = "decimalLatitude", longitude="decimalLongitude", month="month_", year="year_") %>%
-  select( month, year, island...128, class, acceptedGenus, acceptedName, latitude, longitude) %>%
+  select( month, year, island...128, class, acceptedGenus, acceptedName, latitude, longitude, institutionCode) %>%
   rename(island = "island...128") %>%
   add_column(source="Cal-IBIS", type="Collection")
 
@@ -405,6 +414,12 @@ amph_master = rbind(amph_inat_combine, amph_chis_combine) %>%
   mutate(island = fct_relevel(island, "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "Santa Catalina", "San Nicolas", "San Clemente"))
 
 write.csv(amph_master, "Amphibian/AmphibianGraphs/amph_master.csv")
+
+
+#print for Denise 
+amph_instit = table(amph_chis_combine$institutionCode)
+amph_instit_table = as.data.frame(amph_instit) %>% rename(Institution = "Var1", n = "Freq" ) %>% arrange(desc(n))
+write_csv(amph_instit_table, "extratables/amph_instit.csv")
 
 ```
 
