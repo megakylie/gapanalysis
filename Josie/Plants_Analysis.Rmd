@@ -71,7 +71,7 @@ text(0,length(unique(x)),labels=nm,adj=0,cex=1.5)
 ```
 
 ```{r Import main dataset}
-data <- read_csv("Josie/Data/DraftData_20210825.csv")%>%
+data <- read_csv("Josie/Data/DraftData_20211021.csv")%>%
   dplyr::filter(institutionCode != "iNaturalist")
 
 # fix the column headings
@@ -98,7 +98,7 @@ all_data_coords <- all_data %>%
 # Using the coord cleaner package, remove points that have "obvious" issues
 # This filters out things like when the capital or state centroid was used as a dummy coord
 flags <- clean_coordinates(x = all_data_coords, lon = "Longitude", lat = "Latitude",
-                          species = "Sci_Name",
+                          species = "sci_name",
                           tests = c("capitals", "centroids", "equal","gbif", "institutions",
                                      "zeros"))
 all_data_coords <- all_data_coords[flags$.summary,] 
@@ -157,8 +157,12 @@ ggplot(chis_ibis) +
   geom_sf(data = all_data_coords3, color = "red", size = 0.3) +
   geom_sf(fill = alpha("black", 0.2)) 
 
+## isolate and remove centroids
+all_data_centroidkiller_questquecest <- all_data_coords3 %>%
+  mutate("lat_long" = str_c(Latitude, Longitude, sep = ", "))
+
 # Write the cleaned up spatial data to a file
-write_csv(all_data_coords3, "Josie/Data/DraftData_SpatialClean.csv")
+write_csv(all_data_coords3, "Josie/Data/DraftData_20211021_SpatialClean.csv")
 
 ```
 
