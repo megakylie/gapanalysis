@@ -1,0 +1,262 @@
+---
+title: "Merging Cleanup Files"
+author: "Josie Lesage"
+date: "10/5/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# load packages
+library(tidyverse)
+library(stringr)
+```
+
+# File Goal
+This file is meant to merge some of the 'clean-up' steps from the Gap Analysis plant cleaning process into a single-step (or at least more streamlined) cleaning process.
+
+First, we'll create a dataset with all possible "old" species names ("scientificName") and their updated names so far.
+
+Then, we'll create the Elim/Keep list based on updated names.
+
+# Importing plant data
+
+```{r importing actual data}
+# import two files (bc one is too big)
+plants_raw_1 <- read_csv("Josie/Data/plants_raw_1.csv", col_types = cols(.default = "c", isl_name = "c")) 
+plants_raw_2 <- read_csv("Josie/Data/plants_raw_2.csv", col_types = cols(.default = "c", isl_name = "c")) 
+
+# smoosh together
+plants_raw <- full_join(plants_raw_1, plants_raw_2)
+
+# change locality data to lowercase
+plants_isl1 <- plants_raw %>%
+  mutate(locality_low = str_to_lower(locality)) 
+
+plants_isl <- plants_isl1 %>%
+  # remove weird states/locations
+  filter(stateProvince != "Missouri" | is.na(stateProvince),
+         stateProvince != "Alaska" | is.na(stateProvince),
+         stateProvince != "Michigan" | is.na(stateProvince),
+         stateProvince != "Kentucky" | is.na(stateProvince),
+         stateProvince != "UTAH" | is.na(stateProvince),
+         stateProvince != "Florida" | is.na(stateProvince),
+         stateProvince != "Glapagos" | is.na(stateProvince),
+         stateProvince != "Colorado" | is.na(stateProvince),
+         stateProvince != "Gal<e1>pagos" | is.na(stateProvince),
+         stateProvince != "Gal<e1>pagos Prov." | is.na(stateProvince),
+         stateProvince != "Province Gal<e1>pagos Islands" | is.na(stateProvince),
+         stateProvince != "Galapagos Islands" | is.na(stateProvince),
+         stateProvince != "Provincia de Galapagos" | is.na(stateProvince),
+         stateProvince != "Galapagos" | is.na(stateProvince)) %>%
+  # start adding real island names
+  mutate(isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "san nicolas"), "San Nicolas", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "san nicholas"), "San Nicolas", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "nicholas"), "San Nicolas", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "nicolas"), "San Nicolas", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "santa catalina is"), "Santa Catalina", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "catalina is"), "Santa Catalina", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "catalina"), "Santa Catalina", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "santa rosa i"), "Santa Rosa", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "clemente"), "San Clemente", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "clement"), "San Clemente", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "santa cruz"), "Santa Cruz", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "cruz is"), "Santa Cruz", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "coronados i"), "Coronados", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "coronado i"), "Coronados", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "isla coronado"), "Coronados", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "anacapa"), "Anacapa", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "cedros"), "Cedros", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "miguel"), "San Miguel", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "guadalupe"), "Guadalupe", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "todos santo"), "Todos Santos", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "todo santos"), "Todos Santos", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "natividad"), "Natividad", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "benito"), "San Benito", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "martin"), "San Martin", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "santa barbara isl"), "Santa Barbara", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "jeronimo"), "Geronimo", isl_name),
+         isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "geronimo"), "Geronimo", isl_name)) %>%
+  filter(!is.na(isl_name)) %>%
+  filter(isl_name == "San Nicolas" | isl_name == "Santa Catalina" | isl_name == "Santa Rosa" | isl_name == "Santa Barbara" | 
+           isl_name == "Anacapa" | isl_name == "Santa Cruz" | isl_name == "San Clemente" | isl_name == "San Miguel") 
+
+remove(plants_raw_1, plants_raw_2, plants_isl1)
+
+plants_genus <- plants_isl %>%
+  # break the "scientific name" column into two parts - genus and species
+  mutate(epithetfilter =  scientificName) %>%
+  separate(epithetfilter, sep = " ", into = c("genus_filter", "epithet_filter"), extra = "merge") %>%
+  # remove anything that wasn't given a specific epithet
+  filter(!is.na(epithet_filter)) %>%
+  # fix poaceae - for some reason is capitalized
+  mutate(family = ifelse(family == "POACEAE", "Poaceae", family),
+         scientificName = str_to_lower(scientificName)) %>%
+  # filter to just the tracheophyta
+  filter(phylum == "Tracheophyta")
+
+write_csv(plants_genus, "Josie/Data/October2021_Plants.csv")
+
+```
+
+# Combining elimination lists
+
+```{r Fixing up lists}
+kylie_syn <- read_csv("Josie/Data/KJE_synonymylist.csv", col_types = cols(.default = "c")) %>%
+  rename(sci_name_1 = acceptedName) %>%
+  mutate(scientificName = str_to_lower(scientificName),
+         sci_name_1 = str_to_lower(sci_name_1))
+
+elim_list_hold <- read_csv("Josie/Data/Plants_ElimList_Revised2.csv", col_types = cols(.default = "c")) %>%
+  mutate(Eliminate = replace_na(Eliminate, "Keep"),
+         Eliminate = recode_factor(Eliminate, "1" = "Elim")) %>%
+  rename("scientificName" = "OG_spname",
+         Eliminate_1 = Eliminate,
+         sci_name_2 = Updated_name) %>%
+  mutate(scientificName = str_to_lower(scientificName),
+         sci_name_2 = str_to_lower(sci_name_2))
+
+step_1_elim <- elim_list_hold %>%
+  mutate(sci_name_12 = coalesce(sci_name_2, scientificName)) %>%
+  select(sci_name_12, Eliminate_1) %>%
+  filter(!is.na(Eliminate_1))
+
+submaster_list <- full_join(kylie_syn, elim_list_hold) %>%
+  mutate(sci_name_12 = coalesce(sci_name_1, sci_name_2)) %>%
+  select(scientificName, sci_name_1, sci_name_12, -Eliminate_1)
+submaster_list <- full_join(submaster_list, step_1_elim)
+
+elim_list_2 <- read_csv("Josie/Data/Plants_ElimList_round3_2.csv", col_types = cols(.default = "c")) %>%
+  mutate(Eliminate = replace_na(Eliminate, "Keep"),
+         Eliminate = recode_factor(Eliminate, "elim" = "Elim")) %>%
+  rename("scientificName" = "Taxa_name",
+         Family_3 = Family,
+         Eliminate_2 = Eliminate) %>%
+  mutate(scientificName = str_to_lower(scientificName),
+         Syn = str_to_lower(Syn))
+
+submaster_list2 <- full_join(submaster_list, elim_list_2) %>%
+  mutate(updated_name3 = coalesce(Syn, sci_name_12),
+         Eliminate_12 = coalesce(Eliminate_2, Eliminate_1),
+         "Elim12_Problem" = if_else(Eliminate_1 != Eliminate_2, "Problem", "No Problem")) %>%
+  select(scientificName, sci_name_1, sci_name_12, updated_name3, Eliminate_1, Eliminate_2, Eliminate_12, "Elim12_Problem") 
+  
+lastlist <- read_csv("Josie/Data/PlantMasterList.csv", col_types = cols(.default = "c")) %>%
+  mutate(final_syn = coalesce(syn_replace, new_datasetname)) %>%
+  rename(scientificName = old_name,
+         Eliminate_3 = Eliminate) %>%
+  mutate(scientificName = str_to_lower(scientificName),
+         sciname_4 = str_to_lower(final_syn)) %>%
+  dplyr::select(-final_syn) %>%
+  distinct()
+
+# As-close-to-master list as we have rn
+submaster_list3 <- full_join(submaster_list2, lastlist) %>%
+  mutate(updated_name4 = coalesce(sciname_4, updated_name3),
+         Elim13_Problem = if_else(Eliminate_1 != Eliminate_3, "Problem", "No Problem"),
+         Elim23_Problem = if_else(Eliminate_2 != Eliminate_3, "Problem", "No Problem")) %>%
+  select(kingdom_final, phylum_final, class_final, order_final, family_final,
+         scientificName, updated_name4, 
+         Eliminate_1, Eliminate_2, Eliminate_12, Eliminate_3, Elim12_Problem, Elim13_Problem, Elim23_Problem,
+         SMI, SR, SCR, A, SBA, SNI, SCL, SCA) %>%
+  rename(updated_syn = updated_name4)
+
+syn_list <- submaster_list3 %>%
+  select(scientificName, updated_syn) 
+
+write_csv(syn_list, "Josie/Data/October2021_SynList.csv", na = "")
+
+master_elim_list <- submaster_list3 %>%
+  rename(sci_name = updated_syn) %>%
+  mutate(scientificName = str_to_lower(scientificName),
+         sci_name = str_to_lower(sci_name)) %>%
+  group_by(sci_name) %>% distinct() %>% ungroup() %>%
+  mutate(MASTER_ELIM = case_when(Elim12_Problem == "Problem" ~ "Problem - check if keep",
+                                 Elim13_Problem == "Problem" ~ "Problem - check if keep",
+                                 Elim23_Problem == "Problem" ~ "Problem - check if keep",
+                                 Eliminate_1 == "Keep" | Eliminate_2 == "Keep" | Eliminate_3 == "Keep" ~ "KEEP",
+                                 Eliminate_1 == "Elim" | Eliminate_2 == "Elim" | Eliminate_3 == "Elim" ~ "ELIM")) %>%
+  select(kingdom_final, phylum_final, class_final, order_final, family_final,
+         scientificName, sci_name, 
+         Eliminate_1, Eliminate_2, Eliminate_12, Eliminate_3, Elim12_Problem, Elim13_Problem, Elim23_Problem, MASTER_ELIM,
+         SMI, SR, SCR, A, SBA, SNI, SCL, SCA)
+
+write_csv(master_elim_list, "Josie/Data/October2021_ElimList.csv", na = "")
+
+```
+
+# Creating master list
+
+We'll smoosh the data with the hand-worked master list I started generating
+
+```{r}
+master_list <- read_csv("Josie/Data/October2021_ElimList_Handworked.csv")
+
+plants_genus <- read_csv("Josie/Data/October2021_Plants.csv")
+  
+plants_combo1 <- left_join(plants_genus, master_list) %>%
+  select(kingdom_final, phylum_final, class_final, order_final, family_final, scientificName, sci_name,
+         "assign by island", "needs review", "MASTER_ELIM", SMI, SR, SCR, A, SBA, SNI, SCL, SCA) %>%
+  group_by(scientificName) %>%
+  distinct()
+
+write_csv(plants_combo1, "Josie/Data/October2021_AllSppElimList.csv", na = "")
+
+```
+
+
+# OLD CODE
+```{r old combo code}
+kylie_syn <- read_csv("Josie/Data/KJE_synonymylist.csv", col_types = cols(.default = "c")) %>%
+  mutate(scientificName = str_to_lower(scientificName),
+         acceptedName = str_to_lower(acceptedName))
+
+elim_list <- read_csv("Josie/Data/Plants_ElimList_Revised2.csv", col_types = cols(.default = "c")) %>%
+  mutate(Eliminate = replace_na(Eliminate, "Keep"),
+         Eliminate = recode_factor(Eliminate, "1" = "Elim")) %>%
+  rename("sciname_1" = "OG_spname") %>%
+  mutate(sciname_1 = str_to_lower(sciname_1),
+         Updated_name = str_to_lower(Updated_name))
+
+elim_list_2 <- read_csv("Josie/Data/Plants_ElimList_round3_2.csv", col_types = cols(.default = "c")) %>%
+  mutate(Eliminate = replace_na(Eliminate, "Keep"),
+         Eliminate = recode_factor(Eliminate, "elim" = "Elim")) %>%
+  rename("sciname_2" = "Taxa_name",
+         Family_3 = Family) %>%
+  mutate(sciname_2 = str_to_lower(sciname_2),
+         Syn = str_to_lower(Syn))
+
+# this joins the unique names list as done by Kylie's manual entry
+plants_combo1 <- left_join(plants_nonisl, kylie_syn) %>%
+  mutate(sciname_1 = coalesce(acceptedName, scientificName)) 
+
+# This updates names and eliminations based on Kristen's initial passthrough
+plants_combo2 <- left_join(plants_combo1, elim_list) %>%
+  mutate(sciname_2 = coalesce(Updated_name, sciname_1),
+         Family_2 = coalesce(Family, family))  %>%
+  filter(Eliminate != "Elim" | is.na(Eliminate)) %>% 
+  dplyr::select(-Eliminate) 
+
+# This updates names and eliminations based on Kristen's second passthrough, 
+# and isolates those that need to be checked on a by-island basis
+plants_combo3 <- left_join(plants_combo2, elim_list_2) %>%
+  mutate(sciname_3 = coalesce(Syn,  sciname_2),
+         Family_4 = coalesce(Family_3, Family_2)) %>%
+  filter(Eliminate != "Elim" | is.na(Eliminate)) %>%
+  dplyr::select(-SMI, -SCR, - A, -SR, -SBA, -SNI, -SCL, -SCA, -assign_by_island, -Eliminate)
+
+# final clean
+masterlist <- read_csv("Josie/Data/PlantMasterList.csv", col_types = cols(.default = "c")) %>%
+  mutate(final_syn = coalesce(syn_replace, new_datasetname)) %>%
+  rename(sciname_3 = new_datasetname) %>%
+  mutate(sciname_3 = str_to_lower(sciname_3),
+         sciname_4 = str_to_lower(final_syn)) %>%
+  dplyr::select(-old_name, -count_in_dataset, -final_syn) %>%
+  distinct()
+
+plants_combo4 <- left_join(plants_combo3, masterlist, by = c("sciname_3"))
+
+```
+
+

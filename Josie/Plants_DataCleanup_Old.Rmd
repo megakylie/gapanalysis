@@ -11,7 +11,6 @@ knitr::opts_chunk$set(echo = TRUE)
 # load packages
 library(tidyverse)
 library(stringr)
-library(lubridate)
 ```
 
 # File goal
@@ -101,7 +100,8 @@ plants_genus <- plants_isl %>%
   filter(phylum == "Tracheophyta")
 
 # isolate by-island species
-by_isl <- read_csv("Josie/Data/byislsp2.csv", col_types = cols(.default = "c")) %>%
+by_isl <- read_csv("Josie/Data/byislsp.csv", col_types = cols(.default = "c")) %>%
+  rename(scientificName = old_name) %>%
   mutate(scientificName = str_to_lower(scientificName)) %>%
   dplyr::select(scientificName, assign_by_island)
 
@@ -115,10 +115,31 @@ plants_nonisl <- left_join(plants_genus, by_isl) %>%
 
 
 
-```{r fix synonomy for taxa not sorted by island}
-species_list <- read_csv("Josie/Data/October2021_AllSppElimList_Draft.csv", col_types = cols(.default = "c"))
 
-plants_nonisl_all <- left_join(plants_nonisl, species_list)
+```{r fix synonomy for taxa not sorted by island}
+# fix classes/orders based on taxonomy 
+plants_combo4_orders <- plants_combo4 %>%
+  mutate(order = ifelse(Family_4 == "Alliaceae", "Asparagales", order),
+         order = ifelse(Family_4 == "Asparagaceae", "Asparagales", order),
+         order = ifelse(Family_4 == "Asphodelaceae", "Asparagales", order),
+         order = ifelse(Family_4 == "Caprifoliaceae", "Dipsacales", order),
+         order = ifelse(Family_4 == "Caryophyllaceae", "Caryophyllales", order),
+         order = ifelse(Family_4 == "Geraniaceae", "Geraniales", order),
+         order = ifelse(Family_4 == "Hydrophyllaceae", "Boraginales", order),
+         order = ifelse(Family_4 == "Nyctaginaceae", "Caryophyllales", order),
+         order = ifelse(Family_4 == "Orobanchaceae", "Lamiales", order),
+         order = ifelse(Family_4 == "Polygonaceae", "Caryophyllales", order),
+         order = ifelse(Family_4 == "Solanaceae", "Solanales", order),
+         class = ifelse(Family_4 == "Solanaceae", "Magnoliopsida", class),
+         order = ifelse(Family_4 == "Themidaceae", "Asparagales", order),
+         family = ifelse(genus == "Athyrium", "Athyriaceae", family)) %>%
+  rename(old_name = scientificName)
+
+test <- plants_combo4_orders %>%
+  select(old_name, sciname_4, Eliminate) %>%
+  filter(is.na(sciname_4)) %>%
+  distinct()
+
 ```
 
 
@@ -126,69 +147,45 @@ plants_nonisl_all <- left_join(plants_nonisl, species_list)
 After fixing synonyms and removing the major problem species, we also want to remove specimens that were assigned the incorrect island based on their known occurrences. 
 
 ```{r cleanup for main islands by island}
-plants_nonisl_initialclean <- plants_nonisl_all %>%
-  filter(MASTER_ELIM == "KEEP")
-plants_nonisl_initialelim <- plants_nonisl_all %>%
-  filter(MASTER_ELIM != "KEEP" | is.na(MASTER_ELIM))
 
-# Island keepers 
+plants_nonisl_initialclean <- plants_combo4_orders %>%
+  filter(Eliminate == "Keep")
+
 SMI <- plants_nonisl_initialclean %>%
   filter(isl_name == "San Miguel",
          SMI == "1")
+
 SR <- plants_nonisl_initialclean %>%
   filter(isl_name == "Santa Rosa",
          SR == "1")
+
 SCR <- plants_nonisl_initialclean %>%
   filter(isl_name == "Santa Cruz",
          SCR == "1")
+
 A <- plants_nonisl_initialclean %>%
   filter(isl_name == "Anacapa",
-         A == "1")
+         SR == "1")
+
 SBA <- plants_nonisl_initialclean %>%
   filter(isl_name == "Santa Barbara",
          SBA == "1")
+
 SNI <- plants_nonisl_initialclean %>%
   filter(isl_name == "San Nicolas",
          SNI == "1")
+
 SCL <- plants_nonisl_initialclean %>%
   filter(isl_name == "San Clemente",
          SCL == "1")
+
 SCA <- plants_nonisl_initialclean %>%
   filter(isl_name == "Santa Catalina",
          SCA == "1")
 
-# Island trashies
-SMI_trash <- plants_nonisl_initialclean %>%
-  filter(isl_name == "San Miguel",
-         is.na(SMI))
-SR_trash <- plants_nonisl_initialclean %>%
-  filter(isl_name == "Santa Rosa",
-         is.na(SR))
-SCR_trash <- plants_nonisl_initialclean %>%
-  filter(isl_name == "Santa Cruz",
-         is.na(SCR))
-A_trash <- plants_nonisl_initialclean %>%
-  filter(isl_name == "Anacapa",
-         is.na(A))
-SBA_trash <- plants_nonisl_initialclean %>%
-  filter(isl_name == "Santa Barbara",
-         is.na(SBA))
-SNI_trash <- plants_nonisl_initialclean %>%
-  filter(isl_name == "San Nicolas",
-         is.na(SNI))
-SCL_trash <- plants_nonisl_initialclean %>%
-  filter(isl_name == "San Clemente",
-         is.na(SCL))
-SCA_trash <- plants_nonisl_initialclean %>%
-  filter(isl_name == "Santa Catalina",
-         is.na(SCA))
-
-
 plants_nonisl_clean <- rbind(SBA, SCA, SCL, SCR, SMI, SNI, SR, A)
-plants_nonisl_elimed <- rbind(SBA_trash, SCA_trash, SCL_trash, SCR_trash, SMI_trash, SNI_trash, SR_trash, A_trash, plants_nonisl_initialelim)
 
 remove(SBA, SCA, SCL, SCR, SMI, SNI, SR, A)
-remove(SBA_trash, SCA_trash, SCL_trash, SCR_trash, SMI_trash, SNI_trash, SR_trash, A_trash)
 
 ```
 
@@ -399,175 +396,59 @@ plants_byisl_join2 <- left_join(plants_byisl_join, by_isl_filter)
 SMI <- plants_byisl_join2 %>%
   filter(isl_name == "San Miguel",
          SMI == "1")
+
 SR <- plants_byisl_join2 %>%
   filter(isl_name == "Santa Rosa",
          SR == "1")
+
 SCR <- plants_byisl_join2 %>%
   filter(isl_name == "Santa Cruz",
          SCR == "1")
+
 A <- plants_byisl_join2 %>%
   filter(isl_name == "Anacapa",
          SR == "1")
+
 SBA <- plants_byisl_join2 %>%
   filter(isl_name == "Santa Barbara",
          SBA == "1")
+
 SNI <- plants_byisl_join2 %>%
   filter(isl_name == "San Nicolas",
          SNI == "1")
+
 SCL <- plants_byisl_join2 %>%
   filter(isl_name == "San Clemente",
          SCL == "1")
+
 SCA <- plants_byisl_join2 %>%
   filter(isl_name == "Santa Catalina",
          SCA == "1")
 
 plants_byisl_join2_clean <- rbind(SBA, SCA, SCL, SCR, SMI, SNI, SR, A) %>%
-  rename(sci_name = sciname_3)
+  rename(sciname_4 = sciname_3)
 
 remove(SBA, SCA, SCL, SCR, SMI, SNI, SR, A)
 
 
 ```
 
-### Combine island-filtered and non-island filtered 
+## Summary Lists
 
 ```{r}
-plants_nonisl_clean_merger <- plants_nonisl_clean %>%
-  dplyr::select(kingdom_final, phylum_final, class_final, order_final, family_final, scientificName, sci_name,
-         eventDate, verbatimEventDate, year, month, day, startDayOfYear, endDayOfYear, verbatimEventDate, associatedTaxa, 
+all_clean <- full_join(plants_nonisl_clean, plants_byisl_join2_clean)
+
+plants_keep <- all_clean %>% 
+  mutate(Sci_Name = str_to_sentence(sciname_4)) %>%
+  dplyr::select(kingdom_final, phylum_final, class_final, order_final, family_final, old_name, Sci_Name,
+         eventDate, year, month, day, startDayOfYear, endDayOfYear, verbatimEventDate, associatedTaxa, 
          country, stateProvince, county, municipality, locality, isl_name,
          decimalLatitude, decimalLongitude, geodeticDatum,
          id, institutionCode, collectionCode, occurrenceID, basisOfRecord, catalogNumber,
-         scientificNameAuthorship, identifiedBy, dateIdentified, recordedBy, associatedCollectors,
-         recordNumber, catalogNumber, otherCatalogNumbers, eventDate, occurrenceRemarks)
+         scientificNameAuthorship, identifiedBy, dateIdentified, recordedBy, associatedCollectors) %>%
+  filter(institutionCode != "iNaturalist")
 
-plants_byisl_join2_clean_merger <- plants_byisl_join2_clean %>%
-  dplyr::select(kingdom_final, phylum_final, class_final, order_final, family_final, scientificName, sci_name,
-         eventDate, verbatimEventDate, year, month, day, startDayOfYear, endDayOfYear, verbatimEventDate, associatedTaxa, 
-         country, stateProvince, county, municipality, locality, isl_name,
-         decimalLatitude, decimalLongitude, geodeticDatum,
-         id, institutionCode, collectionCode, occurrenceID, basisOfRecord, catalogNumber,
-         scientificNameAuthorship, identifiedBy, dateIdentified, recordedBy, associatedCollectors,
-         recordNumber, catalogNumber, otherCatalogNumbers, eventDate, occurrenceRemarks)
-
-all_clean <- full_join(plants_nonisl_clean_merger, plants_byisl_join2_clean_merger)
-
-plants_keep <- all_clean %>% filter(institutionCode != "iNaturalist")
-
+write_csv(plants_keep, "Josie/Data/DraftData_20210921.csv")
 ```
 
-# Removing duplicate sheets
-
-There is a problem with the data still in the number of repeated sheets/duplicated collections. We'll try to remove these by isolating the collections made on the same days by the same people with shared collection numbers.
-
-```{r remove dupe sheets}
-
-nodupes_cleaner <- plants_keep %>%
-  mutate(filter_date1 = parse_date_time(eventDate, c("mdy", "ymd", "dmy")),
-         filter_date2 = parse_date_time(verbatimEventDate, c("mdy", "ymd", "dmy")),
-         filter_date = coalesce(filter_date1, filter_date2),
-         year2 = year(filter_date), month2 = month(filter_date), day2 = day(filter_date)
-         ) %>%
-  mutate(
-  # fix Junak's record number hyphens and mistyped island codes
-         recordNumber = str_replace_all(recordNumber, "-", ""),
-         recordNumber = str_replace(recordNumber, " ", ""),
-         recordNumber = str_replace(recordNumber, "SCI", "SCl"),
-         recordNumber = str_to_lower(recordNumber),
-  # fix "w./" in recordedBy
-         recordedBy = str_replace(recordedBy, " w/", ";"),
-         recordedBy = str_replace(recordedBy, " &", ";"),
-         recordedBy = str_remove(recordedBy, "Collector(s):"),
-  # JUNAK - collapse the many variations on name
-         recordedBy = str_replace(recordedBy, "S. A. Junak", "Steven A. Junak"),
-         recordedBy = str_replace(recordedBy, "S.A. Junak", "Steven A. Junak"),
-         recordedBy = str_replace(recordedBy, "Junak, Steven A.", "Steven A. Junak"),
-         recordedBy = str_replace(recordedBy, "Junak, S. A.", "Steven A. Junak"),
-         recordedBy = str_replace(recordedBy, "Junak, S.", "Steven A. Junak"),
-         recordedBy = str_replace(recordedBy, "S A Junak", "Steven A. Junak"),
-         recordedBy = str_replace(recordedBy, "Steven Junak", "Steven A. Junak"),
-         recordedBy = str_replace(recordedBy, "Steven A Junak", "Steven A. Junak"),
-         recordedBy = str_replace(recordedBy, "Steve A Junak", "Steven A. Junak"),
-         recordedBy = str_replace(recordedBy, "Steve A. Junak", "Steven A. Junak"),
-         recordedBy = str_replace(recordedBy, "Steven a. Junak", "Steven A. Junak"),
-         recordedBy = str_replace(recordedBy, "Steve Junak", "Steven A. Junak"),
-         recordedBy = str_replace(recordedBy, "S. Junak", "Steven A. Junak"),
-  # Philbrick - collapse the many variations on name
-         recordedBy = str_replace(recordedBy, "R. N. Philbrick", "Ralph N. Philbrick"),
-         recordedBy = str_replace(recordedBy, "R.N. Philbrick", "Ralph N. Philbrick"),
-         recordedBy = str_replace(recordedBy, "R. Philbrick", "Ralph N. Philbrick"),
-         recordedBy = str_replace(recordedBy, "Ralph Philbrick", "Ralph N. Philbrick"),
-         recordedBy = str_replace(recordedBy, "Philbrick, Ralph", "Ralph N. Philbrick"),
-         recordedBy = str_replace(recordedBy, "Philbrick, Ralph N.", "Ralph N. Philbrick"),
-         recordedBy = str_replace(recordedBy, "Philbrick, R. N.", "Ralph N. Philbrick"),
-         recordedBy = str_replace(recordedBy, "Philbrick N.", "Philbrick"),
-  # Dunkle - collapse the many variations on name
-         recordedBy = str_replace(recordedBy, "M. B. Dunkle", "Meryl B. Dunkle"),
-         recordedBy = str_replace(recordedBy, "Dunkle, M. B.", "Meryl B. Dunkle"),
-         recordedBy = str_replace(recordedBy, "M B Dunkle", "Meryl B. Dunkle"),
-         recordedBy = str_replace(recordedBy, "M.B. Dunkle", "Meryl B. Dunkle"),
-  # Fosberg - collapse the many variations on name
-         recordedBy = str_replace(recordedBy, "F. R. Fosberg", "F. Raymond Fosberg"),
-         recordedBy = str_replace(recordedBy, "F R Fosberg", "F. Raymond Fosberg"),
-         recordedBy = str_replace(recordedBy, "F.R. Fosberg", "F. Raymond Fosberg"),
-         recordedBy = str_replace(recordedBy, "Fosberg, F.R.", "F. Raymond Fosberg"),
-         recordedBy = str_replace(recordedBy, "Fosberg, F. R.", "F. Raymond Fosberg"),
-         recordedBy = str_replace(recordedBy, "Fosberg, F.", "F. Raymond Fosberg"),
-         recordedBy = str_replace(recordedBy, "Francis Raymond Fosberg", "F. Raymond Fosberg"),
-  # Thorne - collapse the many variations on name
-         recordedBy = str_replace(recordedBy, "R. F. Thorne", "Robert F. Thorne"),
-         recordedBy = str_replace(recordedBy, "Thorne, Robert F.", "Robert F. Thorne"),
-         recordedBy = str_replace(recordedBy, "Thorne, R. F.", "Robert F. Thorne"),
-         recordedBy = str_replace(recordedBy, "Thorne, R.F.", "Robert F. Thorne"),
-         recordedBy = str_replace(recordedBy, "R.F. Thorne", "Robert F. Thorne"),
-         recordedBy = str_replace(recordedBy, "R. F. Thorne", "Robert F. Thorne"),
-         recordedBy = str_replace(recordedBy, "Rober F. Thorne", "Robert F. Thorne"),
-  # other names noticed
-         recordedBy = str_replace(recordedBy, "G. Kanakoff", "George Kanakoff"),
-         recordedBy = str_replace(recordedBy, "Blakley, E. R.", "E. R. Blakley"),
-         recordedBy = str_replace(recordedBy, "Wolf, Carl B.", "Carl B. Wolf"),
-         recordedBy = str_replace(recordedBy, "C. B. Wolf", "Carl B. Wolf"),
-         recordedBy = str_replace(recordedBy, "R. Hoffmann", "Ralph Hoffmann"),
-         recordedBy = str_replace(recordedBy, "Hoffmann, Ralph", "Ralph Hoffmann"),
-         recordedBy = str_replace(recordedBy, "Hoffman, R.", "Ralph Hoffmann"),
-         recordedBy = str_replace(recordedBy, "Moran, Reid", "Reid V. Moran"),
-         recordedBy = str_replace(recordedBy, "R. Moran", "Reid V. Moran"),
-         recordedBy = str_replace(recordedBy, "Moran, Reid", "Reid V. Moran"),
-         recordedBy = str_replace(recordedBy, "R. V. Moran", "Reid V. Moran"),
-         recordedBy = str_replace(recordedBy, "Reid Moran", "Reid V. Moran"),
-         recordedBy = str_replace(recordedBy, "M. Daily", "Marla Daily"),
-         recordedBy = str_replace(recordedBy, "C. F. Smith", "Clifton F. Smith"), 
-         recordedBy = str_replace(recordedBy, "Laughrin, Lyndal", "Lyndal Laughrin"))
-  
-
-records_nodupes_ERB <- nodupes_cleaner %>%
-  filter(recordedBy == "E. R. Blakley") %>%
-  distinct(recordNumber, isl_name, sci_name, year, month, .keep_all = T) %>%
-  distinct(recordNumber, isl_name, sci_name, year, month2, .keep_all = T) %>%
-  distinct(recordNumber, isl_name, sci_name, verbatimEventDate, .keep_all = T) %>%
-  distinct(recordNumber, isl_name, sci_name, filter_date, .keep_all = T) 
-
-records_nodupes <- nodupes_cleaner %>%
-  filter(recordedBy != "E. R. Blakley") %>%
-  distinct(recordNumber, isl_name, sci_name, year, month, day, .keep_all = T) %>%
-  distinct(recordNumber, isl_name, sci_name, year, month2, day2, .keep_all = T) %>%
-  distinct(recordNumber, isl_name, sci_name, recordedBy, verbatimEventDate, .keep_all = T) %>%
-  distinct(recordNumber, isl_name, sci_name, recordedBy, filter_date, .keep_all = T)
-
-records_nodupes <- full_join(records_nodupes, records_nodupes_ERB) %>%
-  dplyr::select(kingdom_final, phylum_final, class_final, order_final, family_final, scientificName, sci_name,
-         eventDate, verbatimEventDate, year, month, day, startDayOfYear, endDayOfYear, verbatimEventDate, associatedTaxa, 
-         country, stateProvince, county, municipality, locality, isl_name,
-         decimalLatitude, decimalLongitude, geodeticDatum,
-         id, institutionCode, collectionCode, occurrenceID, basisOfRecord, catalogNumber,
-         scientificNameAuthorship, identifiedBy, dateIdentified, recordedBy, associatedCollectors,
-         recordNumber, catalogNumber, otherCatalogNumbers, eventDate, occurrenceRemarks)
-
-records_nowthatswhaticalldupes <- plants_keep %>%
-  select(year, month, day, verbatimEventDate, eventDate, sci_name, locality, isl_name, institutionCode, collectionCode, recordedBy,
-         recordNumber, catalogNumber, otherCatalogNumbers, occurrenceRemarks) 
-
-
-write_csv(records_nodupes, "Josie/Data/DraftData_20211021.csv")
-```
 
