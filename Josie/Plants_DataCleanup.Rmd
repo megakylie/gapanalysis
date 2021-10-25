@@ -1,5 +1,5 @@
 ---
-title: "Redownload_check"
+title: "Cleaning plants"
 author: "Josie Lesage"
 date: "8/16/2021"
 output: html_document
@@ -11,6 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 # load packages
 library(tidyverse)
 library(stringr)
+library(lubridate)
 ```
 
 # File goal
@@ -20,16 +21,19 @@ The goal of this file is to finish the data prep of a partially cleaned dataset 
 In step 1 of this process, we'll ensure that the locality information or spatial information from each island is encoded and remove any records with such poor info that that we can't assign an island. I started this process by passing the data through a ArcGIS map layer to spatially join the island names for points that were accurately GPS'd.
 
 ```{r}
-
+# import two files (bc one is too big)
 plants_raw_1 <- read_csv("Josie/Data/plants_raw_1.csv", col_types = cols(.default = "c", isl_name = "c")) 
 plants_raw_2 <- read_csv("Josie/Data/plants_raw_2.csv", col_types = cols(.default = "c", isl_name = "c")) 
 
+# smoosh together
 plants_raw <- full_join(plants_raw_1, plants_raw_2)
 
+# change locality data to lowercase
 plants_isl1 <- plants_raw %>%
   mutate(locality_low = str_to_lower(locality)) 
 
 plants_isl <- plants_isl1 %>%
+  # remove weird states/locations
   filter(stateProvince != "Missouri" | is.na(stateProvince),
          stateProvince != "Alaska" | is.na(stateProvince),
          stateProvince != "Michigan" | is.na(stateProvince),
@@ -44,6 +48,7 @@ plants_isl <- plants_isl1 %>%
          stateProvince != "Galapagos Islands" | is.na(stateProvince),
          stateProvince != "Provincia de Galapagos" | is.na(stateProvince),
          stateProvince != "Galapagos" | is.na(stateProvince)) %>%
+  # start adding real island names
   mutate(isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "san nicolas"), "San Nicolas", isl_name),
          isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "san nicholas"), "San Nicolas", isl_name),
          isl_name = ifelse(is.na(isl_name) & str_detect(locality_low, "nicholas"), "San Nicolas", isl_name),
@@ -75,9 +80,7 @@ plants_isl <- plants_isl1 %>%
   filter(isl_name == "San Nicolas" | isl_name == "Santa Catalina" | isl_name == "Santa Rosa" | isl_name == "Santa Barbara" | 
            isl_name == "Anacapa" | isl_name == "Santa Cruz" | isl_name == "San Clemente" | isl_name == "San Miguel") 
 
-remove(plants_raw_1)
-remove(plants_raw_2)
-remove(plants_isl1)
+remove(plants_raw_1, plants_raw_2, plants_isl1)
 ```
 
 
@@ -86,102 +89,37 @@ In step 2, we'll remove any obvious horticulture species from the dataset and fi
 
 ```{r intial cleanup pass - plant data}
 plants_genus <- plants_isl %>%
+  # break the "scientific name" column into two parts - genus and species
   mutate(epithetfilter =  scientificName) %>%
   separate(epithetfilter, sep = " ", into = c("genus_filter", "epithet_filter"), extra = "merge") %>%
+  # remove anything that wasn't given a specific epithet
   filter(!is.na(epithet_filter)) %>%
-  # fix poaceae - they need to chill tf out
+  # fix poaceae - for some reason is capitalized
   mutate(family = ifelse(family == "POACEAE", "Poaceae", family),
          scientificName = str_to_lower(scientificName)) %>%
+  # filter to just the tracheophyta
   filter(phylum == "Tracheophyta")
 
 # isolate by-island species
-by_isl <- read_csv("Josie/Data/byislsp.csv", col_types = cols(.default = "c")) %>%
-  rename(scientificName = old_name) %>%
+by_isl <- read_csv("Josie/Data/byisl_2021Oct22.csv", col_types = cols(.default = "c")) %>%
   mutate(scientificName = str_to_lower(scientificName)) %>%
-  dplyr::select(scientificName, assign_by_island)
+  dplyr::select(scientificName, assign_by_island, sci_name)
 
 plants_byisl <- left_join(plants_genus, by_isl) %>%
   filter(!is.na(assign_by_island))
 
 plants_nonisl <- left_join(plants_genus, by_isl) %>%
-  filter(is.na(assign_by_island))
+  filter(is.na(assign_by_island)) %>%
+  dplyr::select(-sci_name)
 
 ```
 
 
+
 ```{r fix synonomy for taxa not sorted by island}
-kylie_syn <- read_csv("Josie/Data/KJE_synonymylist.csv", col_types = cols(.default = "c")) %>%
-  mutate(scientificName = str_to_lower(scientificName),
-         acceptedName = str_to_lower(acceptedName))
+species_list <- read_csv("Josie/Data/2021Oct22_AllSppElimList.csv", col_types = cols(.default = "c"))
 
-elim_list <- read_csv("Josie/Data/Plants_ElimList_Revised2.csv", col_types = cols(.default = "c")) %>%
-  mutate(Eliminate = replace_na(Eliminate, "Keep"),
-         Eliminate = recode_factor(Eliminate, "1" = "Elim")) %>%
-  rename("sciname_1" = "OG_spname") %>%
-  mutate(sciname_1 = str_to_lower(sciname_1),
-         Updated_name = str_to_lower(Updated_name))
-
-elim_list_2 <- read_csv("Josie/Data/Plants_ElimList_round3_2.csv", col_types = cols(.default = "c")) %>%
-  mutate(Eliminate = replace_na(Eliminate, "Keep"),
-         Eliminate = recode_factor(Eliminate, "elim" = "Elim")) %>%
-  rename("sciname_2" = "Taxa_name",
-         Family_3 = Family) %>%
-  mutate(sciname_2 = str_to_lower(sciname_2),
-         Syn = str_to_lower(Syn))
-
-# this joins the unique names list as done by Kylie's manual entry
-plants_combo1 <- left_join(plants_nonisl, kylie_syn) %>%
-  mutate(sciname_1 = coalesce(acceptedName, scientificName)) 
-
-# This updates names and eliminations based on Kristen's initial passthrough
-plants_combo2 <- left_join(plants_combo1, elim_list) %>%
-  mutate(sciname_2 = coalesce(Updated_name, sciname_1),
-         Family_2 = coalesce(Family, family))  %>%
-  filter(Eliminate != "Elim" | is.na(Eliminate)) %>% 
-  dplyr::select(-Eliminate) 
-
-# This updates names and eliminations based on Kristen's second passthrough, 
-# and isolates those that need to be checked on a by-island basis
-plants_combo3 <- left_join(plants_combo2, elim_list_2) %>%
-  mutate(sciname_3 = coalesce(Syn,  sciname_2),
-         Family_4 = coalesce(Family_3, Family_2)) %>%
-  filter(Eliminate != "Elim" | is.na(Eliminate)) %>%
-  dplyr::select(-SMI, -SCR, - A, -SR, -SBA, -SNI, -SCL, -SCA, -assign_by_island, -Eliminate)
-
-# final clean
-masterlist <- read_csv("Josie/Data/PlantMasterList.csv", col_types = cols(.default = "c")) %>%
-  mutate(final_syn = coalesce(syn_replace, new_datasetname)) %>%
-  rename(sciname_3 = new_datasetname) %>%
-  mutate(sciname_3 = str_to_lower(sciname_3),
-         sciname_4 = str_to_lower(final_syn)) %>%
-  dplyr::select(-old_name, -count_in_dataset, -final_syn) %>%
-  distinct()
-
-plants_combo4 <- left_join(plants_combo3, masterlist, by = c("sciname_3"))
-
-# fix classes/orders based on taxonomy 
-plants_combo4_orders <- plants_combo4 %>%
-  mutate(order = ifelse(Family_4 == "Alliaceae", "Asparagales", order),
-         order = ifelse(Family_4 == "Asparagaceae", "Asparagales", order),
-         order = ifelse(Family_4 == "Asphodelaceae", "Asparagales", order),
-         order = ifelse(Family_4 == "Caprifoliaceae", "Dipsacales", order),
-         order = ifelse(Family_4 == "Caryophyllaceae", "Caryophyllales", order),
-         order = ifelse(Family_4 == "Geraniaceae", "Geraniales", order),
-         order = ifelse(Family_4 == "Hydrophyllaceae", "Boraginales", order),
-         order = ifelse(Family_4 == "Nyctaginaceae", "Caryophyllales", order),
-         order = ifelse(Family_4 == "Orobanchaceae", "Lamiales", order),
-         order = ifelse(Family_4 == "Polygonaceae", "Caryophyllales", order),
-         order = ifelse(Family_4 == "Solanaceae", "Solanales", order),
-         class = ifelse(Family_4 == "Solanaceae", "Magnoliopsida", class),
-         order = ifelse(Family_4 == "Themidaceae", "Asparagales", order),
-         family = ifelse(genus == "Athyrium", "Athyriaceae", family)) %>%
-  rename(old_name = scientificName)
-
-test <- plants_combo4_orders %>%
-  select(old_name, sciname_4, Eliminate) %>%
-  filter(is.na(sciname_4)) %>%
-  distinct()
-
+plants_nonisl_all <- left_join(plants_nonisl, species_list)
 ```
 
 
@@ -189,45 +127,69 @@ test <- plants_combo4_orders %>%
 After fixing synonyms and removing the major problem species, we also want to remove specimens that were assigned the incorrect island based on their known occurrences. 
 
 ```{r cleanup for main islands by island}
+plants_nonisl_initialclean <- plants_nonisl_all %>%
+  filter(MASTER_ELIM == "KEEP")
+plants_nonisl_initialelim <- plants_nonisl_all %>%
+  filter(MASTER_ELIM != "KEEP" | is.na(MASTER_ELIM))
 
-plants_nonisl_initialclean <- plants_combo4_orders %>%
-  filter(Eliminate == "Keep")
-
+# Island keepers 
 SMI <- plants_nonisl_initialclean %>%
   filter(isl_name == "San Miguel",
          SMI == "1")
-
 SR <- plants_nonisl_initialclean %>%
   filter(isl_name == "Santa Rosa",
          SR == "1")
-
 SCR <- plants_nonisl_initialclean %>%
   filter(isl_name == "Santa Cruz",
          SCR == "1")
-
 A <- plants_nonisl_initialclean %>%
   filter(isl_name == "Anacapa",
-         SR == "1")
-
+         A == "1")
 SBA <- plants_nonisl_initialclean %>%
   filter(isl_name == "Santa Barbara",
          SBA == "1")
-
 SNI <- plants_nonisl_initialclean %>%
   filter(isl_name == "San Nicolas",
          SNI == "1")
-
 SCL <- plants_nonisl_initialclean %>%
   filter(isl_name == "San Clemente",
          SCL == "1")
-
 SCA <- plants_nonisl_initialclean %>%
   filter(isl_name == "Santa Catalina",
          SCA == "1")
 
+# Island trashies
+SMI_trash <- plants_nonisl_initialclean %>%
+  filter(isl_name == "San Miguel",
+         is.na(SMI))
+SR_trash <- plants_nonisl_initialclean %>%
+  filter(isl_name == "Santa Rosa",
+         is.na(SR))
+SCR_trash <- plants_nonisl_initialclean %>%
+  filter(isl_name == "Santa Cruz",
+         is.na(SCR))
+A_trash <- plants_nonisl_initialclean %>%
+  filter(isl_name == "Anacapa",
+         is.na(A))
+SBA_trash <- plants_nonisl_initialclean %>%
+  filter(isl_name == "Santa Barbara",
+         is.na(SBA))
+SNI_trash <- plants_nonisl_initialclean %>%
+  filter(isl_name == "San Nicolas",
+         is.na(SNI))
+SCL_trash <- plants_nonisl_initialclean %>%
+  filter(isl_name == "San Clemente",
+         is.na(SCL))
+SCA_trash <- plants_nonisl_initialclean %>%
+  filter(isl_name == "Santa Catalina",
+         is.na(SCA))
+
+
 plants_nonisl_clean <- rbind(SBA, SCA, SCL, SCR, SMI, SNI, SR, A)
+plants_nonisl_elimed <- rbind(SBA_trash, SCA_trash, SCL_trash, SCR_trash, SMI_trash, SNI_trash, SR_trash, A_trash, plants_nonisl_initialelim)
 
 remove(SBA, SCA, SCL, SCR, SMI, SNI, SR, A)
+remove(SBA_trash, SCA_trash, SCL_trash, SCR_trash, SMI_trash, SNI_trash, SR_trash, A_trash)
 
 ```
 
@@ -237,200 +199,118 @@ remove(SBA, SCA, SCL, SCR, SMI, SNI, SR, A)
 In a few cases, we'll want to clean the data OR assign MRT based on the specific island a speciment is from. 
 
 ```{r}
-by_isl_filter <- read_csv("Josie/Data/byislsp_islcheck.csv", col_types = cols(.default = "c")) %>%
-  mutate(sciname_2 = str_to_sentence(sciname_3)) %>%
+by_isl_filter <- read_csv("Josie/Data/2021Oct22_byislcheck.csv", col_types = cols(.default = "c")) %>%
+  mutate(sciname_2 = str_to_sentence(sciname_2)) %>%
   distinct()
 
-by_isl_namechanges <- read_csv("Josie/Data/byislsp_namechanges.csv", col_types = cols(.default = "c")) %>%
-  rename(scientificName = old_name) %>%
-  mutate(scientificName = str_to_lower(scientificName))
-
-plants_byisl_join <- left_join(plants_byisl, by_isl_namechanges) %>%
-  mutate(sciname_2 = coalesce(name_based_onisl, scientificName)) %>%
-  dplyr::select(-name_based_onisl) %>%
-  mutate(scientificName = str_to_sentence(scientificName),
-         sciname_2 = ifelse(scientificName == "Eriogonum giganteum" & isl_name == "Santa Barbara", 
+plants_byisl_join <- plants_byisl %>%
+  mutate(sci_name = str_to_sentence(sci_name),
+         sciname_2 = sci_name,
+         sciname_2 = ifelse(sci_name == "Eriogonum giganteum" & isl_name == "Santa Barbara", 
                             "Eriogonum giganteum var. compactum", sciname_2),
-         sciname_2 = ifelse(scientificName == "Eriogonum giganteum" & isl_name == "San Clemente",
+         sciname_2 = ifelse(sci_name == "Eriogonum giganteum" & isl_name == "San Clemente",
                             "Eriogonum giganteum var. formosum", sciname_2),
-         sciname_2 = ifelse(scientificName == "Eriogonum giganteum" & isl_name == "Santa Catalina", 
+         sciname_2 = ifelse(sci_name == "Eriogonum giganteum" & isl_name == "Santa Catalina", 
                             "Eriogonum giganteum var. giganteum", sciname_2),
-         sciname_2 = ifelse(scientificName == "Eriogonum giganteum" & isl_name == "Santa Cruz", 
+         sciname_2 = ifelse(sci_name == "Eriogonum giganteum" & isl_name == "Santa Cruz", 
                             "Eriogonum giganteum var. giganteum", sciname_2),
          
-         sciname_2 = ifelse(scientificName == "Eriogonum grande" & isl_name == "San Clemente",
-                            "Eriogonum giganteum var. grande", sciname_2),
-         sciname_2 = ifelse(scientificName == "Eriogonum grande" & isl_name == "Santa Catalina", 
-                            "Eriogonum giganteum var. grande", sciname_2),
-         sciname_2 = ifelse(scientificName == "Eriogonum grande" & isl_name == "San Nicolas", 
-                            "Eriogonum giganteum var. timorum", sciname_2),
-         sciname_2 = ifelse(scientificName == "Eriogonum grande" & isl_name == "San Miguel", 
-                            "Eriogonum giganteum var. rubescens", sciname_2),
          
-         sciname_2 = ifelse(scientificName == "Lotus dendroideus" & isl_name == "Santa Rosa", 
+         sciname_2 = ifelse(sci_name == "Eriogonum grande" & isl_name == "San Clemente",
+                            "Eriogonum grande var. grande", sciname_2),
+         sciname_2 = ifelse(sci_name == "Eriogonum grande" & isl_name == "Santa Catalina", 
+                            "Eriogonum grande var. grande", sciname_2),
+         sciname_2 = ifelse(sci_name == "Eriogonum grande" & isl_name == "San Nicolas", 
+                            "Eriogonum grande var. timorum", sciname_2),
+         sciname_2 = ifelse(sci_name == "Eriogonum grande" & isl_name == "San Miguel", 
+                            "Eriogonum grande var. rubescens", sciname_2),
+         sciname_2 = ifelse(sci_name == "Eriogonum grande" & isl_name == "Santa Rosa", 
+                            "Eriogonum grande var. rubescens", sciname_2),
+         
+         
+         sciname_2 = ifelse(sci_name == "Acmispon dendroideus" & isl_name == "Santa Rosa", 
                             "Acmispon dendroideus var. dendroideus", sciname_2),
-         sciname_2 = ifelse(scientificName == "Lotus dendroideus" & isl_name == "Santa Cruz", 
+         sciname_2 = ifelse(sci_name == "Acmispon dendroideus" & isl_name == "Santa Cruz", 
                             "Acmispon dendroideus var. dendroideus", sciname_2),
-         sciname_2 = ifelse(scientificName == "Lotus dendroideus" & isl_name == "Santa Catalina", 
+         sciname_2 = ifelse(sci_name == "Acmispon dendroideus" & isl_name == "Santa Catalina", 
                             "Acmispon dendroideus var. dendroideus", sciname_2),
-         sciname_2 = ifelse(scientificName == "Lotus dendroideus" & isl_name == "Anacapa", 
+         sciname_2 = ifelse(sci_name == "Acmispon dendroideus" & isl_name == "Anacapa", 
                             "Acmispon dendroideus var. dendroideus", sciname_2),
-         sciname_2 = ifelse(scientificName == "Lotus dendroideus" & isl_name == "San Miguel", 
+         sciname_2 = ifelse(sci_name == "Acmispon dendroideus" & isl_name == "San Miguel", 
                             "Acmispon dendroideus var. veatchii", sciname_2),
-         sciname_2 = ifelse(scientificName == "Lotus dendroideus" & isl_name == "San Clemente", 
+         sciname_2 = ifelse(sci_name == "Acmispon dendroideus" & isl_name == "San Clemente", 
                             "Acmispon dendroideus var. traskiae", sciname_2),
         
-         sciname_2 = ifelse(scientificName == "Acmispon dendroideus" & isl_name == "Santa Rosa", 
-                            "Acmispon dendroideus var. dendroideus", sciname_2),
-         sciname_2 = ifelse(scientificName == "Acmispon dendroideus" & isl_name == "Santa Cruz", 
-                            "Acmispon dendroideus var. dendroideus", sciname_2),
-         sciname_2 = ifelse(scientificName == "Acmispon dendroideus" & isl_name == "Santa Catalina", 
-                            "Acmispon dendroideus var. dendroideus", sciname_2),
-         sciname_2 = ifelse(scientificName == "Acmispon dendroideus" & isl_name == "Anacapa", 
-                            "Acmispon dendroideus var. dendroideus", sciname_2),
-         sciname_2 = ifelse(scientificName == "Acmispon dendroideus" & isl_name == "San Miguel", 
-                            "Acmispon dendroideus var. veatchii", sciname_2),
-         sciname_2 = ifelse(scientificName == "Acmispon dendroideus" & isl_name == "San Clemente", 
-                            "Acmispon dendroideus var. traskiae", sciname_2),
         
-         sciname_2 = ifelse(scientificName == "Galium angustifolium" & isl_name == "Santa Catalina", 
+         sciname_2 = ifelse(sci_name == "Galium angustifolium" & isl_name == "Santa Catalina", 
                             "Galium angustifolium subsp. angustifolium", sciname_2),
-         sciname_2 = ifelse(scientificName == "Galium angustifolium" & isl_name == "Santa Rosa", 
+         sciname_2 = ifelse(sci_name == "Galium angustifolium" & isl_name == "Santa Rosa", 
                             "Galium angustifolium subsp. foliosum", sciname_2),
-         sciname_2 = ifelse(scientificName == "Galium angustifolium" & isl_name == "Santa Cruz", 
+         sciname_2 = ifelse(sci_name == "Galium angustifolium" & isl_name == "Santa Cruz", 
                             "Galium angustifolium subsp. foliosum", sciname_2),
-         sciname_2 = ifelse(scientificName == "Galium angustifolium" & isl_name == "Anacapa", 
+         sciname_2 = ifelse(sci_name == "Galium angustifolium" & isl_name == "Anacapa", 
                             "Galium angustifolium subsp. foliosum", sciname_2),
          
-         sciname_2 = ifelse(scientificName == "Galium catalinense" & isl_name == "San Clemente", 
+         sciname_2 = ifelse(sci_name == "Galium catalinense" & isl_name == "San Clemente", 
                             "Galium catalinense subsp. acrispum", sciname_2),
-         sciname_2 = ifelse(scientificName == "Galium catalinense" & isl_name == "Santa Catalina", 
+         sciname_2 = ifelse(sci_name == "Galium catalinense" & isl_name == "Santa Catalina", 
                             "Galium catalinense subsp. catalinense", sciname_2),
 
-         sciname_2 = ifelse(scientificName == "Malvastrum nesioticum" & isl_name == "Santa Catalina", 
-                            "Malacothamnus fasciculatus var. catalinensis", sciname_2),
-         sciname_2 = ifelse(scientificName == "Malvastrum nesioticum" & isl_name == "Santa Cruz", 
-                            "Malacothamnus fasciculatus var. nesioticus", sciname_2),
-         sciname_2 = ifelse(scientificName == "Malacothamnus fasciculatus" & isl_name == "Santa Catalina", 
-                            "Malacothamnus fasciculatus var. catalinensis", sciname_2),
-         sciname_2 = ifelse(scientificName == "Malacothamnus fasciculatus" & isl_name == "Santa Cruz", 
-                            "Malacothamnus fasciculatus var. nesioticus", sciname_2),
-        
-         sciname_2 = ifelse(scientificName == "Lavatera assurgentiflora" & isl_name == "Santa Catalina", 
-                            "Malva assurgentiflora subsp. glabra", sciname_2),
-         sciname_2 = ifelse(scientificName == "Lavatera assurgentiflora" & isl_name == "San Clemente", 
-                            "Malva assurgentiflora subsp. glabra", sciname_2),
-         sciname_2 = ifelse(scientificName == "Lavatera assurgentiflora subsp. glabra" & isl_name == "San Clemente", 
-                            "Malva assurgentiflora subsp. glabra", sciname_2),
-         sciname_2 = ifelse(scientificName == "Lavatera assurgentiflora subsp. glabra" & isl_name == "Santa Catalina", 
-                            "Malva assurgentiflora subsp. glabra", sciname_2),
-         sciname_2 = ifelse(scientificName == "Malva assurgentiflora" & isl_name == "San Clemente", 
-                            "Malva assurgentiflora subsp. glabra", sciname_2),
-         sciname_2 = ifelse(scientificName == "Malva assurgentiflora" & isl_name == "Santa Catalina", 
-                            "Malva assurgentiflora subsp. glabra", sciname_2),
-         sciname_2 = ifelse(scientificName == "Malva assurgentiflora subsp. glabra" & isl_name == "San Clemente", 
-                            "Malva assurgentiflora subsp. glabra", sciname_2),
-         sciname_2 = ifelse(scientificName == "Malva assurgentiflora subsp. glabra" & isl_name == "Santa Catalina", 
-                            "Malva assurgentiflora subsp. glabra", sciname_2),
-         sciname_2 = ifelse(scientificName == "Lavatera assurgentiflora subsp. assurgentiflora" & isl_name == "San Clemente",
-                            "Malva assurgentiflora subsp. glabra", sciname_2),
-         sciname_2 = ifelse(scientificName == "Lavatera assurgentiflora subsp. assurgentiflora" & isl_name == "Santa Catalina", 
-                            "Malva assurgentiflora subsp. glabra", sciname_2),
-         sciname_2 = ifelse(scientificName == "Malva assurgentiflora subsp. assurgentiflora" & isl_name == "San Clemente",
-                            "Malva assurgentiflora subsp. glabra", sciname_2),
-         sciname_2 = ifelse(scientificName == "Malva assurgentiflora subsp. assurgentiflora" & isl_name == "Santa Catalina", 
-                            "Malva assurgentiflora subsp. glabra", sciname_2),
-
-         sciname_2 = ifelse(scientificName == "Malva assurgentiflora subsp. assurgentiflora" & isl_name == "San Miguel",
-                            "Malva assurgentiflora subsp. assurgentiflora", sciname_2),
-         sciname_2 = ifelse(scientificName == "Malva assurgentiflora subsp. assurgentiflora" & isl_name == "Santa Rosa", 
-                            "Malva assurgentiflora subsp. assurgentiflora", sciname_2),  
-         sciname_2 = ifelse(scientificName == "Malva assurgentiflora subsp. assurgentiflora" & isl_name == "Santa Cruz", 
-                            "Malva assurgentiflora subsp. assurgentiflora", sciname_2),  
-         sciname_2 = ifelse(scientificName == "Malva assurgentiflora subsp. assurgentiflora" & isl_name == "Anacapa", 
-                            "Malva assurgentiflora subsp. assurgentiflora", sciname_2),  
-         sciname_2 = ifelse(scientificName == "Malva assurgentiflora" & isl_name == "San Miguel",
-                            "Malva assurgentiflora subsp. assurgentiflora", sciname_2),
-         sciname_2 = ifelse(scientificName == "Malva assurgentiflora" & isl_name == "Santa Rosa", 
-                            "Malva assurgentiflora subsp. assurgentiflora", sciname_2),  
-         sciname_2 = ifelse(scientificName == "Malva assurgentiflora" & isl_name == "Santa Cruz", 
-                            "Malva assurgentiflora subsp. assurgentiflora", sciname_2),  
-         sciname_2 = ifelse(scientificName == "Malva assurgentiflora" & isl_name == "Anacapa", 
-                            "Malva assurgentiflora subsp. assurgentiflora", sciname_2),  
-         sciname_2 = ifelse(scientificName == "Malva assurgentiflora subsp. glabra" & isl_name == "San Miguel",
-                            "Malva assurgentiflora subsp. assurgentiflora", sciname_2),
-         sciname_2 = ifelse(scientificName == "Malva assurgentiflora subsp. glabra" & isl_name == "Santa Rosa", 
-                            "Malva assurgentiflora subsp. assurgentiflora", sciname_2),  
-         sciname_2 = ifelse(scientificName == "Malva assurgentiflora subsp. glabra" & isl_name == "Santa Cruz", 
-                            "Malva assurgentiflora subsp. assurgentiflora", sciname_2),  
-         sciname_2 = ifelse(scientificName == "Malva assurgentiflora subsp. glabra" & isl_name == "Anacapa", 
-                            "Malva assurgentiflora subsp. assurgentiflora", sciname_2),  
-         sciname_2 = ifelse(scientificName == "Lavatera assurgentiflora subsp. glabra" & isl_name == "San Miguel",
-                            "Malva assurgentiflora subsp. assurgentiflora", sciname_2),
-         sciname_2 = ifelse(scientificName == "Lavatera assurgentiflora subsp. glabra" & isl_name == "Santa Rosa", 
-                            "Malva assurgentiflora subsp. assurgentiflora", sciname_2),  
-         sciname_2 = ifelse(scientificName == "Lavatera assurgentiflora subsp. glabra" & isl_name == "Santa Cruz", 
-                            "Malva assurgentiflora subsp. assurgentiflora", sciname_2),  
-         sciname_2 = ifelse(scientificName == "Lavatera assurgentiflora subsp. glabra" & isl_name == "Anacapa", 
-                            "Malva assurgentiflora subsp. assurgentiflora", sciname_2),  
-         sciname_2 = ifelse(scientificName == "Lavatera assurgentiflora subsp. assurgentiflora" & isl_name == "San Miguel",
-                            "Malva assurgentiflora subsp. assurgentiflora", sciname_2),
-         sciname_2 = ifelse(scientificName == "Lavatera assurgentiflora subsp. assurgentiflora" & isl_name == "Santa Rosa", 
-                            "Malva assurgentiflora subsp. assurgentiflora", sciname_2),  
-         sciname_2 = ifelse(scientificName == "Lavatera assurgentiflora subsp. assurgentiflora" & isl_name == "Santa Cruz", 
-                            "Malva assurgentiflora subsp. assurgentiflora", sciname_2),  
-         sciname_2 = ifelse(scientificName == "Lavatera assurgentiflora subsp. assurgentiflora" & isl_name == "Anacapa", 
-                            "Malva assurgentiflora subsp. assurgentiflora", sciname_2),  
-         sciname_2 = ifelse(scientificName == "Lavatera assurgentiflora" & isl_name == "San Miguel",
-                            "Malva assurgentiflora subsp. assurgentiflora", sciname_2),
-         sciname_2 = ifelse(scientificName == "Lavatera assurgentiflora" & isl_name == "Santa Rosa", 
-                            "Malva assurgentiflora subsp. assurgentiflora", sciname_2),  
-         sciname_2 = ifelse(scientificName == "Lavatera assurgentiflora" & isl_name == "Santa Cruz", 
-                            "Malva assurgentiflora subsp. assurgentiflora", sciname_2),  
-         sciname_2 = ifelse(scientificName == "Lavatera assurgentiflora" & isl_name == "Anacapa", 
-                            "Malva assurgentiflora subsp. assurgentiflora", sciname_2),  
          
-         sciname_2 = ifelse(scientificName == "Lyonothamnus aspleniifolius" & isl_name == "Santa Cruz", 
+         sciname_2 = ifelse(sci_name == "Malacothamnus fasciculatus" & isl_name == "Santa Catalina", 
+                            "Malacothamnus fasciculatus var. catalinensis", sciname_2),
+         sciname_2 = ifelse(sci_name == "Malacothamnus fasciculatus" & isl_name == "Santa Cruz", 
+                            "Malacothamnus fasciculatus var. nesioticus", sciname_2),
+         
+         
+         sciname_2 = ifelse(sci_name == "Malva assurgentiflora" & isl_name == "Santa Catalina", 
+                            "Malva assurgentiflora subsp. glabra", sciname_2),
+         sciname_2 = ifelse(sci_name == "Malva assurgentiflora" & isl_name == "San Clemente", 
+                            "Malva assurgentiflora subsp. glabra", sciname_2),
+         sciname_2 = ifelse(sci_name == "Malva assurgentiflora" & isl_name == "San Miguel",
+                            "Malva assurgentiflora subsp. assurgentiflora", sciname_2),
+         sciname_2 = ifelse(sci_name == "Malva assurgentiflora" & isl_name == "Santa Rosa", 
+                            "Malva assurgentiflora subsp. assurgentiflora", sciname_2),  
+         sciname_2 = ifelse(sci_name == "Malva assurgentiflora" & isl_name == "Santa Cruz", 
+                            "Malva assurgentiflora subsp. assurgentiflora", sciname_2),  
+         sciname_2 = ifelse(sci_name == "Malva assurgentiflora" & isl_name == "Anacapa", 
+                            "Malva assurgentiflora subsp. assurgentiflora", sciname_2),
+         
+         sciname_2 = ifelse(sci_name == "Lyonothamnus floribundus" & isl_name == "Santa Cruz", 
                             "Lyonothamnus floribundus subsp. aspleniifolius", sciname_2),  
-         sciname_2 = ifelse(scientificName == "Lyonothamnus aspleniifolius" & isl_name == "Santa Rosa", 
+         sciname_2 = ifelse(sci_name == "Lyonothamnus floribundus" & isl_name == "Santa Rosa", 
                             "Lyonothamnus floribundus subsp. aspleniifolius", sciname_2),  
-         sciname_2 = ifelse(scientificName == "Lyonothamnus aspleniifolius" & isl_name == "San Clemente", 
+         sciname_2 = ifelse(sci_name == "Lyonothamnus floribundus" & isl_name == "San Clemente", 
                             "Lyonothamnus floribundus subsp. aspleniifolius", sciname_2),  
-         sciname_2 = ifelse(scientificName == "Lyonothamnus aspleniifolius" & isl_name == "Santa Catalina", 
-                            "Lyonothamnus floribundus subsp. floribundus", sciname_2),  
-         sciname_2 = ifelse(scientificName == "Lyonothamnus floribundus" & isl_name == "Santa Cruz", 
-                            "Lyonothamnus floribundus subsp. aspleniifolius", sciname_2),  
-         sciname_2 = ifelse(scientificName == "Lyonothamnus floribundus" & isl_name == "Santa Rosa", 
-                            "Lyonothamnus floribundus subsp. aspleniifolius", sciname_2),  
-         sciname_2 = ifelse(scientificName == "Lyonothamnus floribundus" & isl_name == "San Clemente", 
-                            "Lyonothamnus floribundus subsp. aspleniifolius", sciname_2),  
-         sciname_2 = ifelse(scientificName == "Lyonothamnus floribundus" & isl_name == "Santa Catalina", 
+         sciname_2 = ifelse(sci_name == "Lyonothamnus floribundus" & isl_name == "Santa Catalina", 
                             "Lyonothamnus floribundus subsp. floribundus", sciname_2),
          
-         sciname_2 = ifelse(scientificName == "Dudleya hassei", 
-                            "Dudleya virens", sciname_2),
-         sciname_2 = ifelse(scientificName == "Dudleya virens subsp. hassei", 
-                            "Dudleya virens", sciname_2),
-         sciname_2 = ifelse(scientificName == "Dudleya virens subsp. insularis", 
-                            "Dudleya virens", sciname_2),
-         sciname_2 = ifelse(scientificName == "Dudleya virens subsp. virens", 
+         sciname_2 = ifelse(sci_name == "Malacothrix foliosa" & isl_name == "Anacapa", 
+                            "Malacothrix foliosa subsp. crispifolia", sciname_2),  
+         sciname_2 = ifelse(sci_name == "Malacothrix foliosa" & isl_name == "San Clemente", 
+                            "Malacothrix foliosa subsp. foliosa", sciname_2),  
+         sciname_2 = ifelse(sci_name == "Malacothrix foliosa" & isl_name == "Santa Barbara", 
+                            "Malacothrix foliosa subsp. philbrickii", sciname_2),  
+         sciname_2 = ifelse(sci_name == "Malacothrix foliosa" & isl_name == "San Nicolas", 
+                            "Malacothrix foliosa subsp. polycephala", sciname_2),
+         
+         sciname_2 = ifelse(sci_name == "Dudleya blochmaniae" & isl_name == "Santa Cruz", 
+                            "Dudleya blochmaniae subsp. blochmaniae", sciname_2),  
+         sciname_2 = ifelse(sci_name == "Dudleya blochmaniae" & isl_name == "Santa Rosa", 
+                            "Dudleya blochmaniae subsp. insularis", sciname_2),
+         
+         sciname_2 = ifelse(sci_name == "Dudleya virens" & isl_name == "San Nicolas",  
+                            "Dudleya virens subsp. insularis", sciname_2),
+         sciname_2 = ifelse(sci_name == "Dudleya virens" & isl_name == "San Clemente",  
+                            "Dudleya virens subsp. virens", sciname_2),
+         sciname_2 = ifelse(sci_name == "Dudleya virens" & isl_name == "Santa Catalina",  
                             "Dudleya virens", sciname_2),
          
-         sciname_2 = ifelse(scientificName == "Delphinium parryi subsp. maritimum", 
+         sciname_2 = ifelse(sci_name == "Delphinium parryi subsp. maritimum", 
                             "Delphinium parryi", sciname_2),
-         sciname_2 = ifelse(scientificName == "Delphinium parryi subsp. parryi", 
-                            "Delphinium parryi", sciname_2),
+         sciname_2 = ifelse(sci_name == "Delphinium parryi subsp. parryi", 
+                            "Delphinium parryi", sciname_2))
 
-         sciname_2 = ifelse(scientificName == "Camissonia cheiranthifolia", 
-                            "Camissoniopsis cheiranthifolia", sciname_2),   
-         sciname_2 = ifelse(scientificName == "Camissonia cheiranthifolia subsp. cheiranthifolia", 
-                            "Camissoniopsis cheiranthifolia", sciname_2),   
-         sciname_2 = ifelse(scientificName == "Camissoniopsis cheiranthifolia subsp. cheiranthifolia", 
-                            "Camissoniopsis cheiranthifolia", sciname_2),   
-         sciname_2 = ifelse(scientificName == "Camissonia cheiranthifolia subsp. suffruticosa", 
-                            "Camissoniopsis cheiranthifolia", sciname_2),   
-         sciname_2 = ifelse(scientificName == "Camissoniopsis cheiranthifolia subsp. suffruticosa", 
-                            "Camissoniopsis cheiranthifolia", sciname_2)) 
 
 plants_byisl_join2 <- left_join(plants_byisl_join, by_isl_filter)
 
@@ -438,59 +318,176 @@ plants_byisl_join2 <- left_join(plants_byisl_join, by_isl_filter)
 SMI <- plants_byisl_join2 %>%
   filter(isl_name == "San Miguel",
          SMI == "1")
-
 SR <- plants_byisl_join2 %>%
   filter(isl_name == "Santa Rosa",
          SR == "1")
-
 SCR <- plants_byisl_join2 %>%
   filter(isl_name == "Santa Cruz",
          SCR == "1")
-
 A <- plants_byisl_join2 %>%
   filter(isl_name == "Anacapa",
          SR == "1")
-
 SBA <- plants_byisl_join2 %>%
   filter(isl_name == "Santa Barbara",
          SBA == "1")
-
 SNI <- plants_byisl_join2 %>%
   filter(isl_name == "San Nicolas",
          SNI == "1")
-
 SCL <- plants_byisl_join2 %>%
   filter(isl_name == "San Clemente",
          SCL == "1")
-
 SCA <- plants_byisl_join2 %>%
   filter(isl_name == "Santa Catalina",
          SCA == "1")
 
 plants_byisl_join2_clean <- rbind(SBA, SCA, SCL, SCR, SMI, SNI, SR, A) %>%
-  rename(sciname_4 = sciname_3)
+  dplyr::select(-sci_name) %>%
+  rename(sci_name = sciname_2)
 
 remove(SBA, SCA, SCL, SCR, SMI, SNI, SR, A)
 
 
 ```
 
-## Summary Lists
+### Combine island-filtered and non-island filtered 
 
 ```{r}
-all_clean <- full_join(plants_nonisl_clean, plants_byisl_join2_clean)
-
-plants_keep <- plants_nonisl_clean %>% 
-  mutate(Sci_Name = str_to_sentence(sciname_4)) %>%
-  dplyr::select(kingdom_final, phylum_final, class_final, order_final, family_final, old_name, Sci_Name,
-         eventDate, year, month, day, startDayOfYear, endDayOfYear, verbatimEventDate, associatedTaxa, 
+plants_nonisl_clean_merger <- plants_nonisl_clean %>%
+  dplyr::select(kingdom_final, phylum_final, class_final, order_final, family_final, scientificName, sci_name,
+         eventDate, verbatimEventDate, year, month, day, startDayOfYear, endDayOfYear, verbatimEventDate, associatedTaxa, 
          country, stateProvince, county, municipality, locality, isl_name,
          decimalLatitude, decimalLongitude, geodeticDatum,
          id, institutionCode, collectionCode, occurrenceID, basisOfRecord, catalogNumber,
-         scientificNameAuthorship, identifiedBy, dateIdentified, recordedBy, associatedCollectors) %>%
-  filter(institutionCode != "iNaturalist")
+         scientificNameAuthorship, identifiedBy, dateIdentified, recordedBy, associatedCollectors,
+         recordNumber, catalogNumber, otherCatalogNumbers, eventDate, occurrenceRemarks)
 
-write_csv(plants_keep, "Josie/Data/DraftData_20210825.csv")
+plants_byisl_join2_clean_merger <- plants_byisl_join2_clean %>%
+  dplyr::select(kingdom_final, phylum_final, class_final, order_final, family_final, scientificName, sci_name,
+         eventDate, verbatimEventDate, year, month, day, startDayOfYear, endDayOfYear, verbatimEventDate, associatedTaxa, 
+         country, stateProvince, county, municipality, locality, isl_name,
+         decimalLatitude, decimalLongitude, geodeticDatum,
+         id, institutionCode, collectionCode, occurrenceID, basisOfRecord, catalogNumber,
+         scientificNameAuthorship, identifiedBy, dateIdentified, recordedBy, associatedCollectors,
+         recordNumber, catalogNumber, otherCatalogNumbers, eventDate, occurrenceRemarks)
+
+all_clean <- full_join(plants_nonisl_clean_merger, plants_byisl_join2_clean_merger)
+
+plants_keep <- all_clean %>% filter(institutionCode != "iNaturalist")
+
 ```
 
+# Removing duplicate sheets
+
+There is a problem with the data still in the number of repeated sheets/duplicated collections. We'll try to remove these by isolating the collections made on the same days by the same people with shared collection numbers.
+
+```{r remove dupe sheets}
+
+nodupes_cleaner <- plants_keep %>%
+  mutate(filter_date1 = parse_date_time(eventDate, c("mdy", "ymd", "dmy")),
+         filter_date2 = parse_date_time(verbatimEventDate, c("mdy", "ymd", "dmy")),
+         filter_date = coalesce(filter_date1, filter_date2),
+         year2 = year(filter_date), month2 = month(filter_date), day2 = day(filter_date)
+         ) %>%
+  mutate(
+  # fix Junak's record number hyphens and mistyped island codes
+         recordNumber = str_replace_all(recordNumber, "-", ""),
+         recordNumber = str_replace(recordNumber, " ", ""),
+         recordNumber = str_replace(recordNumber, "SCI", "SCl"),
+         recordNumber = str_to_lower(recordNumber),
+  # fix "w./" in recordedBy
+         recordedBy = str_replace(recordedBy, " w/", ";"),
+         recordedBy = str_replace(recordedBy, " &", ";"),
+         recordedBy = str_remove(recordedBy, "Collector(s):"),
+  # JUNAK - collapse the many variations on name
+         recordedBy = str_replace(recordedBy, "S. A. Junak", "Steven A. Junak"),
+         recordedBy = str_replace(recordedBy, "S.A. Junak", "Steven A. Junak"),
+         recordedBy = str_replace(recordedBy, "Junak, Steven A.", "Steven A. Junak"),
+         recordedBy = str_replace(recordedBy, "Junak, S. A.", "Steven A. Junak"),
+         recordedBy = str_replace(recordedBy, "Junak, S.", "Steven A. Junak"),
+         recordedBy = str_replace(recordedBy, "S A Junak", "Steven A. Junak"),
+         recordedBy = str_replace(recordedBy, "Steven Junak", "Steven A. Junak"),
+         recordedBy = str_replace(recordedBy, "Steven A Junak", "Steven A. Junak"),
+         recordedBy = str_replace(recordedBy, "Steve A Junak", "Steven A. Junak"),
+         recordedBy = str_replace(recordedBy, "Steve A. Junak", "Steven A. Junak"),
+         recordedBy = str_replace(recordedBy, "Steven a. Junak", "Steven A. Junak"),
+         recordedBy = str_replace(recordedBy, "Steve Junak", "Steven A. Junak"),
+         recordedBy = str_replace(recordedBy, "S. Junak", "Steven A. Junak"),
+  # Philbrick - collapse the many variations on name
+         recordedBy = str_replace(recordedBy, "R. N. Philbrick", "Ralph N. Philbrick"),
+         recordedBy = str_replace(recordedBy, "R.N. Philbrick", "Ralph N. Philbrick"),
+         recordedBy = str_replace(recordedBy, "R. Philbrick", "Ralph N. Philbrick"),
+         recordedBy = str_replace(recordedBy, "Ralph Philbrick", "Ralph N. Philbrick"),
+         recordedBy = str_replace(recordedBy, "Philbrick, Ralph", "Ralph N. Philbrick"),
+         recordedBy = str_replace(recordedBy, "Philbrick, Ralph N.", "Ralph N. Philbrick"),
+         recordedBy = str_replace(recordedBy, "Philbrick, R. N.", "Ralph N. Philbrick"),
+         recordedBy = str_replace(recordedBy, "Philbrick N.", "Philbrick"),
+  # Dunkle - collapse the many variations on name
+         recordedBy = str_replace(recordedBy, "M. B. Dunkle", "Meryl B. Dunkle"),
+         recordedBy = str_replace(recordedBy, "Dunkle, M. B.", "Meryl B. Dunkle"),
+         recordedBy = str_replace(recordedBy, "M B Dunkle", "Meryl B. Dunkle"),
+         recordedBy = str_replace(recordedBy, "M.B. Dunkle", "Meryl B. Dunkle"),
+  # Fosberg - collapse the many variations on name
+         recordedBy = str_replace(recordedBy, "F. R. Fosberg", "F. Raymond Fosberg"),
+         recordedBy = str_replace(recordedBy, "F R Fosberg", "F. Raymond Fosberg"),
+         recordedBy = str_replace(recordedBy, "F.R. Fosberg", "F. Raymond Fosberg"),
+         recordedBy = str_replace(recordedBy, "Fosberg, F.R.", "F. Raymond Fosberg"),
+         recordedBy = str_replace(recordedBy, "Fosberg, F. R.", "F. Raymond Fosberg"),
+         recordedBy = str_replace(recordedBy, "Fosberg, F.", "F. Raymond Fosberg"),
+         recordedBy = str_replace(recordedBy, "Francis Raymond Fosberg", "F. Raymond Fosberg"),
+  # Thorne - collapse the many variations on name
+         recordedBy = str_replace(recordedBy, "R. F. Thorne", "Robert F. Thorne"),
+         recordedBy = str_replace(recordedBy, "Thorne, Robert F.", "Robert F. Thorne"),
+         recordedBy = str_replace(recordedBy, "Thorne, R. F.", "Robert F. Thorne"),
+         recordedBy = str_replace(recordedBy, "Thorne, R.F.", "Robert F. Thorne"),
+         recordedBy = str_replace(recordedBy, "R.F. Thorne", "Robert F. Thorne"),
+         recordedBy = str_replace(recordedBy, "R. F. Thorne", "Robert F. Thorne"),
+         recordedBy = str_replace(recordedBy, "Rober F. Thorne", "Robert F. Thorne"),
+  # other names noticed
+         recordedBy = str_replace(recordedBy, "G. Kanakoff", "George Kanakoff"),
+         recordedBy = str_replace(recordedBy, "Blakley, E. R.", "E. R. Blakley"),
+         recordedBy = str_replace(recordedBy, "Wolf, Carl B.", "Carl B. Wolf"),
+         recordedBy = str_replace(recordedBy, "C. B. Wolf", "Carl B. Wolf"),
+         recordedBy = str_replace(recordedBy, "R. Hoffmann", "Ralph Hoffmann"),
+         recordedBy = str_replace(recordedBy, "Hoffmann, Ralph", "Ralph Hoffmann"),
+         recordedBy = str_replace(recordedBy, "Hoffman, R.", "Ralph Hoffmann"),
+         recordedBy = str_replace(recordedBy, "Moran, Reid", "Reid V. Moran"),
+         recordedBy = str_replace(recordedBy, "R. Moran", "Reid V. Moran"),
+         recordedBy = str_replace(recordedBy, "Moran, Reid", "Reid V. Moran"),
+         recordedBy = str_replace(recordedBy, "R. V. Moran", "Reid V. Moran"),
+         recordedBy = str_replace(recordedBy, "Reid Moran", "Reid V. Moran"),
+         recordedBy = str_replace(recordedBy, "M. Daily", "Marla Daily"),
+         recordedBy = str_replace(recordedBy, "C. F. Smith", "Clifton F. Smith"), 
+         recordedBy = str_replace(recordedBy, "Laughrin, Lyndal", "Lyndal Laughrin"))
+  
+
+records_nodupes_ERB <- nodupes_cleaner %>%
+  filter(recordedBy == "E. R. Blakley") %>%
+  distinct(recordNumber, isl_name, sci_name, year, month, .keep_all = T) %>%
+  distinct(recordNumber, isl_name, sci_name, year, month2, .keep_all = T) %>%
+  distinct(recordNumber, isl_name, sci_name, verbatimEventDate, .keep_all = T) %>%
+  distinct(recordNumber, isl_name, sci_name, filter_date, .keep_all = T) 
+
+records_nodupes <- nodupes_cleaner %>%
+  filter(recordedBy != "E. R. Blakley") %>%
+  distinct(recordNumber, isl_name, sci_name, year, month, day, .keep_all = T) %>%
+  distinct(recordNumber, isl_name, sci_name, year, month2, day2, .keep_all = T) %>%
+  distinct(recordNumber, isl_name, sci_name, recordedBy, verbatimEventDate, .keep_all = T) %>%
+  distinct(recordNumber, isl_name, sci_name, recordedBy, filter_date, .keep_all = T)
+
+records_nodupes <- full_join(records_nodupes, records_nodupes_ERB) %>%
+  dplyr::select(kingdom_final, phylum_final, class_final, order_final, family_final, scientificName, sci_name,
+         eventDate, verbatimEventDate, year, month, day, startDayOfYear, endDayOfYear, verbatimEventDate, associatedTaxa, 
+         country, stateProvince, county, municipality, locality, isl_name,
+         decimalLatitude, decimalLongitude, geodeticDatum,
+         id, institutionCode, collectionCode, occurrenceID, basisOfRecord, catalogNumber,
+         scientificNameAuthorship, identifiedBy, dateIdentified, recordedBy, associatedCollectors,
+         recordNumber, catalogNumber, otherCatalogNumbers, eventDate, occurrenceRemarks)
+
+records_nowthatswhaticalldupes <- plants_keep %>%
+  dplyr::select(year, month, day, verbatimEventDate, eventDate, sci_name, locality, isl_name, institutionCode, collectionCode, recordedBy,
+         recordNumber, catalogNumber, otherCatalogNumbers, occurrenceRemarks) 
+
+
+write_csv(records_nodupes, "Josie/Data/Data_20211022.csv")
+```
 

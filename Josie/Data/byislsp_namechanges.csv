@@ -1,49 +1,86 @@
-old_name,name_based_onisl
-Eriogonum giganteum subsp. compactum,Eriogonum giganteum var. compactum
-Eriogonum giganteum var. compactum,Eriogonum giganteum var. compactum
-Eriogonum giganteum subsp. formosum,Eriogonum giganteum var. formosum
-Eriogonum giganteum var. formosum,Eriogonum giganteum var. formosum
-Eriogonum giganteum var. giganteum,Eriogonum giganteum var. giganteum
-Eriogonum grande var. grande,Eriogonum grande var. grande
-Eriogonum grande subsp. rubescens,Eriogonum grande var. rubescens
-Eriogonum grande var. dunklei,Eriogonum grande var. rubescens
-Eriogonum grande var. rubescens,Eriogonum grande var. rubescens
-Eriogonum grande subsp. timorum,Eriogonum grande var. timorum
-Eriogonum grande var. timorum,Eriogonum grande var. timorum
-Lotus scoparius var. dendroideus,Acmispon dendroideus var. dendroideus
-Acmispon dendroideus var. dendroideus,Acmispon dendroideus var. dendroideus
-Lotus dendroideus var. dendroideus,Acmispon dendroideus var. dendroideus
-Lotus scoparius subsp. traskiae,Acmispon dendroideus var. traskiae
-Lotus dendroideus var. traskiae,Acmispon dendroideus var. traskiae
-Acmispon dendroideus var. traskiae,Acmispon dendroideus var. traskiae
-Lotus dendroideus var. veatchii,Acmispon dendroideus var. veatchii
-Lotus scoparius var. veatchii,Acmispon dendroideus var. veatchii
-Acmispon dendroideus var. veatchii,Acmispon dendroideus var. veatchii
-Galium angustifolium subsp. angustifolium,Galium angustifolium subsp. angustifolium
-Galium angustifolium var. foliosum,Galium angustifolium subsp. foliosum
-Galium angustifolium subsp. foliosum,Galium angustifolium subsp. foliosum
-Galium catalinense subsp. acrispum,Galium catalinense subsp. acrispum
-Galium catalinense subsp. catalinense,Galium catalinense subsp. catalinense
-Malacothamnus fasciculatus subsp. catalinensis,Malacothamnus fasciculatus var. catalinensis
-Malacothamnus fasciculatus var. catalinensis,Malacothamnus fasciculatus var. catalinensis
-Malacothamnus fasciculatus var. nesioticus,Malacothamnus fasciculatus var. nesioticus
-Malva assurgentiflora subsp. glabra,Malva assurgentiflora subsp. glabra
-Malva assurgentiflora subsp. assurgentiflora,Malva assurgentiflora subsp. assurgentiflora
-Camissonia cheiranthifolia subsp. cheiranthifolia,Camissoniopsis cheiranthifolia subsp. cheiranthifolia
-Camissoniopsis cheiranthifolia subsp. cheiranthifolia,Camissoniopsis cheiranthifolia subsp. cheiranthifolia
-Camissonia cheiranthifolia subsp. suffruticosa,Camissoniopsis cheiranthifolia subsp. suffruticosa
-Camissoniopsis cheiranthifolia subsp. suffruticosa,Camissoniopsis cheiranthifolia subsp. suffruticosa
-Oenothera guadalupensis subsp. clementina,Camissoniopsis guadalupensis subsp. clementina
-Camissonia guadalupensis subsp. clementina,Camissoniopsis guadalupensis subsp. clementina
-Camissoniopsis guadalupensis,Camissoniopsis guadalupensis subsp. clementina
-Camissoniopsis guadalupensis subsp. clementina,Camissoniopsis guadalupensis subsp. clementina
-Delphinium parryi subsp. maritimum,Delphinium parryi subsp. maritimum
-Delphinium parryi subsp. parryi,Delphinium parryi subsp. parryi
-Lyonothamnus floribundus var. aspleniifolius,Lyonothamnus floribundus subsp. aspleniifolius
-Lyonothamnus floribundus subsp. aspleniifolius,Lyonothamnus floribundus subsp. aspleniifolius
-Lyonothamnus floribundus subsp. floribundus,Lyonothamnus floribundus subsp. floribundus
-Dudleya hassei,Dudleya virens subsp. hassei
-Dudleya virens subsp. hassei,Dudleya virens subsp. hassei
-Dudleya virens subsp. insularis,Dudleya virens subsp. insularis
-Dudleya virens subsp. virens,Dudleya virens subsp. virens
-Lyonothamnus aspleniifolius,Lyonothamnus floribundus subsp. aspleniifolius
+scientificName,hold_name
+acmispon dendroideus,Acmispon dendroideus
+lotus dendroideus,acmispon dendroideus
+acmispon dendroideus var. dendroideus,acmispon dendroideus
+lotus dendroideus dendroideus,acmispon dendroideus
+lotus dendroideus var. dendroideus,acmispon dendroideus
+lotus scoparius var. dendroideus,acmispon dendroideus
+acmispon dendroideus var. traskiae,acmispon dendroideus
+lotus dendroideus var. traskiae,acmispon dendroideus
+lotus scoparius subsp. traskiae,acmispon dendroideus
+acmispon dendroideus var. veatchii,acmispon dendroideus
+lotus dendroideus var. veatchii,acmispon dendroideus
+lotus scoparius var. veatchii,acmispon dendroideus
+camissonia cheiranthifolia,camissoniopsis cheiranthifolia
+camissoniopsis cheiranthifolia,camissoniopsis cheiranthifolia
+camissonia cheiranthifolia subsp. cheiranthifolia,camissoniopsis cheiranthifolia
+camissoniopsis cheiranthifolia subsp. cheiranthifolia,camissoniopsis cheiranthifolia
+camissonia cheiranthifolia subsp. suffruticosa,camissoniopsis cheiranthifolia
+camissoniopsis cheiranthifolia subsp. suffruticosa,camissoniopsis cheiranthifolia
+camissonia guadalupensis subsp. clementina,camissoniopsis guadalupensis subsp. clementina
+camissoniopsis guadalupensis,camissoniopsis guadalupensis subsp. clementina
+camissoniopsis guadalupensis subsp. clementina,camissoniopsis guadalupensis subsp. clementina
+oenothera guadalupensis subsp. clementina,camissoniopsis guadalupensis subsp. clementina
+delphinium parryi,delphinium parryi
+delphinium parryi subsp. maritimum,delphinium parryi
+delphinium parryi subsp. parryi,delphinium parryi
+dudleya blochmaniae,dudleya blochmaniae
+dudleya blochmaniae subsp. blochmaniae,dudleya blochmaniae
+dudleya blochmaniae subsp. insularis,dudleya blochmaniae
+hasseanthus blochmaniae subsp. insularis,dudleya blochmaniae
+dudleya virens,dudleya virens
+dudleya hassei,dudleya virens
+dudleya virens subsp. hassei,dudleya virens
+dudleya virens subsp. insularis,dudleya virens
+dudleya virens subsp. virens,dudleya virens
+dudleya virens var. virens,dudleya virens
+eriogonum giganteum,eriogonum giganteum
+eriogonum giganteum subsp. compactum,eriogonum giganteum
+eriogonum giganteum var. compactum,eriogonum giganteum
+eriogonum giganteum subsp. formosum,eriogonum giganteum
+eriogonum giganteum var. formosum,eriogonum giganteum
+eriogonum giganteum var. giganteum,eriogonum giganteum
+eriogonum grande,eriogonum grande
+eriogonum grande var. grande,eriogonum grande
+eriogonum grande subsp. rubescens,eriogonum grande
+eriogonum grande var. dunklei,eriogonum grande
+eriogonum grande var. rubescens,eriogonum grande
+eriogonum grande subsp. timorum,eriogonum grande
+eriogonum grande var. timorum,eriogonum grande
+galium angustifolium,galium angustifolium
+galium angustifolium subsp. angustifolium,galium angustifolium
+galium angustifolium subsp. foliosum,galium angustifolium
+galium angustifolium var. foliosum,galium angustifolium
+galium catalinense,galium catalinense
+galium catalinense subsp. acrispum,galium catalinense
+galium catalinense subsp. catalinense,galium catalinense
+lyonothamnus floribundus,lyonothamnus floribundus
+lyonothamnus asplenifolius,lyonothamnus floribundus
+lyonothamnus aspleniifolius,lyonothamnus floribundus
+lyonothamnus floribundus f. aspleniifolius,lyonothamnus floribundus
+lyonothamnus floribundus subsp. asplenifolius,lyonothamnus floribundus
+lyonothamnus floribundus subsp. aspleniifolius,lyonothamnus floribundus
+lyonothamnus floribundus var. aspleniifolius,lyonothamnus floribundus
+lyonothamnus floribundus floribundus,lyonothamnus floribundus
+lyonothamnus floribundus subsp. floribundus,lyonothamnus floribundus
+lyonothamnus floribundus var. floribundus,lyonothamnus floribundus
+malacothamnus fasciculatus,malacothamnus fasciculatus
+malvastrum nesioticum,malacothamnus fasciculatus
+malvastrum nesioticum subsp. fasciculatus,malacothamnus fasciculatus
+malacothamnus fasciculatus catalinensis,malacothamnus fasciculatus
+malacothamnus fasciculatus subsp. catalinensis,malacothamnus fasciculatus
+malacothamnus fasciculatus var. catalinensis,malacothamnus fasciculatus
+malacothamnus fasciculatus var. fasciculatus,malacothamnus fasciculatus
+malacothamnus fasciculatus var. nesioticus,malacothamnus fasciculatus
+malacothrix foliosa,malacothrix foliosa
+malacothrix foliosa subsp. crispifolia,malacothrix foliosa
+malacothrix foliosa subsp. foliosa,malacothrix foliosa
+malacothrix foliosa subsp. philbrickii,malacothrix foliosa
+malacothrix foliosa subsp. polycephala,malacothrix foliosa
+malacothrix polycephala,malacothrix foliosa
+lavatera assurgentiflora,malva assurgentiflora
+lavatera assurgentiflora subsp. assurgentiflora,malva assurgentiflora
+lavatera assurgentiflora subsp. glabra,malva assurgentiflora
+malva assurgentiflora,malva assurgentiflora
+malva assurgentiflora subsp. assurgentiflora,malva assurgentiflora
+malva assurgentiflora subsp. glabra,malva assurgentiflora
