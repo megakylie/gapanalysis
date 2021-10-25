@@ -1,0 +1,126 @@
+---
+title: "Plants_DataCleanup_Spatial"
+author: "Josie Lesage"
+date: "10/22/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+### --- Load Packages --- ###
+library(tidyverse)
+library(raster)
+library(sf)
+library(sp)
+library(rgdal)
+library(raster)
+library(rgeos)
+library(CoordinateCleaner)
+library(scrubr)
+library(scales)
+library(rasterVis)
+library(lemon)
+```
+
+```{r Import main dataset}
+data <- read_csv("Josie/Data/Data_20211022.csv")%>%
+  dplyr::filter(institutionCode != "iNaturalist")
+
+# fix the column headings
+all_data <- data  %>%
+  rename(Latitude = decimalLatitude,
+         Longitude = decimalLongitude) 
+```
+
+
+# Processing and cleaning the spatial data
+
+Only a subset of the data has spatial information, so this chunk of code will isolate and clean up those records (removing those in the middle of the ocean, reprojecting for viewing, etc.)
+
+**Please note that there is a known issue with dummy centroid coordinates that Josie still needs to fix! This may not be such a big issue for other groups, but it's a _huge_ problem for the plants. Essentially, because some insitutions just put a coordinate for the centroid of the island into their data, it looks like the centers are heavily sampled - those datapoints need to be removed. Josie will add code to do this at a later date.
+
+```{r Spatial cleaning of data}
+# create a dataframe of all complete cases of name, lat/long, island, and year
+
+all_data_coords <- all_data %>%
+  dplyr::filter(!is.na(Latitude), !is.na(Longitude))
+
+############### drop points with meaningless coords - this removes any specimens that have long/lats that are not in the vicinity of the islands
+
+# Using the coord cleaner package, remove points that have "obvious" issues
+# This filters out things like when the capital or state centroid was used as a dummy coord
+flags <- clean_coordinates(x = all_data_coords, lon = "Longitude", lat = "Latitude",
+                          species = "sci_name",
+                          tests = c("capitals", "centroids", "equal","gbif", "institutions",
+                                     "zeros"))
+all_data_coords <- all_data_coords[flags$.summary,] 
+
+# isolate the coords to those within the islands region
+all_data_coords <- all_data_coords %>%
+  filter(Longitude <= -118, Longitude >= -120.5,
+         Latitude <= 34.1, Latitude >= 32.7)
+
+# make a quick plot of where the points are
+plot(all_data_coords$Longitude, all_data_coords$Latitude, asp=1)
+
+# Ben's modified code and a shapefile found online to isolate counties of interest, 
+# Albers projection is used in order to have grids in km^2
+counties <- readOGR("Heatmap_files", layer="cnty24k09_1_line")
+chis_counties <- counties[counties$NAME%in%c("Ventura", "Santa Barbara","Los Angeles","San Diego","Orange")]
+is.map <- crop(counties, extent(-1.5e+05,2.5e+05,-6e+05,-4e+05))
+
+plot(is.map, col="black")
+rm(counties)
+rm(chis_counties)
+
+####### Reproject Long + Lat Coords into Albers (Island maps are in Albers)
+P4S.latlon <- CRS("+proj=longlat +datum=WGS84")
+new_proj <- "+proj=aea +lat_1=34 +lat_2=40.5 +lat_0=0 +lon_0=-120 +x_0=0 +y_0=-4000000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
+
+sp <- SpatialPointsDataFrame(coords = cbind(as.numeric(all_data_coords$Longitude),
+                                            as.numeric(all_data_coords$Latitude)), 
+                             data = all_data_coords, proj4string = P4S.latlon)
+pointsX <- spTransform(sp, CRS(new_proj))
+
+
+# attach projected points to 'all_data'
+all_data_coords1 <- cbind(all_data_coords,pointsX@coords) %>%
+  mutate(Lat_alb = coords.x2,
+         Lon_alb = coords.x1)
+
+
+### --- Remove things from the middle of the ocean --- ###
+# Import island polygons
+ibis <- st_read("Heatmap_files/Master_Islands.shp")
+
+chis_ibis <- ibis %>%
+  filter(ISL_NAME %in% c("Santa Rosa", "Santa Cruz", "San Miguel", "Anacapa", "San Clemente", "Santa Barbara", "Santa Catalina", "San Nicolas")) 
+
+chis_ibis <- st_transform(chis_ibis, crs = st_crs(new_proj))
+
+# Remove points waaaaaay off of the islands, Josie-style
+all_data_coords2 <- st_as_sf(all_data_coords1, coords = c("coords.x1", "coords.x2"), crs = new_proj)
+
+all_data_coords3 <- st_join(all_data_coords2, chis_ibis, join = st_intersects) %>%
+  filter(!is.na(ISL_NAME))
+
+# Quick map of points
+ggplot(chis_ibis) +
+  geom_sf(data = all_data_coords3, color = "red", size = 0.3) +
+  geom_sf(fill = alpha("black", 0.2))
+
+```
+
+
+```{r removing centroids cleaning of data}
+### ------- isolate and remove centroids ###
+centroid_scrubber <- read_csv("Josie/Data/DraftData_20211022_CentroidsList.csv", col_types = cols(.default= "c")) %>%
+  mutate(Latitude = as.numeric(Latitude),
+         Longitude = as.numeric(Longitude))
+
+all_data_coords4 <- full_join(all_data_coords3, centroid_scrubber) %>%
+  filter(centroid != "yes" | is.na(centroid))
+
+write_csv(all_data_coords4, "Josie/Data/Data_SpatialClean_20211022.csv")
+```

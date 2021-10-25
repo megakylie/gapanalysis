@@ -1,22 +1,24 @@
-Sci_Name,Barbara,Nicolas,Clemente,Catalina
-Baccharis salicina,1,0,2,8
-Bromus berteroanus,16,0,7,2
-Caulanthus lasiophyllus,6,0,31,37
-Constancea nevinii,30,0,101,67
-Cotula australis,2,0,5,18
-Cryptantha clevelandii,32,0,6,38
-Deinandra fasciculata,13,0,40,73
-Hesperocnide tenella,1,0,15,14
-Laennecia coulteri,1,0,14,2
-Logfia arizonica,2,0,45,52
-Mirabilis laevis var. crassifolia,16,0,66,76
-Papaver heterophyllum,7,0,19,11
-Perityle emoryi,27,0,63,68
-Pholistoma auritum var. auritum,12,0,39,37
-Pholistoma racemosum,20,0,70,81
-Polycarpon tetraphyllum,2,0,2,13
-Pseudognaphalium microcephalum,1,0,23,12
-Rafinesquia californica,4,0,32,38
-Schismus barbatus,2,0,4,12
-Tropaeolum majus,1,0,5,9
-Uropappus lindleyi,3,0,44,34
+sci_name,Barbara,Nicolas,Clemente,Catalina
+baccharis salicina,1,0,2,5
+bromus berteroanus,10,0,4,2
+caulanthus lasiophyllus,5,0,23,27
+constancea nevinii,15,0,52,46
+cotula australis,2,0,4,10
+cryptantha clevelandii,22,0,5,29
+deinandra fasciculata,8,0,19,54
+hedypnois cretica,1,0,3,15
+hedypnois rhagadioloides,1,0,3,9
+hesperocnide tenella,1,0,10,11
+laennecia coulteri,1,0,9,2
+logfia arizonica,2,0,28,25
+mirabilis laevis var. crassifolia,7,0,37,58
+papaver heterophyllum,6,0,11,8
+perityle emoryi,16,0,35,45
+pholistoma auritum var. auritum,9,0,23,16
+pholistoma racemosum,12,0,36,59
+polycarpon tetraphyllum,2,0,2,10
+pseudognaphalium microcephalum,1,0,14,11
+rafinesquia californica,4,0,20,23
+schismus barbatus,1,0,3,6
+tropaeolum majus,1,0,2,5
+uropappus lindleyi,3,0,34,26

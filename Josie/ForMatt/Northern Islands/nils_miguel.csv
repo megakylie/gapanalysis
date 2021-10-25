@@ -1,69 +1,65 @@
-Sci_Name,Anacapa,Miguel,Rosa,Cruz
-Acmispon micranthus,10,0,6,64
-Acmispon strigosus,6,0,32,108
-Adiantum capillus-veneris,5,0,8,57
-Amaranthus albus,1,0,1,26
-Aphanisma blitoides,4,0,3,10
-Asclepias fascicularis,1,0,9,48
-Atriplex pacifica,35,0,2,5
-Baccharis salicifolia,8,0,12,82
-Berberis pinnata subsp. insularis,9,0,2,58
-Brassica nigra,2,0,1,41
-Brickellia californica,19,0,7,66
-Bromus arizonicus,15,0,8,2
-Bromus berteroanus,1,0,1,3
-Carpobrotus edulis,2,0,2,3
-Ceanothus megacarpus var. insularis,14,0,27,164
-Chenopodium berlandieri,11,0,1,32
-Cistanthe maritima,24,0,12,42
-Clarkia epilobioides,3,0,20,92
-Comarostaphylis diversifolia subsp. planifolia,3,0,23,257
-Cylindropuntia prolifera,2,0,6,15
-Cynodon dactylon,6,0,14,30
-Deinandra fasciculata,12,0,14,98
-Descurainia pinnata,1,0,1,26
-Eriogonum arborescens,34,0,61,198
-Eschscholzia ramosa,2,0,6,10
-Eucalyptus globulus,5,0,3,16
-Gilia nevinii,32,0,5,21
-Hazardia detonsa,27,0,32,153
-Hesperocyparis macrocarpa,1,0,3,4
-Heuchera maxima,24,0,24,76
-Keckiella cordifolia,6,0,27,139
-Lathyrus vestitus,13,0,12,23
-Lathyrus vestitus var. vestitus,17,0,27,77
-Lilium humboldtii subsp. ocellatum,1,0,2,43
-Lupinus hirsutissimus,4,0,3,41
-Lupinus truncatus,30,0,9,79
-Lycopersicon esculentum,14,0,2,13
-Matricaria discoidea,1,0,14,24
-Mirabilis laevis var. crassifolia,32,0,1,94
-Muhlenbergia microsperma,9,0,7,63
-Pectocarya linearis subsp. ferocula,7,0,1,70
-Pentagramma viscosa,1,0,11,55
-Perityle emoryi,29,0,4,66
-Phacelia cicutaria var. hispida,10,0,5,74
-Phacelia viscida,2,0,5,41
-Plagiobothrys canescens var. catalinensis,1,0,15,53
-Plantago erecta,17,0,57,43
-Plantago ovata var. insularis,11,0,1,3
-Poa secunda subsp. secunda,39,0,36,107
-Polygonum aviculare,14,0,16,46
-Polypodium californicum,22,0,25,85
-Polypogon viridis,1,0,14,31
-Primula clevelandii var. insularis,24,0,15,36
-Prunus ilicifolia subsp. lyonii,41,0,36,190
-Pseudognaphalium beneolens,2,0,12,10
-Pseudognaphalium microcephalum,8,0,10,57
-Quercus tomentella,26,0,73,144
-Rafinesquia californica,17,0,6,40
-Ribes malvaceum var. malvaceum,16,0,1,38
-Selaginella bigelovii,5,0,15,71
-Silybum marianum,2,0,5,23
-Spergularia marina,4,0,7,45
-Stachys bullata,19,0,31,118
-Stebbinsoseris heterocarpa,4,0,13,19
-Uropappus lindleyi,29,0,10,56
-Vicia hassei,5,0,4,21
-Vicia ludoviciana subsp. ludoviciana,5,0,13,19
-Vicia sativa,3,0,15,21
+sci_name,Anacapa,Miguel,Rosa,Cruz
+Acmispon dendroideus var. dendroideus,28,0,27,101
+acmispon strigosus,4,0,24,86
+adiantum capillus-veneris,2,0,7,37
+amaranthus albus,1,0,1,13
+aphanisma blitoides,2,0,3,6
+atriplex pacifica,22,0,2,4
+baccharis salicifolia,6,0,8,49
+berberis pinnata subsp. insularis,4,0,2,35
+brassica nigra,2,0,1,24
+brickellia californica,12,0,4,40
+bromus arizonicus,9,0,8,2
+bromus berteroanus,1,0,1,3
+carpobrotus edulis,2,0,1,3
+ceanothus megacarpus var. insularis,8,0,19,115
+chenopodium berlandieri,8,0,1,17
+cistanthe maritima,18,0,9,24
+clarkia epilobioides,1,0,15,72
+comarostaphylis diversifolia subsp. planifolia,2,0,14,146
+cylindropuntia prolifera,2,0,4,9
+cynodon dactylon,2,0,10,18
+deinandra fasciculata,5,0,9,55
+descurainia pinnata,1,0,1,17
+eriogonum arborescens,20,0,33,127
+eschscholzia ramosa,2,0,5,10
+eucalyptus globulus,5,0,3,11
+Galium angustifolium subsp. foliosum,29,0,23,111
+gilia nevinii,20,0,4,21
+hazardia detonsa,16,0,20,104
+hesperocyparis macrocarpa,1,0,2,3
+heuchera maxima,11,0,16,45
+keckiella cordifolia,4,0,14,83
+lathyrus vestitus var. vestitus,11,0,16,55
+lilium humboldtii subsp. ocellatum,1,0,2,34
+lupinus hirsutissimus,3,0,3,33
+lupinus truncatus,26,0,6,54
+lycopersicon esculentum,8,0,2,7
+matricaria discoidea,1,0,9,16
+mirabilis laevis var. crassifolia,17,0,1,56
+muhlenbergia microsperma,7,0,4,39
+pectocarya linearis subsp. ferocula,6,0,1,57
+perityle emoryi,19,0,4,41
+phacelia cicutaria var. hispida,9,0,3,52
+phacelia viscida,10,0,12,75
+plagiobothrys canescens var. catalinensis,1,0,11,41
+plantago erecta,13,0,36,25
+plantago ovata var. insularis,10,0,1,3
+poa secunda subsp. secunda,21,0,23,66
+polygonum aviculare,4,0,13,33
+polypodium californicum,16,0,20,58
+polypogon viridis,1,0,11,22
+primula clevelandii var. insularis,17,0,15,31
+prunus ilicifolia subsp. lyonii,22,0,22,112
+pseudognaphalium microcephalum,8,0,8,33
+quercus tomentella,14,0,54,102
+rafinesquia californica,13,0,6,25
+ribes malvaceum var. malvaceum,11,0,1,26
+selaginella bigelovii,4,0,13,40
+spergularia marina,2,0,4,28
+stachys bullata,11,0,19,83
+stebbinsoseris heterocarpa,2,0,11,12
+uropappus lindleyi,23,0,7,44
+vicia hassei,4,0,2,13
+vicia ludoviciana subsp. ludoviciana,4,0,11,15
+vicia sativa,2,0,9,7

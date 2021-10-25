@@ -70,101 +70,20 @@ text(0,length(unique(x)),labels=nm,adj=0,cex=1.5)
 
 ```
 
-```{r Import main dataset}
-data <- read_csv("Josie/Data/DraftData_20211021.csv")%>%
+```{r Import datasets}
+data <- read_csv("Josie/Data/Data_20211022.csv")%>%
   dplyr::filter(institutionCode != "iNaturalist")
 
 # fix the column headings
 all_data <- data  %>%
   rename(Latitude = decimalLatitude,
          Longitude = decimalLongitude) 
-```
 
-
-# Processing and cleaning the spatial data
-
-Only a subset of the data has spatial information, so this chunk of code will isolate and clean up those records (removing those in the middle of the ocean, reprojecting for viewing, etc.)
-
-**Please note that there is a known issue with dummy centroid coordinates that Josie still needs to fix! This may not be such a big issue for other groups, but it's a _huge_ problem for the plants. Essentially, because some insitutions just put a coordinate for the centroid of the island into their data, it looks like the centers are heavily sampled - those datapoints need to be removed. Josie will add code to do this at a later date.
-
-```{r Spatial cleaning of data}
-# create a dataframe of all complete cases of name, lat/long, island, and year
-
-all_data_coords <- all_data %>%
-  dplyr::filter(!is.na(Latitude), !is.na(Longitude))
-
-############### drop points with meaningless coords - this removes any specimens that have long/lats that are not in the vicinity of the islands
-
-# Using the coord cleaner package, remove points that have "obvious" issues
-# This filters out things like when the capital or state centroid was used as a dummy coord
-flags <- clean_coordinates(x = all_data_coords, lon = "Longitude", lat = "Latitude",
-                          species = "sci_name",
-                          tests = c("capitals", "centroids", "equal","gbif", "institutions",
-                                     "zeros"))
-all_data_coords <- all_data_coords[flags$.summary,] 
-
-# isolate the coords to those within the islands region
-all_data_coords <- all_data_coords %>%
-  filter(Longitude <= -118, Longitude >= -120.5,
-         Latitude <= 34.1, Latitude >= 32.7)
-
-# make a quick plot of where the points are
-plot(all_data_coords$Longitude, all_data_coords$Latitude, asp=1)
-
-# Ben's modified code and a shapefile found online to isolate counties of interest, 
-# Albers projection is used in order to have grids in km^2
-counties <- readOGR("Heatmap_files", layer="cnty24k09_1_line")
-chis_counties <- counties[counties$NAME%in%c("Ventura", "Santa Barbara","Los Angeles","San Diego","Orange")]
-is.map <- crop(counties, extent(-1.5e+05,2.5e+05,-6e+05,-4e+05))
-
-plot(is.map, col="black")
-rm(counties)
-rm(chis_counties)
-
-####### Reproject Long + Lat Coords into Albers (Island maps are in Albers)
-P4S.latlon <- CRS("+proj=longlat +datum=WGS84")
-new_proj <- "+proj=aea +lat_1=34 +lat_2=40.5 +lat_0=0 +lon_0=-120 +x_0=0 +y_0=-4000000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
-
-sp <- SpatialPointsDataFrame(coords = cbind(as.numeric(all_data_coords$Longitude),
-                                            as.numeric(all_data_coords$Latitude)), 
-                             data = all_data_coords, proj4string = P4S.latlon)
-pointsX <- spTransform(sp, CRS(new_proj))
-
-
-# attach projected points to 'all_data'
-all_data_coords1 <- cbind(all_data_coords,pointsX@coords) %>%
-  mutate(Lat_alb = coords.x2,
-         Lon_alb = coords.x1)
-
-
-### --- Remove things from the middle of the ocean --- ###
-# Import island polygons
-ibis <- st_read("Heatmap_files/Master_Islands.shp")
-
-chis_ibis <- ibis %>%
-  filter(ISL_NAME %in% c("Santa Rosa", "Santa Cruz", "San Miguel", "Anacapa", "San Clemente", "Santa Barbara", "Santa Catalina", "San Nicolas")) 
-
-chis_ibis <- st_transform(chis_ibis, crs = st_crs(new_proj))
-
-# Remove points waaaaaay off of the islands, Josie-style
-all_data_coords2 <- st_as_sf(all_data_coords1, coords = c("coords.x1", "coords.x2"), crs = new_proj)
-
-all_data_coords3 <- st_join(all_data_coords2, chis_ibis, join = st_intersects) %>%
-  filter(!is.na(ISL_NAME))
-
-# Quick map of points
-ggplot(chis_ibis) +
-  geom_sf(data = all_data_coords3, color = "red", size = 0.3) +
-  geom_sf(fill = alpha("black", 0.2)) 
-
-## isolate and remove centroids
-all_data_centroidkiller_questquecest <- all_data_coords3 %>%
-  mutate("lat_long" = str_c(Latitude, Longitude, sep = ", "))
-
-# Write the cleaned up spatial data to a file
-write_csv(all_data_coords3, "Josie/Data/DraftData_20211021_SpatialClean.csv")
+# Load the cleaned specimen data, isolate islands of interest (CA 8)
+spat_occ <- read_csv("Josie/Data/Data_SpatialClean_20211022.csv") 
 
 ```
+
 
 # Produce accumulation curves
 The chunk below will create accumulation curves for the data. This code is pretty old-school cool and was writen by Ben Carter. Josie sorta-kinda understands how it works, but not the grammar of the code itself. We may want to look into alternatives for producing these curves down the line.
@@ -175,7 +94,8 @@ Things to note: You'll want to adjust the x-axis limit ("xlim=c(#1, #2)") so #2 
 ###### Load data
 
 # Load the cleaned specimen data, isolate islands of interest (CA 8)
-occ <- read_csv("Josie/Data/DraftData_SpatialClean.csv") 
+occ <- read_csv("Josie/Data/Data_20211022.csv")%>%
+  dplyr::filter(institutionCode != "iNaturalist")
 
 isl.names <- c("Anacapa","Santa Cruz","Santa Rosa","San Miguel",
 "Santa Catalina","San Clemente","San Nicolas","Santa Barbara")
@@ -189,7 +109,7 @@ isl.names <- c("Anacapa","Santa Cruz","Santa Rosa","San Miguel",
 # make Accum is a custom function that is defined at the bottom of this file
 # k is a number 1:8 corresponding to isl.names
 k=1
-makeAccum(occ$Sci_Name[occ$isl_name==isl.names[k]],'r',nm=isl.names[k])
+makeAccum(occ$sci_name[occ$isl_name==isl.names[k]],'r',nm=isl.names[k])
 
 ######### combined accumulation curve plot
 # ***Note: you'll want to adjust the xlim to match the max number of samples***
@@ -197,7 +117,7 @@ plot(0, 0, col=0, xlim=c(0,19000), ylim=c(0,650),
      ylab="Richness", xlab="Number of collections")
 
 for(k in 1:8) {
-	x <- occ$Sci_Name[occ$isl_name == isl.names[k]]
+	x <- occ$sci_name[occ$isl_name == isl.names[k]]
 	resampling.result <- matrix(nrow=length(x), ncol=100)
 	for(i in 1:100){randCurve <- sample(x, length(x), replace=F)
 	for(j in 1:length(x)){resampling.result[j,i]<-	
@@ -240,7 +160,7 @@ island.cells <- read.csv("Heatmap_files/islandCells.csv")
 isl.rast <- raster("Heatmap_files/islandRaster.asc")
 
 # Data
-occ <- read_csv("Josie/Data/DraftData_SpatialClean.csv") 
+spat_occ <- read_csv("Josie/Data/Data_SpatialClean_20211022.csv") 
 
 # The xlim & ylim (in albers) for plotting each island
 plot.lims <- read.csv("Heatmap_files/islandPlotLimits.csv")
@@ -257,19 +177,19 @@ isl.names <- c("Anacapa","Santa Cruz","Santa Rosa","San Miguel",
 ### Analysis - Build Tables/Rasters
 # get cellIDs for each occurrence
 cellID <- cellFromXY(isl.rast, xy = cbind(occ$Lon_alb, occ$Lat_alb))
-occ <- cbind(occ,cellID); rm(cellID)
-length(unique(occ$cellID))
+spat_occ <- cbind(spat_occ,cellID); rm(cellID)
+length(unique(spat_occ$cellID))
 
 # Make a big grid
 w <- which(!is.na(isl.rast[]))
-taxa <- sort(unique(occ$Sci_Name))
+taxa <- sort(unique(spat_occ$sci_name))
 taxGrid <- matrix(nrow=length(taxa),ncol=length(w))
 colnames(taxGrid) <- w
 rownames(taxGrid) <- taxa
 taxGrid[] <- 0
 
 for(i in 1:dim(taxGrid)[1]){
-	spCells <- occ$cellID[occ$Sci_Name==taxa[i]]
+	spCells <- spat_occ$cellID[spat_occ$sci_name==taxa[i]]
 	for(j in 1:length(spCells)){
 		taxGrid[i,w %in% spCells[j]]<-taxGrid[i,w %in% spCells[j]]+1
 	}
@@ -349,7 +269,7 @@ for(i in 1:8){
 	coll.Summary[i,"perEmpty"] <- round(length(which(rich.cel==0))/length(rich.cel),3)
 	coll.Summary[i,"mnRich"] <- mean(rich.cel[rich.cel!=0])
 	coll.Summary[i,"mnColl"] <- mean(coll.cel[rich.cel!=0])
-	coll.Summary[i,"totRich"] <- length(unique(occ$Sci_Name[occ$isl_name==isl.names[i]]))
+	coll.Summary[i,"totRich"] <- length(unique(spat_occ$sci_name[spat_occ$isl_name==isl.names[i]]))
 	coll.Summary[i,"mnRedund"] <- round(mean(1-(rich.cel[rich.cel!=0]/coll.cel[rich.cel!=0])),3)
 	coll.Summary[i,"mnRedundwE"] <- round(1/mean((coll.cel-rich.cel)),3)
 }
@@ -357,6 +277,8 @@ for(i in 1:8){
 # This creates a summary table like the one presented in Ben and Rikke's reports
 sum_table <- as.data.frame(coll.Summary) %>%
   rownames_to_column(var = "islands") 
+
+write_csv(sum_table, "Josie/ForMatt/SummaryTable.csv")
 
 ######### Make the maps ##################
 colorfunc <- colorRampPalette(c("gray90","cornflowerblue"))
@@ -367,98 +289,98 @@ i=1
 plot(rich.rast, col=colRamp, xlim=c(50000,61000), ylim=c(-450000,-440000),
      xaxt = "n", yaxt = "n") +
   plot(is.map, add=T) +
-  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="sienna3", pch=19) 
+  points(spat_occ$Lon_alb,spat_occ$Lat_alb, cex=0.3, col="sienna3", pch=19) 
 
 i=2
 plot(rich.rast, col = colRamp, xlim=c(5000,46000), ylim=c(-460000,-420000),
      xaxt = "n", yaxt = "n") +
   plot(is.map, add=T) +
-  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="sienna3", pch=19) 
+  points(spat_occ$Lon_alb,spat_occ$Lat_alb, cex=0.3, col="sienna3", pch=19) 
 
 i=3
 plot(rich.rast, col=colRamp, xlim=c(-25000,5000), ylim=c(-470000,-430000),
      xaxt = "n", yaxt = "n") +
   plot(is.map, add=T) +
-  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="sienna3", pch=19) 
+  points(spat_occ$Lon_alb,spat_occ$Lat_alb, cex=0.3, col="sienna3", pch=19) 
 
 i=4
 plot(rich.rast,col=colRamp,xlim=c(-45000,-25000),ylim=c(-450000,-430000),
      xaxt = "n", yaxt = "n") +
   plot(is.map, add=T) +
-  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="sienna3", pch=19)  
+  points(spat_occ$Lon_alb,spat_occ$Lat_alb, cex=0.3, col="sienna3", pch=19)  
 
 i=5
 plot(rich.rast,col=colRamp,xlim=c(125000,165000),ylim=c(-530000,-500000),
      xaxt = "n", yaxt = "n") +
   plot(is.map, add=T) +
-  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="sienna3", pch=19)  
+  points(spat_occ$Lon_alb,spat_occ$Lat_alb, cex=0.3, col="sienna3", pch=19)  
 
 i=6
 plot(rich.rast,col=colRamp,xlim=c(125000,160000),ylim=c(-580000,-550000),
      xaxt = "n", yaxt = "n") +
   plot(is.map, add=T) +
-  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="sienna3", pch=19) 
+  points(spat_occ$Lon_alb,spat_occ$Lat_alb, cex=0.3, col="sienna3", pch=19) 
 
 i=7
 plot(rich.rast,col=colRamp,xlim=c(35000,58000),ylim=c(-540000,-520000),
      xaxt = "n", yaxt = "n") +
   plot(is.map, add=T) +
-  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="sienna3", pch=19) 
+  points(spat_occ$Lon_alb,spat_occ$Lat_alb, cex=0.3, col="sienna3", pch=19) 
 
 i=8
 plot(rich.rast,col=colRamp,xlim=c(86000,94000),ylim=c(-508000,-500000),
      xaxt = "n", yaxt = "n") +
   plot(is.map, add=T) +
-  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="sienna3", pch=19)
+  points(spat_occ$Lon_alb,spat_occ$Lat_alb, cex=0.3, col="sienna3", pch=19)
 
 ### Sampling intensity
 i=1
 plot(coll.rast, col=colRamp, xlim=c(50000,61000), ylim=c(-450000,-440000),
      xaxt = "n", yaxt = "n") +
   plot(is.map, add=T) +
-  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="sienna3", pch=19) 
+  points(spat_occ$Lon_alb,spat_occ$Lat_alb, cex=0.3, col="sienna3", pch=19) 
 
 i=2
 plot(coll.rast, col = colRamp, xlim=c(5000,46000), ylim=c(-460000,-420000),
      xaxt = "n", yaxt = "n") +
   plot(is.map, add=T) +
-  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="sienna3", pch=19) 
+  points(spat_occ$Lon_alb,spat_occ$Lat_alb, cex=0.3, col="sienna3", pch=19) 
 
 i=3
 plot(coll.rast, col=colRamp, xlim=c(-25000,5000), ylim=c(-470000,-430000),
      xaxt = "n", yaxt = "n") +
   plot(is.map, add=T) +
-  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="sienna3", pch=19) 
+  points(spat_occ$Lon_alb,spat_occ$Lat_alb, cex=0.3, col="sienna3", pch=19) 
 
 i=4
 plot(coll.rast, col=colRamp,xlim=c(-45000,-25000),ylim=c(-450000,-430000),
      xaxt = "n", yaxt = "n") +
   plot(is.map, add=T) +
-  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="sienna3", pch=19)  
+  points(spat_occ$Lon_alb,spat_occ$Lat_alb, cex=0.3, col="sienna3", pch=19)  
 
 i=5
 plot(coll.rast, col=colRamp,xlim=c(125000,165000),ylim=c(-530000,-500000),
      xaxt = "n", yaxt = "n") +
   plot(is.map, add=T) +
-  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="sienna3", pch=19)  
+  points(spat_occ$Lon_alb,spat_occ$Lat_alb, cex=0.3, col="sienna3", pch=19)  
 
 i=6
 plot(coll.rast, col=colRamp,xlim=c(125000,160000),ylim=c(-580000,-550000),
      xaxt = "n", yaxt = "n") +
   plot(is.map, add=T) +
-  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="sienna3", pch=19) 
+  points(spat_occ$Lon_alb,spat_occ$Lat_alb, cex=0.3, col="sienna3", pch=19) 
 
 i=7
 plot(coll.rast, col=colRamp,xlim=c(35000,58000),ylim=c(-540000,-520000),
      xaxt = "n", yaxt = "n") +
   plot(is.map, add=T) +
-  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="sienna3", pch=19) 
+  points(spat_occ$Lon_alb,spat_occ$Lat_alb, cex=0.3, col="sienna3", pch=19) 
 
 i=8
 plot(coll.rast, col=colRamp,xlim=c(86000,94000),ylim=c(-508000,-500000),
      xaxt = "n", yaxt = "n") +
   plot(is.map, add=T) +
-  points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="sienna3", pch=19)
+  points(spat_occ$Lon_alb,spat_occ$Lat_alb, cex=0.3, col="sienna3", pch=19)
 
 
 ```
@@ -482,7 +404,7 @@ all_data_size <- left_join(all_data, isl_size) %>%
 all_data_summary <- all_data_size %>%
   filter(year > 1800) %>%
   group_by(isl_name) %>%
-  summarise(sprich = n_distinct(Sci_Name))
+  summarise(sprich = n_distinct(sci_name))
 
 plants_islandsum <- all_data_size %>%
   mutate(no_sample = 1) %>%
@@ -637,7 +559,7 @@ There are some species that have not been seen in 60, 80, or 100 years. The code
 ```{r "Not seen in"}
 ### Tables of species by last time collected
 last_coll_date <- all_data_size %>%
-  group_by(order_final, family_final, Sci_Name, isl_name) %>%
+  group_by(order_final, family_final, sci_name, isl_name) %>%
   summarise(max(year)) %>%
   rename(last_seen = "max(year)") %>%
   ungroup() %>%
@@ -645,10 +567,10 @@ last_coll_date <- all_data_size %>%
   filter(year_since_seen >= 60) 
 
 missing60yrs <- last_coll_date %>%
-  distinct(Sci_Name) %>% dplyr::select(Sci_Name)
+  distinct(sci_name) %>% dplyr::select(sci_name)
 
 data_60yr <- inner_join(all_data_size, missing60yrs) %>%
-  group_by(order_final, family_final, Sci_Name, isl_name) %>%
+  group_by(order_final, family_final, sci_name, isl_name) %>%
   summarise(max(year)) %>%
   rename(last_seen = "max(year)") %>%
   spread(isl_name, last_seen)
@@ -675,7 +597,7 @@ The code below produces these tables as individual .csv files.
 # make it easy to work with the data...
 missingsp <- all_data %>%
   mutate(sample = 1) %>%
-  group_by(isl_name, Sci_Name) %>%
+  group_by(isl_name, sci_name) %>%
   summarise(n_samp = sum(sample)) %>%
   spread(isl_name, n_samp) %>%
   ungroup() %>% 
@@ -698,19 +620,19 @@ missingsp <- all_data %>%
 
 # Northern Islands ("nils")
 nils_anacapa <- missingsp %>%
-  dplyr::select(Sci_Name, Anacapa, Miguel, Rosa, Cruz) %>%
+  dplyr::select(sci_name, Anacapa, Miguel, Rosa, Cruz) %>%
   filter(Anacapa == 0, Miguel > 0 & Rosa > 0 & Cruz > 0)
 
 nils_rosa <- missingsp %>%
-  dplyr::select(Sci_Name, Anacapa, Miguel, Rosa, Cruz) %>%
+  dplyr::select(sci_name, Anacapa, Miguel, Rosa, Cruz) %>%
   filter(Rosa == 0, Miguel > 0 & Anacapa > 0 & Cruz > 0)
 
 nils_cruz <- missingsp %>%
-  dplyr::select(Sci_Name, Anacapa, Miguel, Rosa, Cruz) %>%
+  dplyr::select(sci_name, Anacapa, Miguel, Rosa, Cruz) %>%
   filter(Cruz == 0, Miguel > 0 & Anacapa > 0 & Rosa > 0)
 
 nils_miguel <- missingsp %>%
-  dplyr::select(Sci_Name, Anacapa, Miguel, Rosa, Cruz) %>%
+  dplyr::select(sci_name, Anacapa, Miguel, Rosa, Cruz) %>%
   filter(Miguel == 0, Cruz > 0 & Anacapa > 0 & Rosa > 0)
 
 write_csv(nils_anacapa, "Josie/ForMatt/nils_anacapa.csv")
@@ -720,19 +642,19 @@ write_csv(nils_miguel, "Josie/ForMatt/nils_miguel.csv")
 
 # Southern Islands ("sils")
 sils_barbara <- missingsp %>%
-  dplyr::select(Sci_Name, Barbara, Nicolas, Clemente, Catalina) %>%
+  dplyr::select(sci_name, Barbara, Nicolas, Clemente, Catalina) %>%
   filter(Barbara == 0, Nicolas > 0 & Clemente > 0 & Catalina > 0)
 
 sils_nicolas <- missingsp %>%
-  dplyr::select(Sci_Name, Barbara, Nicolas, Clemente, Catalina) %>%
+  dplyr::select(sci_name, Barbara, Nicolas, Clemente, Catalina) %>%
   filter(Nicolas == 0, Barbara > 0 & Clemente > 0 & Catalina > 0)
 
 sils_clemente <- missingsp %>%
-  dplyr::select(Sci_Name, Barbara, Nicolas, Clemente, Catalina) %>%
+  dplyr::select(sci_name, Barbara, Nicolas, Clemente, Catalina) %>%
   filter(Clemente == 0, Barbara > 0 & Nicolas > 0 & Catalina > 0)
 
 sils_catalina <- missingsp %>%
-  dplyr::select(Sci_Name, Barbara, Nicolas, Clemente, Catalina) %>%
+  dplyr::select(sci_name, Barbara, Nicolas, Clemente, Catalina) %>%
   filter(Catalina == 0, Barbara > 0 & Nicolas > 0 & Clemente > 0)
 
 write_csv(sils_barbara, "Josie/ForMatt/sils_barbara.csv")
@@ -742,19 +664,19 @@ write_csv(sils_catalina, "Josie/ForMatt/sils_catalina.csv")
 
 # Biggest Isls ("bigs")
 bigs_rosa <- missingsp %>%
-  dplyr::select(Sci_Name, Rosa, Cruz, Clemente, Catalina) %>%
+  dplyr::select(sci_name, Rosa, Cruz, Clemente, Catalina) %>%
   filter(Rosa == 0, Cruz > 0 & Clemente > 0 & Catalina > 0)
 
 bigs_cruz <- missingsp %>%
-  dplyr::select(Sci_Name, Rosa, Cruz, Clemente, Catalina) %>%
+  dplyr::select(sci_name, Rosa, Cruz, Clemente, Catalina) %>%
   filter(Cruz == 0, Rosa > 0 & Clemente > 0 & Catalina > 0)
 
 bigs_clemente <- missingsp %>%
-  dplyr::select(Sci_Name, Rosa, Cruz, Clemente, Catalina) %>%
+  dplyr::select(sci_name, Rosa, Cruz, Clemente, Catalina) %>%
   filter(Clemente == 0, Rosa > 0 & Cruz > 0 & Catalina > 0)
 
 bigs_catalina <- missingsp %>%
-  dplyr::select(Sci_Name, Rosa, Cruz, Clemente, Catalina) %>%
+  dplyr::select(sci_name, Rosa, Cruz, Clemente, Catalina) %>%
   filter(Catalina == 0, Rosa > 0 & Cruz > 0 & Clemente > 0)
 
 write_csv(bigs_rosa, "Josie/ForMatt/bigs_rosa.csv")

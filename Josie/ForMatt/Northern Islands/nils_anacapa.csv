@@ -1,60 +1,65 @@
-Sci_Name,Anacapa,Miguel,Rosa,Cruz
-Abronia umbellata var. umbellata,0,50,58,39
-Agoseris grandiflora var. grandiflora,0,9,14,24
-Allium praecox,0,25,11,75
-Ambrosia psilostachya,0,2,4,4
-Aphyllon parishii subsp. brachylobum,0,21,21,34
-Arthrocnemum subterminale,0,3,9,17
-Atriplex leucophylla,0,12,18,40
-Baccharis glutinosa,0,10,28,65
-Brodiaea jolonensis,0,4,5,8
-Calystegia soldanella,0,12,3,10
-Capsella bursa-pastoris,0,15,13,68
-Cardionema ramosissimum,0,6,22,42
-Carduus pycnocephalus subsp. pycnocephalus,0,1,12,2
-Castilleja densiflora,0,4,8,38
-Castilleja exserta subsp. exserta,0,38,28,42
-Cirsium occidentale,0,19,46,26
-Cirsium vulgare,0,5,16,5
-Clinopodium douglasii,0,1,4,2
-Cortaderia selloana,0,9,3,6
-Crocanthemum greenei,0,1,2,48
-Dichondra occidentalis,0,17,16,10
-Dudleya candelabrum,0,1,9,46
-Dudleya greenei,0,46,34,59
-Eschscholzia californica,0,49,42,118
-Festuca arundinacea,0,18,11,4
-Foeniculum vulgare,0,5,12,31
-Galium buxifolium,0,26,1,57
-Galium californicum,0,2,3,8
-Hainardia cylindrica,0,14,2,14
-Hirschfeldia incana,0,15,6,23
-Jaumea carnosa,0,5,17,10
-Juncus mexicanus,0,12,11,18
-Koeleria macrantha,0,1,31,18
-Leptosiphon parviflorus,0,4,5,17
-Lomatium caruifolium var. caruifolium,0,20,19,45
-Lomatium utriculatum,0,2,1,4
-Lupinus arboreus,0,21,15,6
-Malacothrix indecora,0,7,3,7
-Marrubium vulgare,0,17,10,37
-Microseris douglasii subsp. tenella,0,4,1,4
-Monolepis nuttalliana,0,9,6,5
-Nemophila pedunculata,0,19,13,15
-Phacelia ramosissima,0,5,31,22
-Polypogon interruptus,0,33,16,52
-Ranunculus californicus var. cuneatus,0,14,16,48
-Raphanus sativus,0,3,15,49
-Rubus ursinus,0,7,20,48
-Rumex salicifolius,0,4,8,38
-Sagina apetala,0,11,1,4
-Sagina decumbens subsp. occidentalis,0,2,2,25
-Senecio glomeratus,0,5,2,53
-Sidalcea malviflora subsp. malviflora,0,38,50,37
-Silene antirrhina,0,2,4,22
-Sisyrinchium bellum,0,33,25,27
-Stephanomeria exigua subsp. coronaria,0,2,1,22
-Torilis nodosa,0,18,15,58
-Typha domingensis,0,14,6,31
-Vicia americana subsp. americana,0,18,45,47
-Xanthium spinosum,0,9,4,35
+sci_name,Anacapa,Miguel,Rosa,Cruz
+abronia umbellata var. umbellata,0,33,28,26
+agoseris grandiflora var. grandiflora,0,6,14,19
+allium praecox,0,12,8,54
+ambrosia psilostachya,0,2,4,1
+aphyllon parishii subsp. brachylobum,0,8,10,13
+arthrocnemum subterminale,0,1,6,10
+atriplex leucophylla,0,9,14,26
+baccharis glutinosa,0,7,16,43
+brodiaea jolonensis,0,4,5,7
+calystegia soldanella,0,9,2,9
+Camissoniopsis cheiranthifolia,0,38,32,33
+capsella bursa-pastoris,0,9,9,36
+cardionema ramosissimum,0,5,16,30
+carduus pycnocephalus subsp. pycnocephalus,0,1,8,2
+castilleja densiflora,0,3,8,30
+castilleja exserta subsp. exserta,0,31,24,34
+cirsium occidentale,0,9,37,29
+cirsium vulgare,0,3,14,4
+clinopodium douglasii,0,1,4,1
+cortaderia selloana,0,4,3,4
+crocanthemum greenei,0,1,2,41
+dichondra occidentalis,0,8,14,7
+dudleya candelabrum,0,1,7,33
+dudleya greenei,0,27,23,46
+eschscholzia californica,0,25,32,70
+festuca arundinacea,0,6,8,2
+foeniculum vulgare,0,4,6,16
+galium buxifolium,0,15,1,42
+galium californicum,0,2,3,8
+hainardia cylindrica,0,8,2,5
+hirschfeldia incana,0,9,6,16
+jaumea carnosa,0,3,11,8
+juncus mexicanus,0,7,9,15
+koeleria macrantha,0,1,21,15
+layia platyglossa,0,23,53,81
+leptosiphon parviflorus,0,3,3,13
+lomatium caruifolium var. caruifolium,0,12,16,29
+lomatium utriculatum,0,1,1,4
+lupinus arboreus,0,15,9,2
+malacothrix indecora,0,6,3,7
+marrubium vulgare,0,11,7,27
+microseris douglasii subsp. tenella,0,3,1,3
+monolepis nuttalliana,0,7,5,4
+nemophila pedunculata,0,14,8,14
+parietaria hespera var. californica,0,8,14,28
+phacelia ramosissima,0,4,23,16
+plantago lanceolata,0,2,3,24
+polypogon interruptus,0,21,12,40
+ranunculus californicus var. cuneatus,0,9,11,33
+raphanus sativus,0,2,10,25
+rubus ursinus,0,6,12,35
+rumex salicifolius,0,3,5,25
+sagina apetala,0,8,1,4
+sagina decumbens subsp. occidentalis,0,2,2,24
+senecio glomeratus,0,4,2,26
+sidalcea malviflora subsp. malviflora,0,27,40,22
+silene antirrhina,0,1,4,10
+sisyrinchium bellum,0,22,18,14
+stephanomeria exigua subsp. coronaria,0,1,1,14
+torilis nodosa,0,11,10,31
+typha domingensis,0,11,6,23
+urtica urens,0,3,11,23
+vicia americana subsp. americana,0,14,32,36
+xanthium spinosum,0,5,4,29
