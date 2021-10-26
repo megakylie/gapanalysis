@@ -7,6 +7,14 @@ editor_options:
 
 Invert code extras because that markdown is too darn big. This markdown has the individual synonymy for the hymenoptera code and the master's combination code.
 
+```{r packages}
+library(tidyverse)
+library(lubridate)
+library(ggplot2)
+library(dplyr)
+library(RColorBrewer)
+```
+
 ```{r}
 hym_coord_data <- read_csv("hymenoptera/HymenopteraGraphs/hym_coord_data.csv") %>% select(island, source, month_arabic, day_arabic, year, island, order, scientificName, latitude, longitude, locality, institutionCode, Collector)
 
@@ -38,8 +46,7 @@ This code is messy and not the most straight forward way to do this, but it shou
 ```{r make master invert list}
 ###MASTER LIST####
 #masterlists download if don't have already
-mol_master = read_csv("master/mollusk_master.csv") %>% 
-  select(...1, source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, scientificName, latitude, longitude, phylum, class)
+mol_master = read_csv("master/mollusk_master.csv")
 chilo_master = read_csv("master/chilo_master.csv")
 diplo_master = read_csv("master/diplo_master.csv")
 bla_master = read_csv("master/bla_master.csv")
@@ -52,11 +59,11 @@ hem_master = read_csv("master/hem_master.csv")
 dip_master = read_csv("master/dip_master.csv")
 derm_master = read_csv("master/derm_master.csv")
 orth_master = read_csv("master/orth_master.csv")
-hym_master = read_csv("hymenoptera/hym_master_syn.csv") %>% select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, scientificName) %>% add_column(latitude=NA, longitude=NA, phylum="Arthropoda", class="Insecta")
+hym_master = read_csv("hymenoptera/hym_master_syn.csv") %>% dplyr::select(source, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, scientificName) %>% add_column(latitude=NA, longitude=NA, phylum="Arthropoda", class="Insecta", type="undet", institution="undet")
 
 #combined all the master lists
 master_invert_1 = rbind(mol_master, chilo_master, diplo_master, bla_master, odo_master, phas_master, col_master, lep_master, arac_master, orth_master, derm_master, hem_master) %>% 
-   select(source, institution, type, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, scientificName, latitude, longitude, phylum, class)
+   dplyr::select(source, institution, type, month, year, island, order, acceptedFamily, acceptedGenus, acceptedName, scientificName, latitude, longitude, phylum, class)
 
 #master
 master_inverts = rbind(master_invert_1, dip_master, hym_master)
@@ -83,6 +90,56 @@ write_csv(master_invert_syn, "master/master_invert_syn.csv", na="")
 invert_scl = filter(master_inverts, island=="San Clemente") %>% distinct(scientificName, .keep_all=TRUE) %>% select(island, phylum, class, order, acceptedFamily, acceptedGenus, acceptedName, scientificName)
 write_csv(invert_scl, "master/invert_scl.csv", na="")
 ```
+
+```{r Taxanomic Richness}
+master_inverts_clean = read_csv("master/master_inverts_clean.csv")
+
+master_inverts_taxa = master_inverts_clean %>% separate(acceptedName, c("Species1", "Species2", "Subspecies_ep"), remove=FALSE, convert=FALSE) %>% unite("acceptedName2", "Species1":"Species2", remove=TRUE, sep=" ", na.rm=TRUE)  %>% rename(acceptedOrder="order") %>% dplyr::select(phylum, class, acceptedOrder, acceptedFamily, acceptedGenus, acceptedName, acceptedName2, Subspecies_ep)
+
+
+master_families = master_inverts_taxa %>%  replace_na(list(acceptedGenus="NA")) %>% filter(acceptedGenus=="NA") %>% distinct(acceptedFamily, .keep_all=TRUE) %>% drop_na(acceptedFamily)
+#215
+
+master_genus = master_inverts_taxa %>% replace_na(list(acceptedName="NA")) %>% filter(acceptedName=="NA") %>% distinct(acceptedGenus, .keep_all=TRUE) %>% drop_na(acceptedGenus)
+#645
+
+master_species = master_inverts_taxa %>% replace_na(list(Subspecies_ep="NA")) %>%  filter(Subspecies_ep=="NA") %>% distinct(acceptedName, .keep_all=TRUE) %>% drop_na(acceptedName)
+#1584
+
+master_subspecies = master_inverts_taxa %>% distinct(Subspecies_ep, .keep_all=TRUE) %>% drop_na(Subspecies_ep)
+#90 
+
+master_taxa_unique = rbind(master_families, master_genus, master_species, master_subspecies)
+
+write_csv(master_taxa_unique, "master/master_taxa_unique.csv", na="")
+
+##boo above is not truly unique because if there was a specimen only IDed to family now it will be pulled out to the family list even if there are other things IDed to genus
+master_families2 = anti_join(master_families, master_genus, by="acceptedFamily")
+master_families3 = anti_join(master_families2, master_species, by="acceptedFamily")
+master_families4 = anti_join(master_families3, master_subspecies, by="acceptedFamily")
+#54
+
+master_genus2 = anti_join(master_genus, master_species, by="acceptedGenus")
+master_genus3 = anti_join(master_genus2, master_subspecies, by="acceptedGenus")
+#645
+
+master_species2 = anti_join(master_species, master_subspecies, by="acceptedName2")
+#1537
+
+master_taxa_unique = rbind(master_families4, master_genus3, master_species2, master_subspecies) %>% add_column(n=1)
+#1961 unique taxa, #1584 unique species
+
+master_taxa_table_order = master_taxa_unique %>% group_by(acceptedOrder) %>% summarise("taxa richness"=sum(n))
+master_taxa_table_class = master_taxa_unique %>% group_by(class) %>% summarise("taxa richness"=sum(n))
+master_taxa_table_phylum = master_taxa_unique %>% group_by(phylum) %>% summarise("taxa richness"=sum(n))
+
+#species of insects only to compare to LA basin 
+master_taxa_table_order_species = master_species %>% add_column(n=1) %>% group_by(acceptedOrder) %>% summarise("taxa richness"=sum(n))
+master_taxa_table_class_species = master_species %>% add_column(n=1) %>% group_by(class) %>% summarise("taxa richness"=sum(n))
+
+write_csv(master_taxa_table_order, "master/master_taxa_table_order.csv")
+```
+
 
 ``` {r Literature synonymy }
 
