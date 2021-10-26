@@ -1,0 +1,393 @@
+---
+title: "iNaturalist Plant Analysis"
+author: "Kylie Etter"
+date: "10/22/2021"
+editor_options: 
+  chunk_output_type: console
+---
+
+
+## R Markdown
+
+This is an R Markdown document for the analysis of the iNaturalist plant data for the TNC Gap Analysis. 
+
+```{r packages}
+library(tidyverse)
+library(lubridate)
+library(ggplot2)
+library(dplyr)
+library(RColorBrewer)
+```
+
+```{r data}
+plant_inat <- read_csv("plant/inat_plants_islnames.csv") %>% add_column(n =1)
+gap_plantlist <- read_csv("plant/October2021_AllSppElimList.csv")
+
+#checking what islands are in the data to know what names present 
+islands <- plant_inat %>% distinct(Arc_IslName)
+
+#only keep CA islands in dataset
+Arc_IslName <- c('Santa Rosa', 'San Miguel', 'Santa Cruz', 'Anacapa', 'San Nicolas', 'Santa Barbara', 'Santa Catalina', 'San Clemente')
+island_keep <- data.frame(Arc_IslName)
+plant_inat_CA = semi_join(plant_inat, island_keep)
+#18730 out of 20364 kept 
+```
+
+```{r Observations per Family}
+plant_family = plant_inat_CA %>% group_by(taxon_family_name) %>% summarise(total =sum(n)) %>% arrange(desc(total)) %>% rename(Family="taxon_family_name", "# of Observations"="total")
+
+write.csv(plant_family, "plant/plantfamilytable_CA.csv", na="")
+```
+
+
+
+```{r Removing what was not in the list from Cal-IBIS plant data}
+plant_inat_CA2 <- plant_inat_CA %>% mutate(scientificName=str_to_lower(scientific_name))
+
+
+# merging the cal-ibis plant with the checked cal-ibis ssp list to get the rest of taxon/island info. Will merge with the inat unique names after run through JAL island and ssp Cal-IBIS taxa code
+gap_plantlist_2 = gap_plantlist %>% dplyr::select(-scientificName)
+ssp_checkednames = read_csv("plant/ssp_nameschecked.csv")
+
+
+checked_name_ssp = left_join(ssp_checkednames, gap_plantlist_2, by="sci_name") %>% distinct(scientificName, .keep_all=TRUE) %>% replace_na(list(MASTER_ELIM="KEEP"))
+
+plant_namelist = rbind(gap_plantlist, checked_name_ssp)
+
+#only kept names that matched the list from Cal-IBIS plants
+plant_inat_calibis = semi_join(plant_inat_CA2, plant_namelist) %>% dplyr::select(id, Arc_IslName, latitude, longitude, scientific_name, taxon_family_name, taxon_genus_name, taxon_species_name, taxon_subspecies_name, scientificName)
+
+plant_inat_calibis2 = left_join(plant_inat_calibis, plant_namelist) %>% rename(isl_name ="Arc_IslName")
+
+#240 unqiue things removed, a lot will be because var. and subsp. was not included in the inaturalist names, I will make a list that cleans that up, replaces the inat name with var./subsp. included 
+plant_inat_removednames = anti_join(plant_inat_CA2, plant_namelist) %>% distinct(scientificName)
+
+```
+
+```{r prep data for Taxon Richness}
+
+#remove the ELIM and BLANK values 
+#1st add KEEP to unqiue iNat plants 
+
+#only keep KEEP
+plant_inat_clean_needssp = filter(plant_inat_cleaned2, MASTER_ELIM=="KEEP")
+#17830 left
+plant_inat_elimremoved = filter(plant_inat_cleaned2, MASTER_ELIM=="ELIM")
+
+write.csv(plant_inat_clean_needssp, "plant/output/plant_inat_clean_needssp.csv", na="")
+```
+
+### Main data cleanup by island
+After fixing synonyms and removing the major problem species, we also want to remove specimens that were assigned the incorrect island based on their known occurrences. 
+
+```{r cleanup for main islands by island}
+plants_nonisl_initialclean <- plant_inat_calibis2 %>%
+  filter(MASTER_ELIM == "KEEP")
+plants_nonisl_initialelim <- plant_inat_calibis2 %>%
+  filter(MASTER_ELIM != "KEEP" | is.na(MASTER_ELIM))
+# Island keepers 
+SMI <- plants_nonisl_initialclean %>%
+  filter(isl_name == "San Miguel",
+         SMI == "1")
+SR <- plants_nonisl_initialclean %>%
+  filter(isl_name == "Santa Rosa",
+         SR == "1")
+SCR <- plants_nonisl_initialclean %>%
+  filter(isl_name == "Santa Cruz",
+         SCR == "1")
+A <- plants_nonisl_initialclean %>%
+  filter(isl_name == "Anacapa",
+         A == "1")
+SBA <- plants_nonisl_initialclean %>%
+  filter(isl_name == "Santa Barbara",
+         SBA == "1")
+SNI <- plants_nonisl_initialclean %>%
+  filter(isl_name == "San Nicolas",
+         SNI == "1")
+SCL <- plants_nonisl_initialclean %>%
+  filter(isl_name == "San Clemente",
+         SCL == "1")
+SCA <- plants_nonisl_initialclean %>%
+  filter(isl_name == "Santa Catalina",
+         SCA == "1")
+# Island trashies
+SMI_trash <- plants_nonisl_initialclean %>%
+  filter(isl_name == "San Miguel",
+         is.na(SMI))
+SR_trash <- plants_nonisl_initialclean %>%
+  filter(isl_name == "Santa Rosa",
+         is.na(SR))
+SCR_trash <- plants_nonisl_initialclean %>%
+  filter(isl_name == "Santa Cruz",
+         is.na(SCR))
+A_trash <- plants_nonisl_initialclean %>%
+  filter(isl_name == "Anacapa",
+         is.na(A))
+SBA_trash <- plants_nonisl_initialclean %>%
+  filter(isl_name == "Santa Barbara",
+         is.na(SBA))
+SNI_trash <- plants_nonisl_initialclean %>%
+  filter(isl_name == "San Nicolas",
+         is.na(SNI))
+SCL_trash <- plants_nonisl_initialclean %>%
+  filter(isl_name == "San Clemente",
+         is.na(SCL))
+SCA_trash <- plants_nonisl_initialclean %>%
+  filter(isl_name == "Santa Catalina",
+         is.na(SCA))
+plants_nonisl_clean <- rbind(SBA, SCA, SCL, SCR, SMI, SNI, SR, A)
+plants_nonisl_elimed <- rbind(SBA_trash, SCA_trash, SCL_trash, SCR_trash, SMI_trash, SNI_trash, SR_trash, A_trash, plants_nonisl_initialelim)
+remove(SBA, SCA, SCL, SCR, SMI, SNI, SR, A)
+remove(SBA_trash, SCA_trash, SCL_trash, SCR_trash, SMI_trash, SNI_trash, SR_trash, A_trash)
+```
+
+
+### Special Cases - by island
+In a few cases, we'll want to clean the data OR assign MRT based on the specific island a speciment is from. 
+
+```{r}
+by_isl_filter <- read_csv("Josie/Data/2021Oct22_byislcheck.csv", col_types = cols(.default = "c")) %>%
+  mutate(sciname_2 = str_to_sentence(sciname_2)) %>%
+  distinct()
+plants_byisl_join <- plant_inat_calibis2 %>%
+  mutate(sci_name = str_to_sentence(sci_name),
+         sciname_2 = sci_name,
+         sciname_2 = ifelse(sci_name == "Eriogonum giganteum" & isl_name == "Santa Barbara", 
+                            "Eriogonum giganteum var. compactum", sciname_2),
+         sciname_2 = ifelse(sci_name == "Eriogonum giganteum" & isl_name == "San Clemente",
+                            "Eriogonum giganteum var. formosum", sciname_2),
+         sciname_2 = ifelse(sci_name == "Eriogonum giganteum" & isl_name == "Santa Catalina", 
+                            "Eriogonum giganteum var. giganteum", sciname_2),
+         sciname_2 = ifelse(sci_name == "Eriogonum giganteum" & isl_name == "Santa Cruz", 
+                            "Eriogonum giganteum var. giganteum", sciname_2),
+         
+         
+         sciname_2 = ifelse(sci_name == "Eriogonum grande" & isl_name == "San Clemente",
+                            "Eriogonum grande var. grande", sciname_2),
+         sciname_2 = ifelse(sci_name == "Eriogonum grande" & isl_name == "Santa Catalina", 
+                            "Eriogonum grande var. grande", sciname_2),
+         sciname_2 = ifelse(sci_name == "Eriogonum grande" & isl_name == "San Nicolas", 
+                            "Eriogonum grande var. timorum", sciname_2),
+         sciname_2 = ifelse(sci_name == "Eriogonum grande" & isl_name == "San Miguel", 
+                            "Eriogonum grande var. rubescens", sciname_2),
+         sciname_2 = ifelse(sci_name == "Eriogonum grande" & isl_name == "Santa Rosa", 
+                            "Eriogonum grande var. rubescens", sciname_2),
+         
+         
+         sciname_2 = ifelse(sci_name == "Acmispon dendroideus" & isl_name == "Santa Rosa", 
+                            "Acmispon dendroideus var. dendroideus", sciname_2),
+         sciname_2 = ifelse(sci_name == "Acmispon dendroideus" & isl_name == "Santa Cruz", 
+                            "Acmispon dendroideus var. dendroideus", sciname_2),
+         sciname_2 = ifelse(sci_name == "Acmispon dendroideus" & isl_name == "Santa Catalina", 
+                            "Acmispon dendroideus var. dendroideus", sciname_2),
+         sciname_2 = ifelse(sci_name == "Acmispon dendroideus" & isl_name == "Anacapa", 
+                            "Acmispon dendroideus var. dendroideus", sciname_2),
+         sciname_2 = ifelse(sci_name == "Acmispon dendroideus" & isl_name == "San Miguel", 
+                            "Acmispon dendroideus var. veatchii", sciname_2),
+         sciname_2 = ifelse(sci_name == "Acmispon dendroideus" & isl_name == "San Clemente", 
+                            "Acmispon dendroideus var. traskiae", sciname_2),
+        
+        
+         sciname_2 = ifelse(sci_name == "Galium angustifolium" & isl_name == "Santa Catalina", 
+                            "Galium angustifolium subsp. angustifolium", sciname_2),
+         sciname_2 = ifelse(sci_name == "Galium angustifolium" & isl_name == "Santa Rosa", 
+                            "Galium angustifolium subsp. foliosum", sciname_2),
+         sciname_2 = ifelse(sci_name == "Galium angustifolium" & isl_name == "Santa Cruz", 
+                            "Galium angustifolium subsp. foliosum", sciname_2),
+         sciname_2 = ifelse(sci_name == "Galium angustifolium" & isl_name == "Anacapa", 
+                            "Galium angustifolium subsp. foliosum", sciname_2),
+         
+         sciname_2 = ifelse(sci_name == "Galium catalinense" & isl_name == "San Clemente", 
+                            "Galium catalinense subsp. acrispum", sciname_2),
+         sciname_2 = ifelse(sci_name == "Galium catalinense" & isl_name == "Santa Catalina", 
+                            "Galium catalinense subsp. catalinense", sciname_2),
+         
+         sciname_2 = ifelse(sci_name == "Malacothamnus fasciculatus" & isl_name == "Santa Catalina", 
+                            "Malacothamnus fasciculatus var. catalinensis", sciname_2),
+         sciname_2 = ifelse(sci_name == "Malacothamnus fasciculatus" & isl_name == "Santa Cruz", 
+                            "Malacothamnus fasciculatus var. nesioticus", sciname_2),
+         
+         
+         sciname_2 = ifelse(sci_name == "Malva assurgentiflora" & isl_name == "Santa Catalina", 
+                            "Malva assurgentiflora subsp. glabra", sciname_2),
+         sciname_2 = ifelse(sci_name == "Malva assurgentiflora" & isl_name == "San Clemente", 
+                            "Malva assurgentiflora subsp. glabra", sciname_2),
+         sciname_2 = ifelse(sci_name == "Malva assurgentiflora" & isl_name == "San Miguel",
+                            "Malva assurgentiflora subsp. assurgentiflora", sciname_2),
+         sciname_2 = ifelse(sci_name == "Malva assurgentiflora" & isl_name == "Santa Rosa", 
+                            "Malva assurgentiflora subsp. assurgentiflora", sciname_2),  
+         sciname_2 = ifelse(sci_name == "Malva assurgentiflora" & isl_name == "Santa Cruz", 
+                            "Malva assurgentiflora subsp. assurgentiflora", sciname_2),  
+         sciname_2 = ifelse(sci_name == "Malva assurgentiflora" & isl_name == "Anacapa", 
+                            "Malva assurgentiflora subsp. assurgentiflora", sciname_2),
+         
+         sciname_2 = ifelse(sci_name == "Lyonothamnus floribundus" & isl_name == "Santa Cruz", 
+                            "Lyonothamnus floribundus subsp. aspleniifolius", sciname_2),  
+         sciname_2 = ifelse(sci_name == "Lyonothamnus floribundus" & isl_name == "Santa Rosa", 
+                            "Lyonothamnus floribundus subsp. aspleniifolius", sciname_2),  
+         sciname_2 = ifelse(sci_name == "Lyonothamnus floribundus" & isl_name == "San Clemente", 
+                            "Lyonothamnus floribundus subsp. aspleniifolius", sciname_2),  
+         sciname_2 = ifelse(sci_name == "Lyonothamnus floribundus" & isl_name == "Santa Catalina", 
+                            "Lyonothamnus floribundus subsp. floribundus", sciname_2),
+         
+         sciname_2 = ifelse(sci_name == "Malacothrix foliosa" & isl_name == "Anacapa", 
+                            "Malacothrix foliosa subsp. crispifolia", sciname_2),  
+         sciname_2 = ifelse(sci_name == "Malacothrix foliosa" & isl_name == "San Clemente", 
+                            "Malacothrix foliosa subsp. foliosa", sciname_2),  
+         sciname_2 = ifelse(sci_name == "Malacothrix foliosa" & isl_name == "Santa Barbara", 
+                            "Malacothrix foliosa subsp. philbrickii", sciname_2),  
+         sciname_2 = ifelse(sci_name == "Malacothrix foliosa" & isl_name == "San Nicolas", 
+                            "Malacothrix foliosa subsp. polycephala", sciname_2),
+         
+         sciname_2 = ifelse(sci_name == "Dudleya blochmaniae" & isl_name == "Santa Cruz", 
+                            "Dudleya blochmaniae subsp. blochmaniae", sciname_2),  
+         sciname_2 = ifelse(sci_name == "Dudleya blochmaniae" & isl_name == "Santa Rosa", 
+                            "Dudleya blochmaniae subsp. insularis", sciname_2),
+         
+         sciname_2 = ifelse(sci_name == "Dudleya virens" & isl_name == "San Nicolas",  
+                            "Dudleya virens subsp. insularis", sciname_2),
+         sciname_2 = ifelse(sci_name == "Dudleya virens" & isl_name == "San Clemente",  
+                            "Dudleya virens subsp. virens", sciname_2),
+         sciname_2 = ifelse(sci_name == "Dudleya virens" & isl_name == "Santa Catalina",  
+                            "Dudleya virens", sciname_2),
+         
+         sciname_2 = ifelse(sci_name == "Delphinium parryi subsp. maritimum", 
+                            "Delphinium parryi", sciname_2),
+         sciname_2 = ifelse(sci_name == "Delphinium parryi subsp. parryi", 
+                            "Delphinium parryi", sciname_2))
+
+#### base R character conversion baby, bc all the islands are doubles rn and need to be characters to join!!
+plants_byisl_join$SMI = as.character(plants_byisl_join$SMI)
+plants_byisl_join$SR = as.character(plants_byisl_join$SR)
+plants_byisl_join$SCR = as.character(plants_byisl_join$SCR)
+plants_byisl_join$A = as.character(plants_byisl_join$A)
+plants_byisl_join$SNI = as.character(plants_byisl_join$SNI)
+plants_byisl_join$SBA = as.character(plants_byisl_join$SBA)
+plants_byisl_join$SCA = as.character(plants_byisl_join$SCA)
+plants_byisl_join$SCL = as.character(plants_byisl_join$SCL)
+
+###DID NOT USE THIS BELOW, things were removed that should not have been removed, like Catalina Ironwood on Catalina and SB buckwheat on Santa Barbara
+plants_byisl_join2 <- left_join(plants_byisl_join, by_isl_filter)
+SMI <- plants_byisl_join2 %>%
+  filter(isl_name == "San Miguel",
+         SMI == "1")
+SR <- plants_byisl_join2 %>%
+  filter(isl_name == "Santa Rosa",
+         SR == "1")
+SCR <- plants_byisl_join2 %>%
+  filter(isl_name == "Santa Cruz",
+         SCR == "1")
+A <- plants_byisl_join2 %>%
+  filter(isl_name == "Anacapa",
+         SR == "1")
+SBA <- plants_byisl_join2 %>%
+  filter(isl_name == "Santa Barbara",
+         SBA == "1")
+SNI <- plants_byisl_join2 %>%
+  filter(isl_name == "San Nicolas",
+         SNI == "1")
+SCL <- plants_byisl_join2 %>%
+  filter(isl_name == "San Clemente",
+         SCL == "1")
+SCA <- plants_byisl_join2 %>%
+  filter(isl_name == "Santa Catalina",
+         SCA == "1")
+plants_byisl_join2_clean <- rbind(SBA, SCA, SCL, SCR, SMI, SNI, SR, A) %>%
+  dplyr::select(-sci_name) %>%
+  rename(sci_name = sciname_2)
+remove(SBA, SCA, SCL, SCR, SMI, SNI, SR, A)
+```
+
+```{r, Combine the island cleaned and subsp cleaned data}
+#### base R character conversion baby, bc all the islands are doubles rn and need to be characters to join!!
+plants_nonisl_clean$SMI = as.character(plants_nonisl_clean$SMI)
+plants_nonisl_clean$SR = as.character(plants_nonisl_clean$SR)
+plants_nonisl_clean$SCR = as.character(plants_nonisl_clean$SCR)
+plants_nonisl_clean$A = as.character(plants_nonisl_clean$A)
+plants_nonisl_clean$SNI = as.character(plants_nonisl_clean$SNI)
+plants_nonisl_clean$SBA = as.character(plants_nonisl_clean$SBA)
+plants_nonisl_clean$SCA = as.character(plants_nonisl_clean$SCA)
+plants_nonisl_clean$SCL = as.character(plants_nonisl_clean$SCL)
+
+inat_calibis_clean <- full_join(plants_nonisl_clean, plants_byisl_join) %>% distinct(id, .keep_all=TRUE) %>% dplyr::select("id", "isl_name", "latitude", "longitude", "scientific_name", "scientificName", "family_final", "sci_name", "MASTER_ELIM") %>% rename(family="family_final")
+
+inat_calibis_clean2  = filter(inat_calibis_clean, MASTER_ELIM=="KEEP")
+```
+
+```{r, iNat specific taxa selected and filter out what wasn't on list}
+inatonly_nameschecked = read_csv("plant/inatonly_names_checked.csv")
+
+plant_inat_only = semi_join(plant_inat_CA2, inatonly_nameschecked) 
+
+inat_only_clean = left_join(plant_inat_only, inatonly_nameschecked)
+write_csv(inat_only_clean, "plant/output/iNaturalist_uniqueplants.csv")
+```
+
+```{r, Merge the two iNat only and Cal-IBIS list datasets}
+inat_only_clean_merge = inat_only_clean %>% dplyr::select(id, Arc_IslName, latitude, longitude, scientific_name, taxon_family_name, scientificName) %>% rename(isl_name="Arc_IslName", family="taxon_family_name")
+
+inat_plant_all_clean = full_join(inat_calibis_clean2, inat_only_clean_merge) %>% add_column(n=1)
+
+##create dataframe of what was removed from the inaturalist dataset
+
+inat_plant_removed_all = anti_join(plant_inat_CA2, inat_plant_all_clean, by="id")
+write_csv(inat_plant_removed_all, "plant/output/inat_plant_removed_all.csv", na="")
+#135 non-vasc plants, 763 vascular from Matt list and ELIM/" " per cal-ibis plant code/josie method 
+```
+```{r, Taxon Richness}
+#KJE: as of 10/25 the dataset used as been assigned subspecies per josie's code but has not been scrubbed by island due to the issue of that removing inat specific ones too right now 
+
+inat_plant_all_clean$sci_name = as.factor(inat_plant_all_clean$sci_name)
+capFirst <- function(s) {
+    paste(toupper(substring(s, 1, 1)), substring(s, 2), sep = "")
+}
+
+inat_plant_all_clean$sci_name <- capFirst(inat_plant_all_clean$sci_name)
+
+inat_sm = filter(inat_plant_all_clean, isl_name=="San Miguel") %>% distinct(sci_name)
+inat_sr = filter(inat_plant_all_clean, isl_name=="Santa Rosa") %>% distinct(sci_name)
+inat_scr = filter(inat_plant_all_clean, isl_name=="Santa Cruz") %>% distinct(sci_name)
+inat_a = filter(inat_plant_all_clean, isl_name=="Anacapa") %>% distinct(sci_name)
+inat_sb = filter(inat_plant_all_clean, isl_name=="Santa Barbara") %>% distinct(sci_name)
+inat_sn = filter(inat_plant_all_clean, isl_name=="San Nicolas") %>% distinct(sci_name)
+inat_sca = filter(inat_plant_all_clean, isl_name=="Santa Catalina") %>% distinct(sci_name)
+inat_scl = filter(inat_plant_all_clean, isl_name=="San Clemente") %>% distinct(sci_name)
+
+write_csv(inat_sm, "plant/output/iNat_Plant_SanMiguel_Taxa.csv")
+write_csv(inat_sr, "plant/output/iNat_Plant_SantaRosa_Taxa.csv")
+write_csv(inat_scr, "plant/output/iNat_Plant_SantaCruz_Taxa.csv")
+write_csv(inat_a, "plant/output/iNat_Plant_Anacapa_Taxa.csv")
+write_csv(inat_sb, "plant/output/iNat_Plant_SantaBarbara_Taxa.csv")
+write_csv(inat_sn, "plant/output/iNat_Plant_SanNicolas_Taxa.csv")
+write_csv(inat_sca, "plant/output/iNat_Plant_SantaCatalina_Taxa.csv")
+write_csv(inat_scl, "plant/output/iNat_Plant_SanClemente_Taxa.csv")
+
+```
+
+```{r charts by family, code taken from Josie to include break down by all islands}
+all_data_family <- inat_plant_all_clean %>%
+  group_by(family) %>%
+  summarise(specimens = sum(n))
+
+all_data_family_isl <- inat_plant_all_clean %>%
+  group_by(isl_name, family) %>%
+  summarise(specimens = sum(n)) %>% 
+  spread(isl_name, specimens)
+
+all_families <- left_join(all_data_family, all_data_family_isl) %>% rename(Family="family", "All Islands"="specimens") %>% relocate(Family, "All Islands", "San Miguel", "Santa Rosa", "Santa Cruz", "Anacapa", "Santa Barbara", "San Nicolas", "San Clemente", "Santa Catalina")
+
+write_csv(all_families, "plant/output/spec_by_family.csv")
+
+
+
+
+```
+
+```{r}
+data_60yr <- read_csv("Josie/ForMatt/table_60yr_new.csv") %>% rename(sci_name="Sci_Name")
+
+inat_60yr = semi_join(inat_plant_all_clean, data_60yr)
+inat_60yrlist = left_join(inat_60yr, plant_inat_CA2, by="id")
+
+write_csv(inat_60yrlist, "plant/output/inat_60yr_list.csv", na="")
+```

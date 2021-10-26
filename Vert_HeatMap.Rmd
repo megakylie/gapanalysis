@@ -354,7 +354,7 @@ plot(coll.rast, col=colRamp,xlim=c(86000,94000),ylim=c(-508000,-500000),
 amph_chis <- read_csv("amphibian/amph_chis.csv")
 amph_chis_combine <- amph_chis %>%
   rename(latitude = "decimalLatitude", longitude="decimalLongitude", month="month_", year="year_", id="gbifID") %>%
-  select(id, month, year, island...128, class, acceptedGenus, acceptedName, latitude, longitude, locality, institutionCode) %>%
+  dplyr::select(id, month, year, island...128, class, acceptedGenus, acceptedName, latitude, longitude, locality, institutionCode) %>%
   rename(island = "island...128") %>%
   add_column(source="Cal-IBIS", type="Collection")
 
@@ -589,14 +589,14 @@ for(i in 1:8){
 	coll.Summary[i,"perEmpty"] <- round(length(which(rich.cel==0))/length(rich.cel),3)
 	coll.Summary[i,"mnRich"] <- mean(rich.cel[rich.cel!=0])
 	coll.Summary[i,"mnColl"] <- mean(coll.cel[rich.cel!=0])
-	coll.Summary[i,"totRich"] <- length(unique(occ$Sci_Name[occ$isl_name==isl.names[i]]))
+	coll.Summary[i,"totRich"] <- length(unique(occ$acceptedName[occ$island==isl.names[i]]))
 	coll.Summary[i,"mnRedund"] <- round(mean(1-(rich.cel[rich.cel!=0]/coll.cel[rich.cel!=0])),3)
 	coll.Summary[i,"mnRedundwE"] <- round(1/mean((coll.cel-rich.cel)),3)
 }
 
 sum_table <- as.data.frame(coll.Summary) %>%
   rownames_to_column(var = "island") %>% 
-  rename("Island Collections" ="totColls", "1 km cells" ="totCells", "Empty 1 km cells" ="Empty", "Mean records/cell"="mnColl", "Mean redundancy" ="mnRedundwE", "% empty cells"="perEmpty") %>%
+  rename("Island Collections" ="totColls", "1 km cells" ="totCells", "Empty 1 km cells" ="Empty", "Mean records/cell"="mnColl", "Mean redundancy" ="mnRedundwE", "% empty cells"="perEmpty", "Island Richness"="totRich", "Mean richness/cell"="mnRich") %>%
   relocate("island", "Island Collections", "1 km cells", "Empty 1 km cells", "% empty cells", "Mean records/cell", "Mean redundancy" )
 write.csv(sum_table, "amphibian/AmphibianGraphs/amph_sum_table.csv", na="")
 
@@ -643,7 +643,6 @@ ca=plot(coll.rast, col=colRamp,xlim=c(125000,165000),ylim=c(-530000,-500000),
   plot(is.map, add=T) +
   points(occ$Lon_alb,occ$Lat_alb, cex=0.3, col="blue", pch=19)  
 
-facet_wrap(an, ba)
 
 ```
 

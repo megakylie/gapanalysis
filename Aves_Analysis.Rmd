@@ -316,7 +316,6 @@ ggsave(plot=aves_collgraph, filename="aves/AvesGraphs/aves_type2.png", height=5,
 #Aves Step 4. Make Tables 
 ```{r Family by Source & Collection Type Tables}
 
-
 avestab= table(aves_master_syn2$acceptedName)
 avestab = as.data.frame.table(avestab) 
 avestab2 = avestab %>%
