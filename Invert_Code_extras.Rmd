@@ -13,6 +13,7 @@ library(lubridate)
 library(ggplot2)
 library(dplyr)
 library(RColorBrewer)
+library(scales)
 ```
 
 ```{r}
@@ -138,6 +139,45 @@ master_taxa_table_order_species = master_species %>% add_column(n=1) %>% group_b
 master_taxa_table_class_species = master_species %>% add_column(n=1) %>% group_by(class) %>% summarise("taxa richness"=sum(n))
 
 write_csv(master_taxa_table_order, "master/master_taxa_table_order.csv")
+```
+
+```{r Taxonomic Pie Chart??}
+order_breakdown = read_csv("master/master_taxa_table_order2.csv")
+
+master_insects = master_taxa_unique %>% filter(class=="Insecta")
+master_insect_table = master_insects %>% group_by(acceptedOrder) %>% summarise("taxa richness"=sum(n)) %>%  replace_na(list(acceptedOrder="Coleoptera")) 
+
+master_insect_table$num = as.numeric(master_insect_table$"taxa richness")
+master_insect_table2 = master_insect_table %>% mutate(prop = (num/1770)*100) 
+
+
+insect_taxapiechart = ggplot(master_insect_table2, aes(x="", y=`prop`, fill=`acceptedOrder` )) + geom_bar(stat="identity", width=1, color="white") + coord_polar("y", start=0) + theme_void() + labs(fill="Order")
+
+ggsave(plot=insect_taxapiechart, filename="master/insect_taxa_piechart.png", height=10, width=20, units="cm", dpi=300)
+
+#Diptera
+diptera_taxa = master_taxa_unique %>% filter(acceptedOrder=="Diptera")
+diptera_taxa_table = diptera_taxa %>% group_by(acceptedFamily) %>% summarise("taxa richness"=sum(n)) 
+
+
+ggplot(diptera_taxa_table, aes(x="", y=`taxa richness`, fill=`acceptedFamily` )) + geom_bar(stat="identity", width=1, color="white") + coord_polar("y", start=0) + theme_void() + labs(fill="Family")
+
+
+#Hymenoptera
+hym_taxa = master_taxa_unique %>% filter(acceptedOrder=="Hymenoptera")
+hym_taxa_table = hym_taxa %>% group_by(acceptedFamily) %>% summarise("taxa richness"=sum(n)) 
+
+
+ggplot(hym_taxa_table, aes(x="", y=`taxa richness`, fill=`acceptedFamily` )) + geom_bar(stat="identity", width=1, color="white") + coord_polar("y", start=0) + theme_void() + labs(fill="Family")
+
+#Lepidoptera
+lep_taxa = master_taxa_unique %>% filter(acceptedOrder=="Lepidoptera")
+lep_taxa_table = lep_taxa %>% group_by(acceptedFamily) %>% summarise("taxa richness"=sum(n)) 
+
+
+ggplot(lep_taxa_table, aes(x="", y=`taxa richness`, fill=`acceptedFamily` )) + geom_bar(stat="identity", width=1, color="white") + coord_polar("y", start=0) + theme_void() + labs(fill="Family")
+```
+
 ```
 
 
